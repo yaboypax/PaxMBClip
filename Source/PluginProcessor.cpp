@@ -22,6 +22,8 @@ PaxMBClipAudioProcessor::PaxMBClipAudioProcessor()
                        )
 #endif
 {
+
+    createParameterLayout();
 }
 
 PaxMBClipAudioProcessor::~PaxMBClipAudioProcessor()
@@ -188,4 +190,29 @@ void PaxMBClipAudioProcessor::setStateInformation (const void* data, int sizeInB
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new PaxMBClipAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    using namespace Params;
+    const auto& params = GetParams();
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Mid_Crossover_Freq), params.at(Names::Low_Mid_Crossover_Freq), juce::NormalisableRange<float>(20, 20000, 1, 1), 200));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_High_Crossover_Freq), params.at(Names::Mid_High_Crossover_Freq), juce::NormalisableRange<float>(20, 20000, 1, 1), 2000));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Clip), params.at(Names::Low_Clip), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_Clip), params.at(Names::Mid_Clip), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::High_Clip), params.at(Names::High_Clip), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Gain), params.at(Names::Low_Gain), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_Gain), params.at(Names::Mid_Gain), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::High_Gain), params.at(Names::High_Gain), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Bypassed_Low), params.at(Names::Bypassed_Low), false));
+    layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Bypassed_Mid), params.at(Names::Bypassed_Mid), false));
+    layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Bypassed_High), params.at(Names::Bypassed_High), false));
+
+    return layout;
 }

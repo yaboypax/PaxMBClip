@@ -13,6 +13,55 @@
 //==============================================================================
 /**
 */
+
+
+namespace Params
+{
+    enum Names
+    {
+        Low_Mid_Crossover_Freq,
+        Mid_High_Crossover_Freq,
+
+        Low_Clip,
+        Mid_Clip,
+        High_Clip,
+
+        Low_Gain,
+        Mid_Gain,
+        High_Gain,
+
+        Bypassed_Low,
+        Bypassed_Mid,
+        Bypassed_High
+    };
+
+    inline const std::map<Names, juce::String>& GetParams()
+    {
+        static std::map<Names, juce::String> params =
+        {
+            {Low_Mid_Crossover_Freq, "Low-Mid Crossover Freq"},
+            {Mid_High_Crossover_Freq, "Mid-High Crossover Freq"},
+
+            {Low_Clip, "Low Clip"},
+            {Mid_Clip, "Mid Clip"},
+            {High_Clip, "High Clip"},
+
+            {Low_Gain, "Low Gain"},
+            {Mid_Gain, "Mid Gain"},
+            {High_Gain, "High Gain"},
+
+            {Bypassed_Low, "Bypassed_Low"},
+            {Bypassed_Mid, "Bypassed Mid"},
+            {Bypassed_High, "Bypassed High"}
+        };
+
+        return params;
+    }
+}
+
+
+
+
 class PaxMBClipAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
@@ -55,6 +104,9 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
 
 private:
     //==============================================================================
