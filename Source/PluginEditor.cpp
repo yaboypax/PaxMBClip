@@ -16,17 +16,26 @@ Placeholder::Placeholder()
     customColor = juce::Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
 }
 
+void GlobalControls::paint(juce::Graphics& g)
+{
+    auto bounds = getLocalBounds();
+    g.setColour(juce::Colours::blueviolet);
+    g.fillAll();
 
+    bounds.reduce(3, 3);
+    g.setColour(juce::Colours::black);
+    g.fillRoundedRectangle(bounds.toFloat(), 3);
+}
 
 
 //==============================================================================
 PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor (PaxMBClipAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    addAndMakeVisible(controlBar);
-    addAndMakeVisible(analyzer);
+    //addAndMakeVisible(controlBar);
+    //addAndMakeVisible(analyzer);
     addAndMakeVisible(globalControls);
-    addAndMakeVisible(bandControls);
+    //addAndMakeVisible(bandControls);
 
     setSize (600, 500);
 }
@@ -39,11 +48,7 @@ PaxMBClipAudioProcessorEditor::~PaxMBClipAudioProcessorEditor()
 void PaxMBClipAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.fillAll(juce::Colours::black);
 }
 
 void PaxMBClipAudioProcessorEditor::resized()

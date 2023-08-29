@@ -24,6 +24,10 @@ struct Placeholder : juce::Component
     juce::Colour customColor;
 };
 
+struct GlobalControls : juce::Component
+{
+    void paint(juce::Graphics& g) override;
+};
 
 
 /**
@@ -41,7 +45,8 @@ public:
 private:
     PaxMBClipAudioProcessor& audioProcessor;
 
-    Placeholder controlBar, analyzer, globalControls, bandControls;
+    Placeholder controlBar, analyzer, bandControls;
+    GlobalControls globalControls;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessorEditor)
 };
