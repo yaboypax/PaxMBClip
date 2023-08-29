@@ -43,6 +43,9 @@ PaxMBClipAudioProcessor::PaxMBClipAudioProcessor()
     floatHelper(lowMidCrossover, Names::Low_Mid_Crossover_Freq);
     floatHelper(midHighCrossover, Names::Mid_High_Crossover_Freq);
 
+    floatHelper(inputGainParam, Names::Gain_In);
+    floatHelper(outputGainParam, Names::Gain_Out);
+
     auto boolHelper = [&apvts = this->apvts, &params](auto& param, const auto& paramName)
     {
         param = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(paramName)));
@@ -148,6 +151,12 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     HP2.prepare(spec);
     AP2.prepare(spec);
 
+    inputGain.prepare(spec);
+    outputGain.prepare(spec);
+
+    inputGain.setRampDurationSeconds(0.05); //50 ms
+    outputGain.setRampDurationSeconds(0.05);
+
     setCrossoverFilters();
 
     for (auto& buffer : filterBuffers)
@@ -189,6 +198,7 @@ bool PaxMBClipAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 #endif
 void PaxMBClipAudioProcessor::updateState()
 {
+
     auto lowMidCutoffFreq = lowMidCrossover->get();
     LP1.setCutoffFrequency(lowMidCutoffFreq);
     HP1.setCutoffFrequency(lowMidCutoffFreq);
@@ -197,6 +207,9 @@ void PaxMBClipAudioProcessor::updateState()
     AP2.setCutoffFrequency(midHighCutoffFreq);
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
+
+    inputGain.setGainDecibels(inputGainParam->get());
+    outputGain.setGainDecibels(outputGainParam->get());
 
 }
 void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -208,6 +221,9 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     updateState();
+
+    applyGain(buffer, inputGain);
+
     splitBands(buffer);
 
 
@@ -229,6 +245,8 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     addFilterBand(buffer, filterBuffers[0]);
     addFilterBand(buffer, filterBuffers[1]);
     addFilterBand(buffer, filterBuffers[2]);
+
+    applyGain(buffer, outputGain);
 }
 
 void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBuffer)
@@ -319,8 +337,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Solo_Mid), params.at(Names::Solo_Mid), false));
     layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Solo_High), params.at(Names::Solo_High), false));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
+    auto gainRange = juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f);
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), gainRange, 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainRange, 0));
 
     return layout;
 }

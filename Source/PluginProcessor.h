@@ -65,6 +65,14 @@ public:
 
     void setCrossoverFilters();
 
+    template<typename T, typename U>
+    void applyGain(T& buffer, U& dsp)
+    {
+        auto block = juce::dsp::AudioBlock<float>(buffer);
+        auto ctx = juce::dsp::ProcessContextReplacing<float>(block);
+        dsp.process(ctx);
+    }
+
 private:
     //==============================================================================
     using Filter = juce::dsp::LinkwitzRileyFilter<float>;
