@@ -29,11 +29,10 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
     context.isBypassed = bypassed->get();
-    
-    updateClipperSettings();
+
     applyGain(buffer, bandGain);
 
-    clipper.process(context);
+    //clipper.process(context);
 
 
     auto postRMS = computeRMSLevel(buffer);

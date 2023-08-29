@@ -220,11 +220,22 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+    for (auto& clipper : clippers)
+    {
+        clipper.updateClipperSettings();
+    }
+
     updateState();
 
     applyGain(buffer, inputGain);
 
     splitBands(buffer);
+
+    for (size_t i = 0; i < filterBuffers.size(); ++i) 
+    {
+        clippers[i].process(filterBuffers[i]);
+    }
 
 
     //context.isBypassed = bypassedLow->get();

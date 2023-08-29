@@ -55,11 +55,6 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
 
-    std::array<Clipper, 3> clippers;
-    Clipper& lowBandClip = clippers[0];
-    Clipper& midBandClip = clippers[1];
-    Clipper& highBandClip = clippers[2];
-
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
 
@@ -86,6 +81,11 @@ private:
     juce::dsp::Gain<float> inputGain, outputGain;
     juce::AudioParameterFloat* inputGainParam{ nullptr };
     juce::AudioParameterFloat* outputGainParam{ nullptr };
+
+    std::array<Clipper, 3> clippers;
+    Clipper& lowBandClip = clippers[0];
+    Clipper& midBandClip = clippers[1];
+    Clipper& highBandClip = clippers[2];
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessor)
