@@ -23,12 +23,13 @@ struct Clipper
 
     void prepare(const juce::dsp::ProcessSpec& spec);
 
-    void updateCompressorSettings();
+    void updateClipperSettings();
 
     void process(juce::AudioBuffer<float>& buffer);
 
     float getRMSOutputLevelDb() const { return rmsOutputLevelDb; }
     float getRMSInputLevelDb() const { return rmsInputLevelDb; }
+
 private:
 
     juce::dsp::WaveShaper<float> clipper;

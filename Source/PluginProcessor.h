@@ -1,66 +1,10 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
 
 #pragma once
 
 #include <JuceHeader.h>
-
-//==============================================================================
-/**
-*/
-
-
-namespace Params
-{
-    enum Names
-    {
-        Low_Mid_Crossover_Freq,
-        Mid_High_Crossover_Freq,
-
-        Low_Clip,
-        Mid_Clip,
-        High_Clip,
-
-        Low_Gain,
-        Mid_Gain,
-        High_Gain,
-
-        Bypassed_Low,
-        Bypassed_Mid,
-        Bypassed_High
-    };
-
-    inline const std::map<Names, juce::String>& GetParams()
-    {
-        static std::map<Names, juce::String> params =
-        {
-            {Low_Mid_Crossover_Freq, "Low-Mid Crossover Freq"},
-            {Mid_High_Crossover_Freq, "Mid-High Crossover Freq"},
-
-            {Low_Clip, "Low Clip"},
-            {Mid_Clip, "Mid Clip"},
-            {High_Clip, "High Clip"},
-
-            {Low_Gain, "Low Gain"},
-            {Mid_Gain, "Mid Gain"},
-            {High_Gain, "High Gain"},
-
-            {Bypassed_Low, "Bypassed_Low"},
-            {Bypassed_Mid, "Bypassed Mid"},
-            {Bypassed_High, "Bypassed High"}
-        };
-
-        return params;
-    }
-}
-
-
-
+#include "Params.h"
+#include "Clip.h"
+//====================================================================
 
 class PaxMBClipAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
@@ -108,7 +52,27 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
 
+    std::array<Clipper, 3> clippers;
+    Clipper& lowBandClip = clippers[0];
+    Clipper& midBandClip = clippers[1];
+    Clipper& highBandClip = clippers[2];
+
+    juce::AudioParameterFloat* lowMidCrossover{ nullptr };
+    juce::AudioParameterFloat* midHighCrossover{ nullptr };
+
 private:
     //==============================================================================
+
+    using Filter = juce::dsp::LinkwitzRileyFilter<float>;
+    //      fc0     fc1
+    Filter  LP1, AP2,
+            HP1, LP2,
+            HP2;
+
+    std::array<juce::AudioBuffer<float>, 3> filterBuffers;
+
+    juce::dsp::Gain<float> inputGain, outputGain;
+    juce::AudioParameterFloat* inputGainParam{ nullptr };
+    juce::AudioParameterFloat* outputGainParam{ nullptr };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessor)
 };
