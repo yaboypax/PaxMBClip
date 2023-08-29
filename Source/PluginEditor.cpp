@@ -119,6 +119,22 @@ void LookAndFeel::drawToggleButton(juce::Graphics& g,
 
         g.strokePath(analyzerButton->randomPath, PathStrokeType(1.f));
     }
+    else
+    {
+        auto bounds = toggleButton.getLocalBounds().reduced(2);
+        bool buttonIsOn = toggleButton.getToggleState();
+
+        const int cornerSize = 4;
+
+        g.setColour(buttonIsOn ? juce::Colours::navajowhite : juce::Colours::black);
+        g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
+
+        g.setColour(buttonIsOn ? juce::Colours::black : juce::Colours::navajowhite);
+        g.drawRoundedRectangle(bounds.toFloat(), cornerSize, 1);
+
+        g.drawFittedText(toggleButton.getName(), bounds, juce::Justification::centred, 1);
+
+    }
 }
 //==============================================================================
 //void RotarySliderWithLabels::paint(juce::Graphics& g)
@@ -245,6 +261,15 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
 
     addAndMakeVisible(bandGainSlider);
     addAndMakeVisible(bandClipSlider);
+
+    bypassButton.setName("x");
+    soloButton.setName("s");
+    muteButton.setName("m");
+
+    addAndMakeVisible(bypassButton);
+    addAndMakeVisible(soloButton);
+    addAndMakeVisible(muteButton);
+
 }
 
 void drawModuleBackground(juce::Graphics &g, juce::Rectangle<int> bounds)
@@ -271,6 +296,28 @@ void ClipperBandControls::resized()
 {
     auto bounds = getLocalBounds();
 
+    auto createBandButtonControlBox = [](std::vector<Component*> clippers)
+    {
+        juce::FlexBox flexBox;
+        flexBox.flexDirection = juce::FlexBox::Direction::column;
+        flexBox.flexWrap = juce::FlexBox::Wrap::noWrap;
+
+        auto spacer = juce::FlexItem().withWidth(2);
+
+        for (auto* clipper : clippers)
+        {
+            flexBox.items.add(spacer);
+            flexBox.items.add(juce::FlexItem(*clipper).withFlex(1.0f));
+        }
+
+        flexBox.items.add(spacer);
+        
+        return flexBox;
+    };
+
+    auto bandButtonControlBox = createBandButtonControlBox({&bypassButton, &soloButton, &muteButton});
+
+
     juce::FlexBox flexBox;
     flexBox.flexDirection = juce::FlexBox::Direction::row;
     flexBox.flexWrap = juce::FlexBox::Wrap::noWrap;
@@ -282,6 +329,8 @@ void ClipperBandControls::resized()
     flexBox.items.add(juce::FlexItem(bandGainSlider).withFlex(1.f));
     flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(bandClipSlider).withFlex(1.f));
+    flexBox.items.add(spacer);
+    flexBox.items.add(juce::FlexItem(bandButtonControlBox).withWidth(30));
     flexBox.items.add(endCap);
 
     flexBox.performLayout(bounds);
@@ -353,6 +402,7 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor (PaxMBClipAudioProc
 
 PaxMBClipAudioProcessorEditor::~PaxMBClipAudioProcessorEditor()
 {
+
 }
 
 //==============================================================================
