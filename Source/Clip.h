@@ -37,6 +37,10 @@ private:
     std::atomic<float> rmsInputLevelDb{ PaxMBClip::NEG_INFINITY };
     std::atomic<float> rmsOutputLevelDb{ PaxMBClip::NEG_INFINITY };
 
+    juce::dsp::Gain<float> bandGain;
+    //juce::AudioParameterFloat* inBandGainParam{ nullptr };
+    //juce::AudioParameterFloat* outBandGainParam{ nullptr };
+
     template<typename T>
     float computeRMSLevel(const T& buffer)
     {
@@ -50,5 +54,13 @@ private:
 
         rms /= static_cast<float>(numChannels);
         return rms;
+    }
+
+    template<typename T, typename U>
+    void applyGain(T& buffer, U& dsp)
+    {
+        auto block = juce::dsp::AudioBlock<float>(buffer);
+        auto ctx = juce::dsp::ProcessContextReplacing<float>(block);
+        dsp.process(ctx);
     }
 };

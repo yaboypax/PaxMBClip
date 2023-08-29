@@ -13,11 +13,12 @@
 void Clipper::prepare(const juce::dsp::ProcessSpec& spec)
 {
     clipper.prepare(spec);
+    bandGain.prepare(spec);
 }
 
 void Clipper::updateClipperSettings()
 {
-    //clipper.setGain(attack->get());
+    bandGain.setGainDecibels(gain->get());
     //clipper.setClip(release->get());
 }
 
@@ -28,8 +29,12 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
     context.isBypassed = bypassed->get();
+    
+    updateClipperSettings();
+    applyGain(buffer, bandGain);
 
     clipper.process(context);
+
 
     auto postRMS = computeRMSLevel(buffer);
 
