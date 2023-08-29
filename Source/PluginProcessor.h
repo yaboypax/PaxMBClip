@@ -4,6 +4,8 @@
 #include <JuceHeader.h>
 #include "Params.h"
 #include "Clip.h"
+#include "utilities.h"
+
 //====================================================================
 
 class PaxMBClipAudioProcessor  : public juce::AudioProcessor
@@ -25,7 +27,7 @@ public:
    #endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-
+    void splitBands(const juce::AudioBuffer<float>& inputBuffer);
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -48,6 +50,7 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    void updateState();
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
@@ -60,9 +63,10 @@ public:
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
 
+    void setCrossoverFilters();
+
 private:
     //==============================================================================
-
     using Filter = juce::dsp::LinkwitzRileyFilter<float>;
     //      fc0     fc1
     Filter  LP1, AP2,
@@ -74,5 +78,7 @@ private:
     juce::dsp::Gain<float> inputGain, outputGain;
     juce::AudioParameterFloat* inputGainParam{ nullptr };
     juce::AudioParameterFloat* outputGainParam{ nullptr };
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessor)
 };

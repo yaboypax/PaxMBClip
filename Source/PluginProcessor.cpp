@@ -132,8 +132,25 @@ void PaxMBClipAudioProcessor::changeProgramName (int index, const juce::String& 
 //==============================================================================
 void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    juce::dsp::ProcessSpec spec;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+    spec.sampleRate = sampleRate;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        clippers[i].prepare(spec);
+    }
+
+    LP1.prepare(spec);
+    HP1.prepare(spec);
+
+    setCrossoverFilters();
+
+    for (auto& buffer : filterBuffers)
+    {
+        buffer.setSize(spec.numChannels, samplesPerBlock);
+    }
 }
 
 void PaxMBClipAudioProcessor::releaseResources()
@@ -167,40 +184,77 @@ bool PaxMBClipAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
   #endif
 }
 #endif
+void PaxMBClipAudioProcessor::updateState()
+{
+    auto lowMidCutoffFreq = lowMidCrossover->get();
+    LP1.setCutoffFrequency(lowMidCutoffFreq);
+    HP1.setCutoffFrequency(lowMidCutoffFreq);
 
+    auto midHighCutoffFreq = midHighCrossover->get();
+    AP2.setCutoffFrequency(midHighCutoffFreq);
+    LP2.setCutoffFrequency(midHighCutoffFreq);
+    HP2.setCutoffFrequency(midHighCutoffFreq);
+
+}
 void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+    updateState();
+    splitBands(buffer);
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+
+    //context.isBypassed = bypassedLow->get();
+
+    auto numSamples = buffer.getNumSamples();
+    auto numChannels = buffer.getNumChannels();
+
+    buffer.clear();
+
+    auto addFilterBand = [numSamples, numChannels](auto& inputBuffer, const auto& source)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        for (auto i = 0; i < numChannels; ++i)
+        {
+            inputBuffer.addFrom(i, 0, source, i, 0, numSamples);
+        }
+    };
 
-        // ..do something to the data...
-    }
+    addFilterBand(buffer, filterBuffers[0]);
+    addFilterBand(buffer, filterBuffers[1]);
 }
 
+void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBuffer)
+{
+    for (auto& fb : filterBuffers)
+    {
+        fb = inputBuffer;
+    }
+
+    auto fb0Block = juce::dsp::AudioBlock<float>(filterBuffers[0]);
+    auto fb1Block = juce::dsp::AudioBlock<float>(filterBuffers[1]);
+    auto fb2Block = juce::dsp::AudioBlock<float>(filterBuffers[2]);
+
+    auto fb0Ctx = juce::dsp::ProcessContextReplacing<float>(fb0Block);
+    auto fb1Ctx = juce::dsp::ProcessContextReplacing<float>(fb1Block);
+    auto fb2Ctx = juce::dsp::ProcessContextReplacing<float>(fb2Block);
+
+    LP1.process(fb0Ctx);
+    AP2.process(fb0Ctx);
+
+    HP1.process(fb1Ctx);
+    filterBuffers[2] = filterBuffers[1];
+    LP2.process(fb1Ctx);
+
+    HP2.process(fb2Ctx);
+}
 //==============================================================================
 bool PaxMBClipAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* PaxMBClipAudioProcessor::createEditor()
@@ -211,15 +265,17 @@ juce::AudioProcessorEditor* PaxMBClipAudioProcessor::createEditor()
 //==============================================================================
 void PaxMBClipAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    juce::MemoryOutputStream mos(destData, true);
+    apvts.state.writeToStream(mos);
 }
 
 void PaxMBClipAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if (tree.isValid())
+    {
+        apvts.replaceState(tree);
+    }
 }
 
 //==============================================================================
@@ -263,4 +319,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), juce::NormalisableRange<float>(0, 1, 0.01, 1), 0));
 
     return layout;
+}
+
+void PaxMBClipAudioProcessor::setCrossoverFilters()
+{
+    LP1.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
+    HP1.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
 }
