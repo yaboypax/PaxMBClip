@@ -144,6 +144,9 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 
     LP1.prepare(spec);
     HP1.prepare(spec);
+    LP2.prepare(spec);
+    HP2.prepare(spec);
+    AP2.prepare(spec);
 
     setCrossoverFilters();
 
@@ -225,6 +228,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     addFilterBand(buffer, filterBuffers[0]);
     addFilterBand(buffer, filterBuffers[1]);
+    addFilterBand(buffer, filterBuffers[2]);
 }
 
 void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBuffer)
@@ -325,4 +329,10 @@ void PaxMBClipAudioProcessor::setCrossoverFilters()
 {
     LP1.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     HP1.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+
+    AP2.setType(juce::dsp::LinkwitzRileyFilterType::allpass);
+
+    LP2.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
+    HP2.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+    
 }
