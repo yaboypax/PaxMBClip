@@ -270,6 +270,10 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     addAndMakeVisible(soloButton);
     addAndMakeVisible(muteButton);
 
+    bypassButton.setLookAndFeel(&lnf);
+    soloButton.setLookAndFeel(&lnf);
+    muteButton.setLookAndFeel(&lnf);
+
 }
 
 void drawModuleBackground(juce::Graphics &g, juce::Rectangle<int> bounds)
@@ -296,7 +300,7 @@ void ClipperBandControls::resized()
 {
     auto bounds = getLocalBounds();
 
-    auto createBandButtonControlBox = [](std::vector<Component*> clippers)
+    auto createBandButtonControlBox = [](std::vector<Component*> components)
     {
         juce::FlexBox flexBox;
         flexBox.flexDirection = juce::FlexBox::Direction::column;
@@ -304,10 +308,10 @@ void ClipperBandControls::resized()
 
         auto spacer = juce::FlexItem().withWidth(2);
 
-        for (auto* clipper : clippers)
+        for (auto* component : components)
         {
             flexBox.items.add(spacer);
-            flexBox.items.add(juce::FlexItem(*clipper).withFlex(1.0f));
+            flexBox.items.add(juce::FlexItem(*component).withFlex(1.0f));
         }
 
         flexBox.items.add(spacer);

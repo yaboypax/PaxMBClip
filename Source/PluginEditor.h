@@ -105,6 +105,7 @@ struct RotarySlider : juce::Slider
         juce::Slider::TextEntryBoxPosition::NoTextBox) {}
 };
 
+
 template<typename Attachment, typename APVTS, typename Params, typename ParamName, typename SliderType>
 void makeAttachment(std::unique_ptr<Attachment>& attachment, APVTS& apvts, const Params& params, const ParamName& name, SliderType& slider)
 {
@@ -124,6 +125,7 @@ private:
     std::unique_ptr<Attachment> bandGainSliderAttachment, bandClipSliderAttachment;
 
     juce::ToggleButton bypassButton, soloButton, muteButton;
+    LookAndFeel lnf;
 };
 
 struct GlobalControls : juce::Component
