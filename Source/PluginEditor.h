@@ -102,7 +102,16 @@ struct Placeholder : juce::Component
 struct RotarySlider : juce::Slider
 {
     RotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
-        juce::Slider::TextEntryBoxPosition::NoTextBox) {}
+                                                 juce::Slider::TextEntryBoxPosition::NoTextBox)
+    {
+        param = nullptr;
+    }
+
+    int getTextHeight() const { return 14; }
+    void changeParam(juce::RangedAudioParameter* p);
+private:
+    juce::RangedAudioParameter* param;
+    juce::String suffix;
 };
 
 
@@ -117,8 +126,10 @@ struct ClipperBandControls : juce::Component
     ClipperBandControls(juce::AudioProcessorValueTreeState& apvts);
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void updateAttachments();
 
 private:
+    juce::AudioProcessorValueTreeState& apvts;
     LookAndFeel lnf;
 
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -131,6 +142,8 @@ private:
 
     juce::ToggleButton lowBandButton, midBandButton, highBandButton;
     //std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
+
+    juce::Component::SafePointer<ClipperBandControls> safePtr{ this };
 };
 
 struct GlobalControls : juce::Component
@@ -147,6 +160,18 @@ private:
 
 };
 
+template<
+    typename APVTS,
+    typename Params,
+    typename Name
+>
+juce::RangedAudioParameter& getParam(APVTS& apvts, const Params& params, const Name& name)
+{
+    auto param = apvts.getParameter(params.at(name));
+    jassert(param != nullptr);
+
+    return *param;
+}
 
 /**
 */

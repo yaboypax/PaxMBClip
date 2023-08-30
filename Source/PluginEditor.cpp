@@ -68,6 +68,12 @@
 //    }
 //}
 
+void RotarySlider::changeParam(juce::RangedAudioParameter* p)
+{
+    param = p;
+    repaint();
+}
+
 void LookAndFeel::drawToggleButton(juce::Graphics& g,
     juce::ToggleButton& toggleButton,
     bool shouldDrawButtonAsHighlighted,
@@ -245,18 +251,8 @@ Placeholder::Placeholder()
     customColor = juce::Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
 }
 
-ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apvts)
+ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apvts) : apvts(apvts)
 {
-    using namespace Params;
-    const auto& params = GetParams();
-
-    auto makeAttachmentHelper = [&params, &apvts](auto& attachment, const auto& name, auto& slider)
-    {
-        makeAttachment(attachment, apvts, params, name, slider);
-    };
-
-    makeAttachmentHelper(bandGainSliderAttachment, Names::Mid_Gain, bandGainSlider);
-    makeAttachmentHelper(bandClipSliderAttachment, Names::Mid_Clip, bandClipSlider);
 
     addAndMakeVisible(bandGainSlider);
     addAndMakeVisible(bandClipSlider);
@@ -273,10 +269,6 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     soloButton.setLookAndFeel(&lnf);
     muteButton.setLookAndFeel(&lnf);
 
-    makeAttachmentHelper(bypassButtonAttachment, Names::Bypassed_Mid, bypassButton);
-    makeAttachmentHelper(soloButtonAttachment, Names::Solo_Mid, soloButton);
-    makeAttachmentHelper(muteButtonAttachment, Names::Mute_Mid, muteButton);
-
     lowBandButton.setName("l");
     midBandButton.setName("m");
     highBandButton.setName("h");
@@ -285,15 +277,138 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     midBandButton.setRadioGroupId(1);
     highBandButton.setRadioGroupId(1);
 
-    addAndMakeVisible(lowBandButton);
-    addAndMakeVisible(midBandButton);
-    addAndMakeVisible(highBandButton);
-
     lowBandButton.setLookAndFeel(&lnf);
     midBandButton.setLookAndFeel(&lnf);
     highBandButton.setLookAndFeel(&lnf);
 
+    auto buttonSwitcher = [safePtr = this->safePtr]()
+    {
+        if (auto* component = safePtr.getComponent())
+        {
+            component->updateAttachments();
+        }
+    };
 
+    lowBandButton.onClick = buttonSwitcher;
+    midBandButton.onClick = buttonSwitcher;
+    highBandButton.onClick = buttonSwitcher;
+
+    lowBandButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+    
+    updateAttachments();
+
+    addAndMakeVisible(lowBandButton);
+    addAndMakeVisible(midBandButton);
+    addAndMakeVisible(highBandButton);
+
+
+}
+
+void ClipperBandControls::updateAttachments()
+{
+    enum BandType
+    {
+        Low,
+        Mid,
+        High
+    };
+
+    BandType bandType = [this]()
+    {
+        if (lowBandButton.getToggleState())
+            return BandType::Low;
+        if (midBandButton.getToggleState())
+            return BandType::Mid;
+        return BandType::High;
+    }();
+
+    using namespace Params;
+    std::vector<Names> names;
+
+    switch (bandType)
+    {
+    case Low:
+    {
+        names = std::vector<Names>
+        {
+            Names::Low_Gain,
+            Names::Low_Clip,
+            Names::Bypassed_Low,
+            Names::Solo_Low,
+            Names::Mute_Low
+        };
+        break;
+    }
+        
+        case Mid:
+        {
+            names = std::vector<Names>
+            {
+                Names::Mid_Gain,
+                Names::Mid_Clip,
+                Names::Bypassed_Mid,
+                Names::Solo_Mid,
+                Names::Mute_Mid
+            };
+            break;
+        }
+
+        case High:
+        {
+            names = std::vector<Names>
+            {
+                Names::High_Gain,
+                Names::High_Clip,
+                Names::Bypassed_High,
+                Names::Solo_High,
+                Names::Mute_High
+            };
+            break;
+        }
+
+    }
+
+    enum Position
+    {
+        Gain,
+        Clip,
+        Bypassed,
+        Solo,
+        Mute
+    };
+
+    const auto& params = GetParams();
+
+    auto getParamHelper = [&params, &apvts = this->apvts, &names](const auto& position) -> auto&
+    {
+        return getParam(apvts, params, names.at(position));
+    };
+
+    bandGainSliderAttachment.reset();
+    bandClipSliderAttachment.reset();
+    bypassButtonAttachment.reset();
+    muteButtonAttachment.reset();
+    soloButtonAttachment.reset();
+
+    auto& gainParam = getParamHelper(Position::Gain);
+    bandGainSlider.changeParam(&gainParam);
+    auto& clipParam = getParamHelper(Position::Clip);
+    bandClipSlider.changeParam(&clipParam);
+    //auto& bypassedParam = getParamHelper(Position::Bypassed);
+    //auto& soloParam = getParamHelper(Position::Solo);
+    //auto& muteParam = getParamHelper(Position::Mute);
+
+    auto makeAttachmentHelper = [&params, &apvts =  this->apvts](auto& attachment, const auto& name, auto& slider)
+    {
+        makeAttachment(attachment, apvts, params, name, slider);
+    };
+
+    makeAttachmentHelper(bandGainSliderAttachment, names[Position::Gain], bandGainSlider);
+    makeAttachmentHelper(bandClipSliderAttachment, names[Position::Clip], bandClipSlider);
+
+    makeAttachmentHelper(bypassButtonAttachment, names[Position::Bypassed], bypassButton);
+    makeAttachmentHelper(soloButtonAttachment, names[Position::Solo], soloButton);
+    makeAttachmentHelper(muteButtonAttachment, names[Position::Mute], muteButton);
 }
 
 void drawModuleBackground(juce::Graphics &g, juce::Rectangle<int> bounds)
