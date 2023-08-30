@@ -119,13 +119,18 @@ struct ClipperBandControls : juce::Component
     void resized() override;
 
 private:
-    RotarySlider bandGainSlider, bandClipSlider;
+    LookAndFeel lnf;
 
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    RotarySlider bandGainSlider, bandClipSlider;
     std::unique_ptr<Attachment> bandGainSliderAttachment, bandClipSliderAttachment;
 
+    using BtnAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
     juce::ToggleButton bypassButton, soloButton, muteButton;
-    LookAndFeel lnf;
+    std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
+
+    juce::ToggleButton lowBandButton, midBandButton, highBandButton;
+    //std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 };
 
 struct GlobalControls : juce::Component

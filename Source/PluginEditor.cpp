@@ -258,7 +258,6 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     makeAttachmentHelper(bandGainSliderAttachment, Names::Mid_Gain, bandGainSlider);
     makeAttachmentHelper(bandClipSliderAttachment, Names::Mid_Clip, bandClipSlider);
 
-
     addAndMakeVisible(bandGainSlider);
     addAndMakeVisible(bandClipSlider);
 
@@ -273,6 +272,27 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     bypassButton.setLookAndFeel(&lnf);
     soloButton.setLookAndFeel(&lnf);
     muteButton.setLookAndFeel(&lnf);
+
+    makeAttachmentHelper(bypassButtonAttachment, Names::Bypassed_Mid, bypassButton);
+    makeAttachmentHelper(soloButtonAttachment, Names::Solo_Mid, soloButton);
+    makeAttachmentHelper(muteButtonAttachment, Names::Mute_Mid, muteButton);
+
+    lowBandButton.setName("l");
+    midBandButton.setName("m");
+    highBandButton.setName("h");
+
+    lowBandButton.setRadioGroupId(1);
+    midBandButton.setRadioGroupId(1);
+    highBandButton.setRadioGroupId(1);
+
+    addAndMakeVisible(lowBandButton);
+    addAndMakeVisible(midBandButton);
+    addAndMakeVisible(highBandButton);
+
+    lowBandButton.setLookAndFeel(&lnf);
+    midBandButton.setLookAndFeel(&lnf);
+    highBandButton.setLookAndFeel(&lnf);
+
 
 }
 
@@ -299,6 +319,7 @@ void ClipperBandControls::paint(juce::Graphics& g)
 void ClipperBandControls::resized()
 {
     auto bounds = getLocalBounds();
+    bounds.reduce(3, 6);
 
     auto createBandButtonControlBox = [](std::vector<Component*> components)
     {
@@ -320,6 +341,7 @@ void ClipperBandControls::resized()
     };
 
     auto bandButtonControlBox = createBandButtonControlBox({&bypassButton, &soloButton, &muteButton});
+    auto bandSelectControlBox = createBandButtonControlBox({ &lowBandButton, &midBandButton, &highBandButton });
 
 
     juce::FlexBox flexBox;
@@ -329,7 +351,9 @@ void ClipperBandControls::resized()
     auto spacer = juce::FlexItem().withWidth(4);
     auto endCap = juce::FlexItem().withWidth(6);
 
-    flexBox.items.add(endCap);
+    flexBox.items.add(spacer);
+    flexBox.items.add(juce::FlexItem(bandSelectControlBox).withWidth(50));
+    flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(bandGainSlider).withFlex(1.f));
     flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(bandClipSlider).withFlex(1.f));
