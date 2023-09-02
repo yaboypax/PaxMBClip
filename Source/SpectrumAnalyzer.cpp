@@ -35,6 +35,10 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     floatHelper(lowMidXoverParam, Names::Low_Mid_Crossover_Freq);
     floatHelper(midHighXoverParam, Names::Mid_High_Crossover_Freq);
 
+    floatHelper(lowClipParam, Names::Low_Clip);
+    floatHelper(midClipParam, Names::Mid_Clip);
+    floatHelper(highClipParam, Names::High_Clip);
+
     startTimerHz(60);
 }
 
@@ -94,6 +98,9 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
 {
     const auto top = bounds.getY()+20;
     const auto bottom = bounds.getBottom()-20;
+    
+    const auto left = bounds.getX();
+    const auto right = bounds.getRight();
 
     auto mapX = [left = bounds.getX(), width = bounds.getWidth()](float frequency) {
         auto normX = juce::mapFromLog10(frequency, PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY);
@@ -107,6 +114,16 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     auto midHighX = mapX(midHighXoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
     g.drawVerticalLine(midHighX, top, bottom);
+
+    auto mapY = [bottom, top](float db) {
+
+        return juce::jmap(db, -24.f, 24.f, float(bottom), float(top));
+    };
+    
+    g.setColour(juce::Colours::yellow);
+    g.drawHorizontalLine(mapY(lowClipParam->get()), left, lowMidX);
+    g.drawHorizontalLine(mapY(midClipParam->get()), lowMidX, midHighX);
+    g.drawHorizontalLine(mapY(highClipParam->get()), midHighX, right);
 }
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()

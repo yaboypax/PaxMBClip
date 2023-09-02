@@ -55,5 +55,10 @@ private:
     void drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds);
     juce::AudioParameterFloat* lowMidXoverParam{ nullptr };
     juce::AudioParameterFloat* midHighXoverParam{ nullptr };
+
+
+    juce::AudioParameterFloat* lowClipParam{ nullptr };
+    juce::AudioParameterFloat* midClipParam{ nullptr };
+    juce::AudioParameterFloat* highClipParam{ nullptr };
 };
 
