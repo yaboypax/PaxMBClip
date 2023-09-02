@@ -48,7 +48,7 @@ struct AnalyzerPathGenerator
 
         p.startNewSubPath(0, y);
 
-        const int pathResolution = 2; //you can draw line-to's every 'pathResolution' pixels.
+        const int pathResolution = 1; //you can draw line-to's every 'pathResolution' pixels.
 
         for (int binNum = 1; binNum < numBins; binNum += pathResolution)
         {

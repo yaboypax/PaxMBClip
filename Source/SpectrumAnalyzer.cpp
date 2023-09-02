@@ -9,7 +9,7 @@
 */
 
 #include "SpectrumAnalyzer.h"
-
+#include "Utilities.h"
 
 SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     audioProcessor(p),
@@ -37,10 +37,9 @@ SpectrumAnalyzer::~SpectrumAnalyzer()
 void SpectrumAnalyzer::paint(juce::Graphics& g)
 {
     using namespace juce;
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(Colours::black);
-
     drawBackgroundGrid(g);
+    
 
     auto responseArea = getAnalysisArea();
 
@@ -74,8 +73,6 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
 
     drawTextLabels(g);
 
-    g.setColour(Colours::orange);
-    g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
 }
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()
@@ -135,7 +132,7 @@ void SpectrumAnalyzer::drawBackgroundGrid(juce::Graphics& g)
     {
         auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
 
-        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey);
+        g.setColour(gDb == 0.f ? Colour(188, 198, 206) : Colours::darkgrey);
         g.drawHorizontalLine(y, left, right);
     }
 }
@@ -204,7 +201,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g)
         r.setX(getWidth() - textWidth);
         r.setCentre(r.getCentreX(), y);
 
-        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
+        g.setColour(gDb == 0.f ? Colour(188, 198, 206) : Colours::lightgrey);
 
         g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
 

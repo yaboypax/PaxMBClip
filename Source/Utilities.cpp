@@ -13,7 +13,7 @@
 
 void drawModuleBackground(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
-    g.setColour(juce::Colours::navajowhite);
+    g.setColour(juce::Colour(188, 198, 206));
     g.fillAll();
 
     auto localBounds = bounds;

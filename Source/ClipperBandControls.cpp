@@ -153,9 +153,7 @@ void ClipperBandControls::updateAttachments()
     bandGainSlider.changeParam(&gainParam);
     auto& clipParam = getParamHelper(Position::Clip);
     bandClipSlider.changeParam(&clipParam);
-    //auto& bypassedParam = getParamHelper(Position::Bypassed);
-    //auto& soloParam = getParamHelper(Position::Solo);
-    //auto& muteParam = getParamHelper(Position::Mute);
+
 
     auto makeAttachmentHelper = [&params, &apvts = this->apvts](auto& attachment, const auto& name, auto& slider)
     {
