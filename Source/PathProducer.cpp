@@ -18,6 +18,12 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
         if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
         {
             auto size = tempIncomingBuffer.getNumSamples();
+            size = juce::jmin(size, monoBuffer.getNumSamples());
+
+            auto writePointer = monoBuffer.getWritePointer(0, 0);
+            auto readPointer = monoBuffer.getReadPointer(0, size);
+
+            std::copy(readPointer, readPointer + (monoBuffer.getNumSamples() - size), writePointer);
 
             juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, 0),
                 monoBuffer.getReadPointer(0, size),
