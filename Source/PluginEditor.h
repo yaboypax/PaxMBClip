@@ -13,35 +13,8 @@
 #include "ClipperBandControls.h"
 #include "GlobalControls.h"
 #include "SpectrumAnalyzer.h"
-//==============================================================================
-
-struct ControlBar : juce::Component
-{
-    ControlBar();
-    void resized() override;
-
-    AnalyzerButton analyzerButton;
-    PowerButton globalBypassButton;
-
-    LookAndFeel lnf;
-};
-
-struct Placeholder : juce::Component
-{
-    Placeholder();
-
-    void paint(juce::Graphics& g) override
-    {
-        g.fillAll(customColor);
-    }
-    juce::Colour customColor;
-};
-
-
-
-
-/**
-*/
+#include "ControlBar.h"
+//===============================================================================
 
 class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
 {

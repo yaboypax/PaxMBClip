@@ -9,30 +9,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-Placeholder::Placeholder()
-{
-    juce::Random r;
-    customColor = juce::Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
-}
-
-ControlBar::ControlBar()
-{
-    analyzerButton.setLookAndFeel(&lnf);
-    analyzerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(analyzerButton);
-
-    globalBypassButton.setLookAndFeel(&lnf);
-    globalBypassButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(globalBypassButton);
-}
-
-void ControlBar::resized()
-{
-    auto bounds = getLocalBounds();
-    analyzerButton.setBounds(getX() + 4, getY() + 4, 50, getHeight() - 8);
-    globalBypassButton.setBounds(getWidth() - 54, getY() + 4, 50, getHeight() - 8);
-}
-
 //==============================================================================
 PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)

@@ -21,6 +21,9 @@ struct Clipper
     juce::AudioParameterBool* mute{ nullptr };
     juce::AudioParameterBool* solo{ nullptr };
 
+    juce::AudioParameterInt* waveType{ nullptr };
+    float m_softness = 0.0;
+
     void prepare(const juce::dsp::ProcessSpec& spec);
 
     void updateClipperSettings();
@@ -29,6 +32,18 @@ struct Clipper
 
     float getRMSOutputLevelDb() const { return rmsOutputLevelDb; }
     float getRMSInputLevelDb() const { return rmsInputLevelDb; }
+
+    void clipSamples(juce::AudioBuffer<float>* buffer, int numchans);
+
+    float sinclip(float& s);
+    float logiclip(float& s);
+    float hardclip(float& s);
+    float tanclip(float& s, float& soft);
+    float quintic(float& s);
+    float cubicBasic(float& s);
+    float algclip(float& s, float soft);
+    float arcClip(float& s, float& soft);
+
 
 private:
 
