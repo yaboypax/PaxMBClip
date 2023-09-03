@@ -12,11 +12,19 @@
 #include "PluginProcessor.h"
 #include "ClipperBandControls.h"
 #include "GlobalControls.h"
-
 #include "SpectrumAnalyzer.h"
 //==============================================================================
 
+struct ControlBar : juce::Component
+{
+    ControlBar();
+    void resized() override;
 
+    AnalyzerButton analyzerButton;
+    PowerButton globalBypassButton;
+
+    LookAndFeel lnf;
+};
 
 struct Placeholder : juce::Component
 {
@@ -35,7 +43,7 @@ struct Placeholder : juce::Component
 /**
 */
 
-class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor
+class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
 {
 public:
     PaxMBClipAudioProcessorEditor (PaxMBClipAudioProcessor& p);
@@ -45,14 +53,20 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void timerCallback();
+
 private:
     PaxMBClipAudioProcessor& audioProcessor;
 
-    Placeholder controlBar;
-
+    ControlBar controlBar;
     GlobalControls globalControls {audioProcessor.apvts};
     ClipperBandControls bandControls {audioProcessor.apvts};
     SpectrumAnalyzer analyzer {audioProcessor};
+
+    void toggleGlobalBypassState();
+    void updateGlobalBypassButton();
+
+    std::array<juce::AudioParameterBool*, 3> getBypassParams();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessorEditor)
 };
