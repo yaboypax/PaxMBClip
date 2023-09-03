@@ -24,10 +24,6 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     addAndMakeVisible(soloButton);
     addAndMakeVisible(muteButton);
 
-    bypassButton.setLookAndFeel(&lnf);
-    soloButton.setLookAndFeel(&lnf);
-    muteButton.setLookAndFeel(&lnf);
-
     lowBandButton.setName("l");
     midBandButton.setName("m");
     highBandButton.setName("h");
@@ -35,10 +31,6 @@ ClipperBandControls::ClipperBandControls(juce::AudioProcessorValueTreeState& apv
     lowBandButton.setRadioGroupId(1);
     midBandButton.setRadioGroupId(1);
     highBandButton.setRadioGroupId(1);
-
-    lowBandButton.setLookAndFeel(&lnf);
-    midBandButton.setLookAndFeel(&lnf);
-    highBandButton.setLookAndFeel(&lnf);
 
     auto buttonSwitcher = [safePtr = this->safePtr]()
     {

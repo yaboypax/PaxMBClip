@@ -11,8 +11,8 @@
 #pragma once
 #include "JuceHeader.h"
 #include "Utilities.h"
-#include "LookAndFeel.h"
 #include "RotarySlider.h"
+#include "LookAndFeel.h"
 #include "Params.h"
 
 struct ClipperBandControls : juce::Component
@@ -25,7 +25,6 @@ struct ClipperBandControls : juce::Component
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
-    LookAndFeel lnf;
 
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     RotarySlider bandGainSlider, bandClipSlider;

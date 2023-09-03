@@ -35,7 +35,7 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
     context.isBypassed = bypassed->get();
 
     applyGain(buffer, bandGain);
-	clipSamples(&buffer, buffer.getNumChannels());
+	//clipSamples(&buffer, buffer.getNumChannels());
     //clipper.process(context);
 
 

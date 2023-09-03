@@ -12,11 +12,9 @@
 
 ControlBar::ControlBar()
 {
-    analyzerButton.setLookAndFeel(&lnf);
     analyzerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     addAndMakeVisible(analyzerButton);
 
-    globalBypassButton.setLookAndFeel(&lnf);
     globalBypassButton.setToggleState(false, juce::NotificationType::dontSendNotification);
     addAndMakeVisible(globalBypassButton);
 }

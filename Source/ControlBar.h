@@ -23,5 +23,5 @@ public:
     PowerButton globalBypassButton;
     
 private:
-    LookAndFeel lnf;
+    
 };

@@ -24,6 +24,7 @@ struct LookAndFeel : juce::LookAndFeel_V4
         juce::ToggleButton& toggleButton,
         bool shouldDrawButtonAsHighlighted,
         bool shouldDrawButtonAsDown) override;
+
 };
 
 struct PowerButton : juce::ToggleButton { };

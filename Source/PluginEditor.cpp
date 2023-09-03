@@ -25,6 +25,10 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
         toggleGlobalBypassState();
     };
 
+
+    controlBar.setLookAndFeel(&lnf);
+    bandControls.setLookAndFeel(&lnf);
+
     addAndMakeVisible(controlBar);
     addAndMakeVisible(analyzer);
     addAndMakeVisible(globalControls);

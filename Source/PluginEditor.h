@@ -14,6 +14,7 @@
 #include "GlobalControls.h"
 #include "SpectrumAnalyzer.h"
 #include "ControlBar.h"
+#include "LookAndFeel.h"
 //===============================================================================
 
 class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
@@ -30,6 +31,7 @@ public:
 
 private:
     PaxMBClipAudioProcessor& audioProcessor;
+    LookAndFeel lnf;
 
     ControlBar controlBar;
     GlobalControls globalControls {audioProcessor.apvts};
