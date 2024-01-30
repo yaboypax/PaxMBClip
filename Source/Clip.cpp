@@ -19,7 +19,6 @@ template <typename T> int sgn(T val) {
 
 void Clipper::prepare(const juce::dsp::ProcessSpec& spec)
 {
-    clipper.prepare(spec);
     bandGain.prepare(spec);
 }
 
@@ -49,8 +48,8 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
 
 void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, int numchans)
 {
-	if (!waveType)
-		return;
+	if (waveType)
+		m_waveType = static_cast<WaveType>(waveType->get());
 
 	for (int j = 0; j < numchans; j++)
 	{
@@ -59,18 +58,34 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, int numchans)
 		for (int i = 0; i < buffer->getNumSamples(); i++)
 		{
 			float newval = 0.0f;
-			if (*waveType == 0)
+
+			switch (m_waveType)
+			{
+			case WaveType::Hard:
 				newval = hardclip(bufferData[i]);
-			else if (*waveType == 1)
+				break;
+
+			case WaveType::Quintic:
 				newval = quintic(bufferData[i]);
-			else if (*waveType == 2)
+				break;
+
+			case WaveType::Cubic:
 				newval = cubicBasic(bufferData[i]);
-			else if (*waveType == 3)
+				break;
+
+			case WaveType::Tan:
 				newval = tanclip(bufferData[i], m_softness);
-			else if (*waveType == 4)
+				break;
+
+			case WaveType::Alg:
 				newval = algclip(bufferData[i], m_softness);
-			else if (*waveType == 5)
+				break;
+
+			case WaveType::Arc:
 				newval = arcClip(bufferData[i], m_softness);
+				break;
+			}
+
 			bufferData[i] = newval;
 		}
 	}

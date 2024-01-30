@@ -64,6 +64,8 @@ PaxMBClipAudioProcessor::PaxMBClipAudioProcessor()
     boolHelper(midBandClip.solo, Names::Solo_Mid);
     boolHelper(highBandClip.solo, Names::Solo_High);
 
+
+    //addParameter(waveType = new juce::AudioParameterInt("wavetype", "Wavetype", 0, 5, 0));
 }
 
 PaxMBClipAudioProcessor::~PaxMBClipAudioProcessor()

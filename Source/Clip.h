@@ -13,16 +13,26 @@
 #include <JuceHeader.h>
 #include "Utilities.h"
 
-struct Clipper
+enum WaveType
 {
+    Hard = 0,
+    Quintic,
+    Cubic,
+    Tan,
+    Alg,
+    Arc
+};
+
+class Clipper
+{
+public:
+  
     juce::AudioParameterFloat* gain{ nullptr };
     juce::AudioParameterFloat* clip{ nullptr };
     juce::AudioParameterBool* bypassed{ nullptr };
     juce::AudioParameterBool* mute{ nullptr };
     juce::AudioParameterBool* solo{ nullptr };
-
     juce::AudioParameterInt* waveType{ nullptr };
-    float m_softness = 0.0;
 
     void prepare(const juce::dsp::ProcessSpec& spec);
 
@@ -47,14 +57,15 @@ struct Clipper
 
 private:
 
-    juce::dsp::WaveShaper<float> clipper;
+    float m_softness = 0.0;
 
     std::atomic<float> rmsInputLevelDb{ PaxMBClip::NEG_INFINITY };
     std::atomic<float> rmsOutputLevelDb{ PaxMBClip::NEG_INFINITY };
 
     juce::dsp::Gain<float> bandGain;
-    //juce::AudioParameterFloat* inBandGainParam{ nullptr };
-    //juce::AudioParameterFloat* outBandGainParam{ nullptr };
+
+    WaveType m_waveType = WaveType::Quintic;
+
 
     template<typename T>
     float computeRMSLevel(const T& buffer)
