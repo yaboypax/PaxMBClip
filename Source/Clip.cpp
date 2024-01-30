@@ -5,6 +5,9 @@
     Created: 28 Aug 2023 5:04:32pm
     Author:  Paxton Fleming
 
+
+	Attach parameter to waveType
+
   ==============================================================================
 */
 
@@ -29,29 +32,26 @@ void Clipper::updateClipperSettings()
 void Clipper::process(juce::AudioBuffer<float>& buffer)
 {
     auto preRMS = computeRMSLevel(buffer);
-    auto block = juce::dsp::AudioBlock<float>(buffer);
-    auto context = juce::dsp::ProcessContextReplacing<float>(block);
-
-    context.isBypassed = bypassed->get();
+	bool isBypassed = bypassed->get();
 
     applyGain(buffer, bandGain);
-	//clipSamples(&buffer, buffer.getNumChannels());
-    //clipper.process(context);
+	float clipCeiling = clip->get();
+
+	buffer.applyGain(1 / clipCeiling);
+	if (!isBypassed)
+		clipSamples(&buffer, buffer.getNumChannels());
 
 
     auto postRMS = computeRMSLevel(buffer);
-
-    auto convertToDb = [](auto input)
-    {
-        return juce::Decibels::gainToDecibels(input);
-    };
-
-    rmsInputLevelDb.store(convertToDb(preRMS));
-    rmsOutputLevelDb.store(convertToDb(postRMS));
+    rmsInputLevelDb.store(juce::Decibels::gainToDecibels(preRMS));
+    rmsOutputLevelDb.store(juce::Decibels::gainToDecibels(preRMS));
 }
 
 void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, int numchans)
 {
+	if (!waveType)
+		return;
+
 	for (int j = 0; j < numchans; j++)
 	{
 		float* bufferData = buffer->getWritePointer(j);
