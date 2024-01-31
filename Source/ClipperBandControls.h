@@ -35,7 +35,6 @@ private:
     std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 
     juce::ToggleButton lowBandButton, midBandButton, highBandButton;
-    //std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 
     juce::Component::SafePointer<ClipperBandControls> safePtr{ this };
 };

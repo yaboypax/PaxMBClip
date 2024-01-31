@@ -15,16 +15,11 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
     using namespace Params;
     const auto& params = GetParams();
 
-    auto makeAttachmentHelper = [&params, &apvts](auto& attachment, const auto& name, auto& slider)
-    {
-        makeAttachment(attachment, apvts, params, name, slider);
-    };
+    makeAttachment(inGainSliderAttachment, apvts, params, Names::Gain_In, inGainSlider);
+    makeAttachment(lowMidXoverSliderAttachment, apvts, params, Names::Low_Mid_Crossover_Freq, lowMidXoverSlider);
+    makeAttachment(midHighXoverSliderAttachment, apvts, params, Names::Mid_High_Crossover_Freq, midHighXoverSlider);
+    makeAttachment(outGainSliderAttachment, apvts, params, Names::Gain_Out, outGainSlider);
 
-    makeAttachmentHelper(inGainSliderAttachment, Names::Gain_In, inGainSlider);
-    makeAttachmentHelper(lowMidXoverSliderAttachment, Names::Low_Mid_Crossover_Freq, lowMidXoverSlider);
-    makeAttachmentHelper(midHighXoverSliderAttachment, Names::Mid_High_Crossover_Freq, midHighXoverSlider);
-    makeAttachmentHelper(inGainSliderAttachment, Names::Gain_In, inGainSlider);
-    makeAttachmentHelper(outGainSliderAttachment, Names::Gain_Out, outGainSlider);
 
     addAndMakeVisible(inGainSlider);
     addAndMakeVisible(lowMidXoverSlider);

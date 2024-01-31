@@ -27,6 +27,10 @@ namespace Params
         Mid_Gain,
         High_Gain,
 
+        Low_Wave,
+        Mid_Wave,
+        High_Wave,
+
         Bypassed_Low,
         Bypassed_Mid,
         Bypassed_High,
@@ -58,7 +62,11 @@ namespace Params
             {Mid_Gain, "Mid Gain"},
             {High_Gain, "High Gain"},
 
-            {Bypassed_Low, "Bypassed_Low"},
+            {Low_Wave, "Low Wave"},
+            {Mid_Wave, "Mid Wave"},
+            {High_Wave, "High Wave"},
+
+            {Bypassed_Low, "Bypassed Low"},
             {Bypassed_Mid, "Bypassed Mid"},
             {Bypassed_High, "Bypassed High"},
 
