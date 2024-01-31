@@ -34,7 +34,7 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     addAndMakeVisible(globalControls);
     addAndMakeVisible(bandControls);
 
-    setSize (600, 500);
+    setSize (800, 500);
     startTimerHz(40);
 }
 
@@ -55,25 +55,24 @@ void PaxMBClipAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
 
     controlBar.setBounds(bounds.removeFromTop(32));
-    bandControls.setBounds(bounds.removeFromBottom(135));
-    analyzer.setBounds(bounds.removeFromTop(225));
-    globalControls.setBounds(bounds);
+    analyzer.setBounds(0, 32, 500, 500 - 32);
+
+    
+    bandControls.setBounds(500, 32, 150, 500-32);
+    
+    globalControls.setBounds(500 + 150, 32, 150, 500 - 32);
 }
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()
 {
     bool shouldEnable = !controlBar.globalBypassButton.getToggleState();
     auto params = getBypassParams();
-    auto bypassParamHelper = [](auto* param, bool shouldBeBypassed)
-    {
-        param->beginChangeGesture();
-        param->setValueNotifyingHost(shouldBeBypassed ? 1.f : 0.f);
-        param->endChangeGesture();
-    };
 
     for (auto* param : params)
     {
-        bypassParamHelper(param, !shouldEnable);
+        param->beginChangeGesture();
+        param->setValueNotifyingHost(!shouldEnable ? 1.f : 0.f);
+        param->endChangeGesture();
     }
 }
 
