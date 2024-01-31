@@ -13,14 +13,14 @@
 #include <JuceHeader.h>
 #include "Utilities.h"
 
-enum WaveType
+enum class WaveType
 {
-    Hard = 0,
-    Quintic,
-    Cubic,
-    Tan,
-    Alg,
-    Arc
+    hard = 0,
+    quintic,
+    cubic,
+    tan,
+    alg,
+    arc
 };
 
 class Clipper
@@ -64,7 +64,7 @@ private:
 
     juce::dsp::Gain<float> bandGain;
 
-    WaveType m_waveType = WaveType::Quintic;
+    WaveType m_waveType = WaveType::quintic;
 
 
     template<typename T>
@@ -89,4 +89,9 @@ private:
         auto ctx = juce::dsp::ProcessContextReplacing<float>(block);
         dsp.process(ctx);
     }
+
+    template <typename T> int sgn(T val) {
+        return (T(0) < val) - (val < T(0));
+    }
+
 };

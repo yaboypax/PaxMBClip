@@ -13,9 +13,6 @@
 
 #include "Clip.h"
 
-template <typename T> int sgn(T val) {
-	return (T(0) < val) - (val < T(0));
-}
 
 void Clipper::prepare(const juce::dsp::ProcessSpec& spec)
 {
@@ -61,27 +58,27 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, int numchans)
 
 			switch (m_waveType)
 			{
-			case WaveType::Hard:
+			case WaveType::hard:
 				newval = hardclip(bufferData[i]);
 				break;
 
-			case WaveType::Quintic:
+			case WaveType::quintic:
 				newval = quintic(bufferData[i]);
 				break;
 
-			case WaveType::Cubic:
+			case WaveType::cubic:
 				newval = cubicBasic(bufferData[i]);
 				break;
 
-			case WaveType::Tan:
+			case WaveType::tan:
 				newval = tanclip(bufferData[i], m_softness);
 				break;
 
-			case WaveType::Alg:
+			case WaveType::alg:
 				newval = algclip(bufferData[i], m_softness);
 				break;
 
-			case WaveType::Arc:
+			case WaveType::arc:
 				newval = arcClip(bufferData[i], m_softness);
 				break;
 			}
