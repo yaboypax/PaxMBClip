@@ -27,7 +27,7 @@ private:
     juce::AudioProcessorValueTreeState& apvts;
 
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-    RotarySlider bandGainSlider, bandClipSlider;
+    juce::Slider bandGainSlider, bandClipSlider;
     std::unique_ptr<Attachment> bandGainSliderAttachment, bandClipSliderAttachment;
 
     using BtnAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
