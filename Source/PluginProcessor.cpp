@@ -1,9 +1,23 @@
 /*
-  ==============================================================================
+  =============================================================================
 
-    This file contains the basic framework code for a JUCE plugin processor.
 
-  ==============================================================================
+  Chomp - Multiband Clipper VST
+
+  TO DO:
+  
+  
+  - redo global controls layout
+  - add level meters 
+  - scroll wheel for clip controls
+  - add Overhead font and gater aesthetic
+
+  - add support for waveform analyzer
+    - switch analysis with current analyzer button in cb
+    ? possible different display without bands
+
+
+  =============================================================================
 */
 
 #include "PluginProcessor.h"

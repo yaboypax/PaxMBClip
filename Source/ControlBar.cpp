@@ -19,6 +19,13 @@ ControlBar::ControlBar()
     addAndMakeVisible(globalBypassButton);
 }
 
+void ControlBar::paint(juce::Graphics& g)
+{
+    g.setColour(juce::Colours::white);
+    g.setFont(18.f);
+    g.drawText("Ya Boy Pax               CHOMP           Multiband Clipper", 100, 5, 500, 18, juce::Justification::centred, false);
+}
+
 void ControlBar::resized()
 {
     auto bounds = getLocalBounds();
