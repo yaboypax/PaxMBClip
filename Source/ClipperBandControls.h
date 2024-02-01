@@ -17,11 +17,13 @@
 #include "LookAndFeel.h"
 #include "Params.h"
 
-class ClipperBandControls : public juce::Component
+class ClipperBandControls : public juce::Component, public juce::ChangeListener
 {
 public:
 
     ClipperBandControls(PaxMBClipAudioProcessor& inProcessor);
+    ~ClipperBandControls() override;
+
     void paint(juce::Graphics& g) override;
     void resized() override;
 
@@ -29,6 +31,7 @@ public:
     void layoutButtons();
     void updateAttachments();
 
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
     PaxMBClipAudioProcessor* m_processor;

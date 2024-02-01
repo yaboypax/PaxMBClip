@@ -13,11 +13,11 @@
 #include "Utilities.h"
 
 SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
-    audioProcessor(p),
-    leftPathProducer(audioProcessor.leftChannelFifo),
-    rightPathProducer(audioProcessor.rightChannelFifo)
+    m_processor(p),
+    leftPathProducer(m_processor.leftChannelFifo),
+    rightPathProducer(m_processor.rightChannelFifo)
 {
-    const auto& params = audioProcessor.getParameters();
+    const auto& params = m_processor.getParameters();
     for (auto param : params)
     {
         param->addListener(this);
@@ -26,25 +26,19 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     using namespace Params;
     const auto& paramNames = GetParams();
 
-    auto floatHelper = [&apvts = audioProcessor.apvts, &paramNames](auto& param, const auto& paramName)
-    {
-        param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramNames.at(paramName)));
-        jassert(param != nullptr);
-    };
+    m_lowMidXoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Mid_Crossover_Freq)));
+    m_midHighXoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_High_Crossover_Freq)));
 
-    floatHelper(lowMidXoverParam, Names::Low_Mid_Crossover_Freq);
-    floatHelper(midHighXoverParam, Names::Mid_High_Crossover_Freq);
-
-    floatHelper(lowClipParam, Names::Low_Clip);
-    floatHelper(midClipParam, Names::Mid_Clip);
-    floatHelper(highClipParam, Names::High_Clip);
+    m_lowClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Clip)));
+    m_midClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Clip)));
+    m_highClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Clip)));
 
     startTimerHz(60);
 }
 
 SpectrumAnalyzer::~SpectrumAnalyzer()
 {
-    const auto& params = audioProcessor.getParameters();
+    const auto& params = m_processor.getParameters();
     for (auto param : params)
     {
         param->removeListener(this);
@@ -107,13 +101,13 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
         return (left + width * normX);
     };
 
-    auto lowMidX = mapX(lowMidXoverParam->get());
+    m_lowMidX = mapX(m_lowMidXoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
-    g.drawVerticalLine(lowMidX, top, bottom);
+    g.drawVerticalLine(m_lowMidX, top, bottom);
 
-    auto midHighX = mapX(midHighXoverParam->get());
+    m_midHighX = mapX(m_midHighXoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
-    g.drawVerticalLine(midHighX, top, bottom);
+    g.drawVerticalLine(m_midHighX, top, bottom);
 
     auto mapY = [bottom, top](float db) {
 
@@ -121,9 +115,28 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     };
     
     g.setColour(juce::Colours::yellow);
-    g.drawHorizontalLine(mapY(lowClipParam->get()), left, lowMidX);
-    g.drawHorizontalLine(mapY(midClipParam->get()), lowMidX, midHighX);
-    g.drawHorizontalLine(mapY(highClipParam->get()), midHighX, right);
+    g.drawHorizontalLine(mapY(m_lowClipParam->get()), left, m_lowMidX);
+    g.drawHorizontalLine(mapY(m_midClipParam->get()), m_lowMidX, m_midHighX);
+    g.drawHorizontalLine(mapY(m_highClipParam->get()), m_midHighX, right);
+}
+
+void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
+{
+    auto x = e.getMouseDownX();
+
+    if (x < m_lowMidX)
+    {
+        m_processor.setBandFocus(BandFocus::Low);
+    }
+    else if (x > m_lowMidX && x < m_midHighX)
+    {
+        m_processor.setBandFocus(BandFocus::Mid);
+    }
+    else if (x > m_midHighX)
+    {
+        m_processor.setBandFocus(BandFocus::High);
+    }
+    else return;
 }
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()
@@ -290,7 +303,7 @@ void SpectrumAnalyzer::timerCallback()
     {
         auto fftBounds = getAnalysisArea().toFloat();
         fftBounds.setBottom(getLocalBounds().getBottom());
-        auto sampleRate = audioProcessor.getSampleRate();
+        auto sampleRate = m_processor.getSampleRate();
 
         leftPathProducer.process(fftBounds, sampleRate);
         rightPathProducer.process(fftBounds, sampleRate);

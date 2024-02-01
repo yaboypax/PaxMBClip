@@ -26,11 +26,17 @@ namespace
 ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
 {
     m_processor = &inProcessor;
-    
+    m_processor->addChangeListener(this);
+
     layoutButtons();
     layoutSliders();
     updateAttachments();
 
+}
+
+ClipperBandControls::~ClipperBandControls()
+{
+    m_processor->removeChangeListener(this);
 }
 
 void ClipperBandControls::layoutButtons()
@@ -160,4 +166,11 @@ void ClipperBandControls::resized()
 
     bandGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
     bandClipSlider.setBounds(bandGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
+}
+
+void ClipperBandControls::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    updateAttachments();
+    resized();
+    repaint();
 }

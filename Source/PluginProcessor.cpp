@@ -373,6 +373,7 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
 void PaxMBClipAudioProcessor::setBandFocus(BandFocus inFocus)
 {
     globalBandFocus = inFocus;
+    sendChangeMessage();
 }
 
 BandFocus PaxMBClipAudioProcessor::getBandFocus()

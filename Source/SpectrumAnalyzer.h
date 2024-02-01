@@ -12,28 +12,30 @@
 #include <JuceHeader.h>
 #include "PathProducer.h"
 
-struct SpectrumAnalyzer : juce::Component,
-    juce::AudioProcessorParameter::Listener,
-    juce::Timer
+class SpectrumAnalyzer : public juce::Component,
+    public juce::AudioProcessorParameter::Listener,
+    public juce::Timer, public juce::MouseListener
 {
+public:
+
     SpectrumAnalyzer(PaxMBClipAudioProcessor&);
     ~SpectrumAnalyzer();
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
-
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
 
     void timerCallback() override;
-
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    void mouseDown(const juce::MouseEvent& e) override;
     void toggleAnalysisEnablement(bool enabled)
     {
         shouldShowFFTAnalysis = enabled;
     }
+
 private:
-    PaxMBClipAudioProcessor& audioProcessor;
+    PaxMBClipAudioProcessor& m_processor;
 
     bool shouldShowFFTAnalysis = true;
 
@@ -47,18 +49,18 @@ private:
     std::vector<float> getXs(const std::vector<float>& freqs, float left, float width);
 
     juce::Rectangle<int> getRenderArea();
-
     juce::Rectangle<int> getAnalysisArea();
 
     PathProducer leftPathProducer, rightPathProducer;
 
     void drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds);
-    juce::AudioParameterFloat* lowMidXoverParam{ nullptr };
-    juce::AudioParameterFloat* midHighXoverParam{ nullptr };
+    juce::AudioParameterFloat* m_lowMidXoverParam{ nullptr };
+    juce::AudioParameterFloat* m_midHighXoverParam{ nullptr };
+    
+    int m_lowMidX, m_midHighX;
 
-
-    juce::AudioParameterFloat* lowClipParam{ nullptr };
-    juce::AudioParameterFloat* midClipParam{ nullptr };
-    juce::AudioParameterFloat* highClipParam{ nullptr };
+    juce::AudioParameterFloat* m_lowClipParam{ nullptr };
+    juce::AudioParameterFloat* m_midClipParam{ nullptr };
+    juce::AudioParameterFloat* m_highClipParam{ nullptr };
 };
 

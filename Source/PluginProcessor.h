@@ -19,10 +19,10 @@ enum class BandFocus
     High
 };
 
-class PaxMBClipAudioProcessor  : public juce::AudioProcessor
+class PaxMBClipAudioProcessor  : public juce::AudioProcessor, public juce::ChangeBroadcaster
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
-                            #endif
+                            #endif 
 {
 public:
     //==============================================================================
