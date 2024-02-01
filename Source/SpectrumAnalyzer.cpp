@@ -111,7 +111,7 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
 
     auto mapY = [bottom, top](float db) {
 
-        return juce::jmap(db, -24.f, 24.f, float(bottom), float(top));
+        return juce::jmap(db, 0.f, 1.f, float(bottom), float(top));
     };
     
     g.setColour(juce::Colours::yellow);
@@ -174,6 +174,11 @@ void SpectrumAnalyzer::mouseUp(const juce::MouseEvent& e)
 {
     m_lowMidDragging = false;
     m_midHighDragging = false;
+}
+
+void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
+{
+
 }
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()
