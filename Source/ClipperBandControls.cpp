@@ -12,15 +12,20 @@
 
 namespace
 {
-   constexpr int buttonX = 6;
-   constexpr int buttonY = 5;
-   constexpr int buttonSize = 45;
-   constexpr int margin = 4;
+    constexpr int buttonX = 6;
+    constexpr int buttonY = 5;
+    constexpr int buttonSize = 45;
+    constexpr int margin = 4;
 
-   constexpr int sliderX = 26;
-   constexpr int sliderY = 53;
-   constexpr int sliderWidth = 48;
-   constexpr int sliderHeight = 400;
+    constexpr int sliderX = 26;
+    constexpr int sliderY = 53;
+    constexpr int sliderWidth = 48;
+    constexpr int sliderHeight = 355;
+
+    constexpr int waveX = 26;
+    constexpr int waveY = 422;
+    constexpr int waveW = 100;
+    constexpr int waveH = 20;
 }
 
 ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
@@ -30,6 +35,8 @@ ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
 
     layoutButtons();
     layoutSliders();
+    layoutWaveSelector();
+
     updateAttachments();
 
 }
@@ -63,6 +70,16 @@ void ClipperBandControls::layoutSliders()
     addAndMakeVisible(bandClipSlider);
 }
 
+void ClipperBandControls::layoutWaveSelector()
+{
+    for (int i = 0; i <= 5; i++)
+    {
+        waveSelection.addItem(waveTypeNames[i], i + 1);
+    }
+
+    addAndMakeVisible(waveSelection);
+}
+
 void ClipperBandControls::updateAttachments()
 {
 
@@ -89,7 +106,8 @@ void ClipperBandControls::updateAttachments()
             Names::Low_Clip,
             Names::Bypassed_Low,
             Names::Solo_Low,
-            Names::Mute_Low
+            Names::Mute_Low,
+            Names::Low_Wave
         };
         break;
     }
@@ -102,7 +120,8 @@ void ClipperBandControls::updateAttachments()
             Names::Mid_Clip,
             Names::Bypassed_Mid,
             Names::Solo_Mid,
-            Names::Mute_Mid
+            Names::Mute_Mid,
+            Names::Mid_Wave
         };
         break;
     }
@@ -115,7 +134,8 @@ void ClipperBandControls::updateAttachments()
             Names::High_Clip,
             Names::Bypassed_High,
             Names::Solo_High,
-            Names::Mute_High
+            Names::Mute_High,
+            Names::High_Wave
         };
         break;
     }
@@ -128,19 +148,20 @@ void ClipperBandControls::updateAttachments()
         Clip,
         Bypassed,
         Solo,
-        Mute
+        Mute,
+        Wave
     };
 
     bandGainSliderAttachment.reset();
     bandClipSliderAttachment.reset();
+
     bypassButtonAttachment.reset();
     muteButtonAttachment.reset();
     soloButtonAttachment.reset();
 
-    //auto& gainParam = getParam(m_processor->apvts, params, names.at(Position::Gain));
-    //bandGainSlider.changeParam(&gainParam);
-    //auto& clipParam = getParamHelper(Position::Clip);
-    //bandClipSlider.changeParam(&clipParam);
+    waveSelectionAttachment.reset();
+
+    makeAttachment(waveSelectionAttachment, m_processor->apvts, params, names[Position::Wave], waveSelection);
 
     makeAttachment(bandGainSliderAttachment, m_processor->apvts, params, names[Position::Gain], bandGainSlider);
     makeAttachment(bandClipSliderAttachment, m_processor->apvts, params, names[Position::Clip], bandClipSlider);
@@ -166,6 +187,8 @@ void ClipperBandControls::resized()
 
     bandGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
     bandClipSlider.setBounds(bandGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
+
+    waveSelection.setBounds(waveX, waveY, waveW, waveH);
 }
 
 void ClipperBandControls::changeListenerCallback(juce::ChangeBroadcaster* source)
