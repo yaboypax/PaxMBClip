@@ -124,19 +124,56 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
 {
     auto x = e.getMouseDownX();
 
-    if (x < m_lowMidX)
+    if (x < m_lowMidX - 5)
     {
         m_processor.setBandFocus(BandFocus::Low);
     }
-    else if (x > m_lowMidX && x < m_midHighX)
+    else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
     {
         m_processor.setBandFocus(BandFocus::Mid);
     }
-    else if (x > m_midHighX)
+    else if (x > m_midHighX + 5)
     {
         m_processor.setBandFocus(BandFocus::High);
     }
-    else return;
+
+    if (x > m_lowMidX - 5 && x < m_lowMidX + 5)
+    {
+        m_lowMidDragging = true;
+    }
+    else if (x > m_midHighX - 5 && x < m_midHighX + 5)
+    {
+        m_midHighDragging = true;
+    }
+}
+
+void SpectrumAnalyzer::mouseDrag(const juce::MouseEvent& e)
+{
+    auto bounds = getLocalBounds().toFloat();
+    auto frequency = static_cast<float>(e.x) / bounds.getWidth();
+
+    if (m_lowMidDragging == true)
+    {
+        m_lowMidXoverParam->beginChangeGesture();
+        m_lowMidXoverParam->setValueNotifyingHost(frequency);
+        m_lowMidXoverParam->endChangeGesture();
+        repaint();
+    }
+
+    if (m_midHighDragging == true)
+    {
+        m_midHighXoverParam->beginChangeGesture();
+        m_midHighXoverParam->setValueNotifyingHost(frequency);
+        m_midHighXoverParam->endChangeGesture();
+        repaint();
+    }
+}
+
+
+void SpectrumAnalyzer::mouseUp(const juce::MouseEvent& e)
+{
+    m_lowMidDragging = false;
+    m_midHighDragging = false;
 }
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()

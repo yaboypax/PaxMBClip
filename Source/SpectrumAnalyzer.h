@@ -29,6 +29,10 @@ public:
     void resized() override;
 
     void mouseDown(const juce::MouseEvent& e) override;
+    void mouseDrag(const juce::MouseEvent& e) override;
+    void mouseUp(const juce::MouseEvent& e) override;
+
+
     void toggleAnalysisEnablement(bool enabled)
     {
         shouldShowFFTAnalysis = enabled;
@@ -59,8 +63,13 @@ private:
     
     int m_lowMidX, m_midHighX;
 
+    bool m_lowMidDragging = false;
+    bool m_midHighDragging = false;
+
     juce::AudioParameterFloat* m_lowClipParam{ nullptr };
     juce::AudioParameterFloat* m_midClipParam{ nullptr };
     juce::AudioParameterFloat* m_highClipParam{ nullptr };
+
+
 };
 
