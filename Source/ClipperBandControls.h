@@ -10,21 +10,29 @@
 
 #pragma once
 #include "JuceHeader.h"
+#include "PluginProcessor.h"
+
 #include "Utilities.h"
 #include "RotarySlider.h"
 #include "LookAndFeel.h"
 #include "Params.h"
 
-struct ClipperBandControls : juce::Component
+class ClipperBandControls : public juce::Component
 {
-    ClipperBandControls(juce::AudioProcessorValueTreeState& apvts);
+public:
+
+    ClipperBandControls(PaxMBClipAudioProcessor& inProcessor);
     void paint(juce::Graphics& g) override;
     void resized() override;
+
+    void layoutSliders();
+    void layoutButtons();
     void updateAttachments();
 
 
 private:
-    juce::AudioProcessorValueTreeState& apvts;
+    PaxMBClipAudioProcessor* m_processor;
+    BandFocus m_focus = BandFocus::unfocused;
 
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     juce::Slider bandGainSlider, bandClipSlider;

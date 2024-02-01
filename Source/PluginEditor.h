@@ -33,9 +33,10 @@ private:
     PaxMBClipAudioProcessor& audioProcessor;
     LookAndFeel lnf;
 
+    
     ControlBar controlBar;
     GlobalControls globalControls {audioProcessor.apvts};
-    ClipperBandControls bandControls {audioProcessor.apvts};
+    ClipperBandControls bandControls {audioProcessor};
     SpectrumAnalyzer analyzer {audioProcessor};
 
     void toggleGlobalBypassState();

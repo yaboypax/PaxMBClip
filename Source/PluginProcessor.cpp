@@ -369,6 +369,16 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
 
     HP2.process(fb2Ctx);
 }
+
+void PaxMBClipAudioProcessor::setBandFocus(BandFocus inFocus)
+{
+    globalBandFocus = inFocus;
+}
+
+BandFocus PaxMBClipAudioProcessor::getBandFocus()
+{
+    return globalBandFocus;
+}
 //==============================================================================
 bool PaxMBClipAudioProcessor::hasEditor() const
 {

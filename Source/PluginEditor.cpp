@@ -59,7 +59,6 @@ void PaxMBClipAudioProcessorEditor::resized()
 
     
     bandControls.setBounds(500, 32, 150, 500-32);
-    
     globalControls.setBounds(500 + 150, 32, 150, 500 - 32);
 }
 

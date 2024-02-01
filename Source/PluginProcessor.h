@@ -11,6 +11,13 @@
 #include <array>
 
 //====================================================================
+enum class BandFocus
+{
+    unfocused=0,
+    Low,
+    Mid,
+    High
+};
 
 class PaxMBClipAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
@@ -64,6 +71,8 @@ public:
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
 
     void setCrossoverFilters();
+    void setBandFocus(BandFocus inFocus);
+    BandFocus getBandFocus();
 
     template<typename T, typename U>
     void applyGain(T& buffer, U& dsp)
@@ -90,6 +99,8 @@ private:
     juce::dsp::Gain<float> inputGain, outputGain;
     juce::AudioParameterFloat* inputGainParam{ nullptr };
     juce::AudioParameterFloat* outputGainParam{ nullptr };
+
+    BandFocus globalBandFocus = BandFocus::unfocused;
 
     std::array<Clipper, 3> clippers;
     Clipper& lowBandClip = clippers[0];
