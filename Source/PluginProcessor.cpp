@@ -1,11 +1,12 @@
 /*
   =============================================================================
-
+     
 
   Chomp - Multiband Clipper VST
 
   TO DO:
   
+  - add oversampling and post clip artefact logic
   
   - redo global controls layout
   - add level meters 
@@ -95,22 +96,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Mid_Crossover_Freq), params.at(Names::Low_Mid_Crossover_Freq), juce::NormalisableRange<float> (PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY, 1.f, 0.2f), 200.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_High_Crossover_Freq), params.at(Names::Mid_High_Crossover_Freq), juce::NormalisableRange<float>(PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY, 1.f, 0.2f), 2000.f));
 
-    auto clipLow = juce::Decibels::decibelsToGain(-40.0f);
-    auto clipHigh = juce::Decibels::decibelsToGain(0.0f);
+    auto clipLow = -48.0f;
+    auto clipHigh = 0.0f;
     
-    auto gainLow = juce::Decibels::decibelsToGain(-20.0f);
-    auto gainHigh = juce::Decibels::decibelsToGain(20.0f);
+    auto gainLow = -24.0f;
+    auto gainHigh = 24.0f;
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Clip), params.at(Names::Low_Clip), clipLow, clipHigh, 1.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_Clip), params.at(Names::Mid_Clip), clipLow, clipHigh, 1.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::High_Clip), params.at(Names::High_Clip), clipLow, clipHigh, 1.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Clip), params.at(Names::Low_Clip), clipLow, clipHigh, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_Clip), params.at(Names::Mid_Clip), clipLow, clipHigh, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::High_Clip), params.at(Names::High_Clip), clipLow, clipHigh, 0.f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), gainLow, gainHigh, 1.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainLow, gainHigh, 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), gainLow, gainHigh, 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainLow, gainHigh, 0.0f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Gain), params.at(Names::Low_Gain), gainLow, gainHigh, 1.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_Gain), params.at(Names::Mid_Gain), gainLow, gainHigh, 1.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::High_Gain), params.at(Names::High_Gain), gainLow, gainHigh, 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Gain), params.at(Names::Low_Gain), gainLow, gainHigh, 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_Gain), params.at(Names::Mid_Gain), gainLow, gainHigh, 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::High_Gain), params.at(Names::High_Gain), gainLow, gainHigh, 0.0f));
 
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Low_Wave), params.at(Names::Low_Wave), 0, 5, 0));
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Mid_Wave), params.at(Names::Mid_Wave), 0, 5, 0));

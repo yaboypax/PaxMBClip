@@ -66,6 +66,9 @@ void ClipperBandControls::layoutSliders()
     bandGainSlider.setSliderStyle(juce::Slider::LinearVertical);
     bandGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
 
+    bandGainSlider.onValueChange = [this] {
+        DBG(bandGainSlider.getValue());
+        };
     addAndMakeVisible(bandGainSlider);
     addAndMakeVisible(bandClipSlider);
 }
@@ -169,6 +172,9 @@ void ClipperBandControls::updateAttachments()
     makeAttachment(bypassButtonAttachment, m_processor->apvts, params, names[Position::Bypassed], bypassButton);
     makeAttachment(soloButtonAttachment, m_processor->apvts, params, names[Position::Solo], soloButton);
     makeAttachment(muteButtonAttachment, m_processor->apvts, params, names[Position::Mute], muteButton);
+
+    bandClipSlider.setRange(-48.0, 0.0, 0.1);
+    bandGainSlider.setRange(-24.0, 24.0, 0.1);
 }
 
 
