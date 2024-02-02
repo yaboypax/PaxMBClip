@@ -33,6 +33,11 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_midClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Clip)));
     m_highClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Clip)));
 
+    m_lowGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Gain)));
+    m_midGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Gain)));
+    m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
+ 
+
     startTimerHz(60);
 }
 
@@ -90,8 +95,8 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
 
 void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
-    const auto top = bounds.getY()+20;
-    const auto bottom = bounds.getBottom()-20;
+    const auto top = bounds.getY();
+    const auto bottom = bounds.getBottom();
     
     const auto left = bounds.getX();
     const auto right = bounds.getRight();
@@ -109,15 +114,26 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     g.setColour(juce::Colour(188, 198, 206));
     g.drawVerticalLine(m_midHighX, top, bottom);
 
-    auto mapY = [bottom, top](float db) {
+    auto mapGainY = [bottom, top](float db) {
 
-        return juce::jmap(db, 0.f, 1.f, float(bottom), float(top));
+        return juce::jmap(db, -24.f, 24.f, float(bottom), float(top));
     };
+
+    auto mapClipY = [bottom, top](float db) {
+
+        return juce::jmap(db, -48.f, 0.f, float(bottom), float(top));
+        };
     
+    g.setColour(juce::Colours::green);
+
+    g.drawHorizontalLine(mapGainY(m_lowGainParam->get()), left, m_lowMidX);
+    g.drawHorizontalLine(mapGainY(m_midGainParam->get()), m_lowMidX, m_midHighX);
+    g.drawHorizontalLine(mapGainY(m_highGainParam->get()), m_midHighX, right);
+
     g.setColour(juce::Colours::yellow);
-    g.drawHorizontalLine(mapY(m_lowClipParam->get()), left, m_lowMidX);
-    g.drawHorizontalLine(mapY(m_midClipParam->get()), m_lowMidX, m_midHighX);
-    g.drawHorizontalLine(mapY(m_highClipParam->get()), m_midHighX, right);
+    g.drawHorizontalLine(mapClipY(m_lowClipParam->get()), left, m_lowMidX);
+    g.drawHorizontalLine(mapClipY(m_midClipParam->get()), m_lowMidX, m_midHighX);
+    g.drawHorizontalLine(mapClipY(m_highClipParam->get()), m_midHighX, right);
 }
 
 void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)

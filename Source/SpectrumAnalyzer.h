@@ -71,6 +71,9 @@ private:
     juce::AudioParameterFloat* m_midClipParam{ nullptr };
     juce::AudioParameterFloat* m_highClipParam{ nullptr };
 
+    juce::AudioParameterFloat* m_lowGainParam{ nullptr };
+    juce::AudioParameterFloat* m_midGainParam{ nullptr };
+    juce::AudioParameterFloat* m_highGainParam{ nullptr };
 
 };
 
