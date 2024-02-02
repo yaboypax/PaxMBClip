@@ -10,6 +10,24 @@
 
 #include "GlobalControls.h"
 
+namespace
+{
+    constexpr int sliderX = 26;
+    constexpr int sliderY = 53;
+    constexpr int sliderWidth = 48;
+    constexpr int sliderHeight = 355;
+
+    constexpr int overX = 26;
+    constexpr int overY = 22;
+    constexpr int overW = 100;
+    constexpr int overH = 20;
+
+    constexpr int xoverX = 16;
+    constexpr int xoverY = 405;
+    constexpr int xOverSize = 58;
+}
+
+
 GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
 {
     using namespace Params;
@@ -20,11 +38,20 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
     makeAttachment(midHighXoverSliderAttachment, apvts, params, Names::Mid_High_Crossover_Freq, midHighXoverSlider);
     makeAttachment(outGainSliderAttachment, apvts, params, Names::Gain_Out, outGainSlider);
 
+    inGainSlider.setSliderStyle(juce::Slider::LinearVertical);
+    inGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    inGainSlider.setRange(-24.0, 24.0, 0.1);
+
+    outGainSlider.setSliderStyle(juce::Slider::LinearVertical);
+    outGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    outGainSlider.setRange(-24.0, 24.0, 0.1);
 
     addAndMakeVisible(inGainSlider);
     addAndMakeVisible(lowMidXoverSlider);
     addAndMakeVisible(midHighXoverSlider);
     addAndMakeVisible(outGainSlider);
+
+    addAndMakeVisible(oversamplingSelection);
 }
 
 void GlobalControls::paint(juce::Graphics& g)
@@ -35,24 +62,11 @@ void GlobalControls::paint(juce::Graphics& g)
 
 void GlobalControls::resized()
 {
-    auto bounds = getLocalBounds();
+    inGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
+    outGainSlider.setBounds(inGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
 
-    juce::FlexBox flexBox;
-    flexBox.flexDirection = juce::FlexBox::Direction::row;
-    flexBox.flexWrap = juce::FlexBox::Wrap::noWrap;
+    lowMidXoverSlider.setBounds(xoverX, xoverY, xOverSize, xOverSize);
+    midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xOverSize, xOverSize);
 
-    auto spacer = juce::FlexItem().withWidth(4);
-    auto endCap = juce::FlexItem().withWidth(6);
-
-    flexBox.items.add(endCap);
-    flexBox.items.add(juce::FlexItem(inGainSlider).withFlex(1.f));
-    flexBox.items.add(spacer);
-    flexBox.items.add(juce::FlexItem(lowMidXoverSlider).withFlex(1.f));
-    flexBox.items.add(spacer);
-    flexBox.items.add(juce::FlexItem(midHighXoverSlider).withFlex(1.f));
-    flexBox.items.add(spacer);
-    flexBox.items.add(juce::FlexItem(outGainSlider).withFlex(1.f));
-    flexBox.items.add(endCap);
-
-    flexBox.performLayout(bounds);
+    oversamplingSelection.setBounds(overX, overY, overW, overH);
 }
