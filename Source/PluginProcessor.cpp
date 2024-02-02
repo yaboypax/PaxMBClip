@@ -7,17 +7,15 @@
   TO DO:
   
   - add oversampling and post clip artefact logic
-  
-  - redo global controls layout
   - add level meters 
-  - scroll wheel for clip controls
-  - add Overhead font and gater aesthetic
+  ? scroll wheel for clip controls
+  ? add Overhead font and gater aesthetic
 
   - add support for waveform analyzer
     - switch analysis with current analyzer button in cb
     ? possible different display without bands
 
-
+  - design release GUI
   =============================================================================
 */
 
