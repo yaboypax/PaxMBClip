@@ -31,11 +31,16 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
 	bool isBypassed = bypassed->get();
 
     applyGain(buffer, bandGain);
+
 	float clipCeiling = juce::Decibels::decibelsToGain(clip->get());
 
 	buffer.applyGain(1 / clipCeiling);
+
 	if (!isBypassed)
 		clipSamples(&buffer, buffer.getNumChannels());
+
+	buffer.applyGain(clipCeiling);
+	
 
 
     auto postRMS = computeRMSLevel(buffer);
