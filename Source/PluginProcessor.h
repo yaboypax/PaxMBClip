@@ -10,6 +10,10 @@
 #include "SingleChannelSampleFifo.h"
 #include <array>
 
+#include "DspFilters/Dsp.h"
+#define F_ORDER 12 
+
+
 //====================================================================
 enum class BandFocus
 {
@@ -69,10 +73,13 @@ public:
 
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
-
     void setCrossoverFilters();
     void setBandFocus(BandFocus inFocus);
     BandFocus getBandFocus();
+
+    float calcCutoff();
+    double m_fsamplerate;
+
 
     template<typename T, typename U>
     void applyGain(T& buffer, U& dsp)
@@ -88,24 +95,38 @@ public:
 
 private:
     //==============================================================================
-    using Filter = juce::dsp::LinkwitzRileyFilter<float>;
-    //      fc0     fc1
-    Filter  LP1, AP2,
-            HP1, LP2,
-            HP2;
+    // Crossover Filters
+    using xOverFilter = juce::dsp::LinkwitzRileyFilter<float>;
+    //           fc0  fc1
+    xOverFilter  LP1, AP2,
+                 HP1, LP2,
+                 HP2;
 
     std::array<juce::AudioBuffer<float>, 3> filterBuffers;
 
-    juce::dsp::Gain<float> inputGain, outputGain;
+    // Oversampling filters (butterworth)
+    using oversamplingFilter = juce::dsp::IIR::Filter<float>;
+    oversamplingFilter oFilter1, oFilter2;
+    int m_oversample = 1;
+    juce::AudioBuffer<float>* m_resizedBuffer;
+
+
+    float m_inputGain, m_outputGain;
     juce::AudioParameterFloat* inputGainParam{ nullptr };
     juce::AudioParameterFloat* outputGainParam{ nullptr };
 
-    BandFocus globalBandFocus = BandFocus::unfocused;
+    BandFocus m_globalBandFocus = BandFocus::unfocused;
 
     std::array<Clipper, 3> clippers;
     Clipper& lowBandClip = clippers[0];
     Clipper& midBandClip = clippers[1];
     Clipper& highBandClip = clippers[2];
+
+    int m_forder = F_ORDER;
+    void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioSampleBuffer* newBuffer, int numchans);
+    void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioSampleBuffer* downBuffer, int numchans);
+    const int m_maxOversample = 32;
+    const float m_sampleShift = 0.0;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessor)

@@ -223,12 +223,6 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     HP2.prepare(spec);
     AP2.prepare(spec);
 
-    inputGain.prepare(spec);
-    outputGain.prepare(spec);
-
-    inputGain.setRampDurationSeconds(0.05); //50 ms
-    outputGain.setRampDurationSeconds(0.05);
-
     setCrossoverFilters();
 
     for (auto& buffer : filterBuffers)
@@ -238,6 +232,9 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 
     leftChannelFifo.prepare(samplesPerBlock);
     rightChannelFifo.prepare(samplesPerBlock);
+
+    m_resizedBuffer->setSize(2, samplesPerBlock * m_maxOversample, false, true, false);
+    m_resizedBuffer->clear();
 }
 
 void PaxMBClipAudioProcessor::releaseResources()
@@ -280,8 +277,8 @@ void PaxMBClipAudioProcessor::updateState()
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
 
-    inputGain.setGainDecibels(inputGainParam->get());
-    outputGain.setGainDecibels(outputGainParam->get());
+    m_inputGain = *inputGainParam;
+    m_outputGain = *outputGainParam;
 
 }
 void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -290,22 +287,55 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    m_resizedBuffer->setSize(2, buffer.getNumSamples() * m_oversample, false, true, true);
+    m_resizedBuffer->clear();
 
     updateState();
     leftChannelFifo.update(buffer);
     rightChannelFifo.update(buffer);
 
-    applyGain(buffer, inputGain);
+
+    if (*inputGainParam != m_inputGain)
+    {
+        buffer.applyGainRamp(0, buffer.getNumSamples(), m_inputGain, *inputGainParam);
+        m_inputGain = *inputGainParam;
+    }
+    else
+    {
+        buffer.applyGain(*inputGainParam);
+    }
+
+
+    
 
     splitBands(buffer);
 
-    for (size_t i = 0; i < filterBuffers.size(); ++i) 
+    if (m_oversample > 1)
     {
-        clippers[i].process(filterBuffers[i]);
-    }
+        overSampleZS(&buffer, m_resizedBuffer, buffer.getNumChannels());
 
+        m_resizedBuffer->applyGain(m_oversample);
+
+        //oFilter1.process(m_bufferResized->getNumSamples(), m_bufferResized->getArrayOfWritePointers());
+
+        for (size_t i = 0; i < filterBuffers.size(); ++i)
+        {
+            clippers[i].process(filterBuffers[i]);
+        }
+
+        //oFilter2.process(m_bufferResized->getNumSamples(), m_bufferResized->getArrayOfWritePointers());
+
+        decimate(m_resizedBuffer, &buffer, buffer.getNumChannels());
+
+    }
+    else
+    {
+
+        for (size_t i = 0; i < filterBuffers.size(); ++i)
+        {
+            clippers[i].process(filterBuffers[i]);
+        }
+    }
 
     //context.isBypassed = bypassedLow->get();
 
@@ -355,7 +385,47 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         }
     }
 
-    applyGain(buffer, outputGain);
+    if (*outputGainParam != m_outputGain)
+    {
+        buffer.applyGainRamp(0, buffer.getNumSamples(), m_outputGain, *outputGainParam);
+        m_outputGain = *outputGainParam;
+    }
+    else
+    {
+        buffer.applyGain(*outputGainParam);
+    }
+
+}
+
+void PaxMBClipAudioProcessor::overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioSampleBuffer* newBuffer, int numchans)
+{
+    for (int i = 0; i < oldBuffer->getNumSamples(); i++)
+    {
+        for (int j = 0; j < numchans; j++)
+        {
+            newBuffer->setSample(j, i * m_oversample, oldBuffer->getSample(j, i));
+        }
+    }
+
+}
+
+void PaxMBClipAudioProcessor::decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans)
+{
+    for (int i = 0; i < downBuffer->getNumSamples(); i++)
+    {
+        for (int j = 0; j < numchans; j++)
+        {
+            /*if (m_postClipType == 3)
+            {
+                float s = upBuffer->getSample(j, i * m_ioversample + (int)(sampleShift * (m_ioversample - 1)));
+                downBuffer->setSample(j, i, hardclip(s));
+            }*/
+            //else
+            //{
+                downBuffer->setSample(j, i, upBuffer->getSample(j, i * m_oversample + (int)(m_sampleShift * (m_oversample - 1))));
+            //}
+        }
+    }
 }
 
 void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBuffer)
@@ -385,13 +455,13 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
 
 void PaxMBClipAudioProcessor::setBandFocus(BandFocus inFocus)
 {
-    globalBandFocus = inFocus;
+    m_globalBandFocus = inFocus;
     sendChangeMessage();
 }
 
 BandFocus PaxMBClipAudioProcessor::getBandFocus()
 {
-    return globalBandFocus;
+    return m_globalBandFocus;
 }
 //==============================================================================
 bool PaxMBClipAudioProcessor::hasEditor() const
