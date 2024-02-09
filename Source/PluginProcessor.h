@@ -123,8 +123,8 @@ private:
     Clipper& highBandClip = clippers[2];
 
     int m_forder = F_ORDER;
-    void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioSampleBuffer* newBuffer, int numchans);
-    void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioSampleBuffer* downBuffer, int numchans);
+    void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
+    const void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans);
     const int m_maxOversample = 32;
     const float m_sampleShift = 0.0;
 

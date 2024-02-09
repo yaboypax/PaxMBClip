@@ -337,8 +337,6 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         }
     }
 
-    //context.isBypassed = bypassedLow->get();
-
     auto numSamples = buffer.getNumSamples();
     auto numChannels = buffer.getNumChannels();
 
@@ -371,6 +369,15 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             {
                 addFilterBand(buffer, filterBuffers[i]);
             }
+            else
+            {
+                if (auto param = clipper.mute)
+                {
+                    param->beginChangeGesture();
+                    param->setValueNotifyingHost(1.0f);
+                    param->endChangeGesture();
+                }
+            }
         }
     }
     else
@@ -397,7 +404,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
 }
 
-void PaxMBClipAudioProcessor::overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioSampleBuffer* newBuffer, int numchans)
+void PaxMBClipAudioProcessor::overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans)
 {
     for (int i = 0; i < oldBuffer->getNumSamples(); i++)
     {
@@ -409,7 +416,7 @@ void PaxMBClipAudioProcessor::overSampleZS(juce::AudioBuffer<float>* oldBuffer, 
 
 }
 
-void PaxMBClipAudioProcessor::decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans)
+const void PaxMBClipAudioProcessor::decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans)
 {
     for (int i = 0; i < downBuffer->getNumSamples(); i++)
     {
