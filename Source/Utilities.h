@@ -58,4 +58,7 @@ juce::RangedAudioParameter& getParam(APVTS& apvts, const Params& params, const N
     return *param;
 }
 
-void drawModuleBackground(juce::Graphics& g, juce::Rectangle<int> bounds);
+static inline float calcCutoff(float sampleRate)
+{
+    return (sampleRate / 2) * 0.98;
+}

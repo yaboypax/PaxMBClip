@@ -12,6 +12,7 @@
 
 #include "JuceHeader.h"
 #include "Utilities.h"
+#include "LookAndFeel.h"
 #include "RotarySlider.h"
 #include "Params.h"
 

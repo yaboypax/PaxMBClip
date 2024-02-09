@@ -225,6 +225,12 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 
     setCrossoverFilters();
 
+    m_oversamplingFilter1.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
+    m_oversamplingFilter2.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
+
+    //f 
+    //f2
+
     for (auto& buffer : filterBuffers)
     {
         buffer.setSize(spec.numChannels, samplesPerBlock);
@@ -316,7 +322,10 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
         m_resizedBuffer->applyGain(m_oversample);
 
-        //oFilter1.process(m_bufferResized->getNumSamples(), m_bufferResized->getArrayOfWritePointers());
+        //auto preBlock = juce::dsp::AudioBlock<float>(*m_resizedBuffer);
+        //auto preContext = juce::dsp::ProcessContextReplacing<float>(preBlock);
+        //m_oversamplingFilter1.process(preContext);
+        m_oversamplingFilter1.process(m_resizedBuffer->getNumSamples(), m_resizedBuffer->getArrayOfWritePointers());
 
         splitBands(*m_resizedBuffer);
 
@@ -327,23 +336,28 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
         recombineBands(*m_resizedBuffer);
 
-        //oFilter2.process(m_bufferResized->getNumSamples(), m_bufferResized->getArrayOfWritePointers());
+        //auto postBlock = juce::dsp::AudioBlock<float>(*m_resizedBuffer);
+        //auto postContext = juce::dsp::ProcessContextReplacing<float>(postBlock);
+        //m_oversamplingFilter2.process(postContext);
+        m_oversamplingFilter2.process(m_resizedBuffer->getNumSamples(), m_resizedBuffer->getArrayOfWritePointers());
 
         decimate(m_resizedBuffer, &buffer, buffer.getNumChannels());
     }
     else
     {
         splitBands(buffer);
+
         for (size_t i = 0; i < filterBuffers.size(); ++i)
         {
             clippers[i].process(filterBuffers[i]);
         }
+
         recombineBands(buffer);
     }
 
     if (m_postClip)
     {
-        masterClip.masterClip(&buffer);
+        m_masterClip.masterClip(&buffer);
     }
 
     if (*outputGainParam != m_outputGain)

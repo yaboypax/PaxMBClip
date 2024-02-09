@@ -79,9 +79,6 @@ public:
     void setBandFocus(BandFocus inFocus);
     BandFocus getBandFocus();
 
-    float calcCutoff();
-    double m_fsamplerate;
-
 
     template<typename T, typename U>
     void applyGain(T& buffer, U& dsp)
@@ -107,8 +104,8 @@ private:
     std::array<juce::AudioBuffer<float>, 3> filterBuffers;
 
     // Oversampling filters (butterworth)
-    using oversamplingFilter = juce::dsp::IIR::Filter<float>;
-    oversamplingFilter oFilter1, oFilter2;
+    using oversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <F_ORDER>, 2>;
+    oversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
     int m_oversample = 1;
     juce::AudioBuffer<float>* m_resizedBuffer;
 
@@ -124,7 +121,7 @@ private:
     Clipper& midBandClip = clippers[1];
     Clipper& highBandClip = clippers[2];
     bool m_postClip = false;
-    Clipper masterClip;
+    Clipper m_masterClip;
 
     int m_forder = F_ORDER;
     void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);

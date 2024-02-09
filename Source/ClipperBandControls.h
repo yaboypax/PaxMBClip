@@ -12,7 +12,6 @@
 #include "JuceHeader.h"
 #include "PluginProcessor.h"
 
-#include "Utilities.h"
 #include "RotarySlider.h"
 #include "LookAndFeel.h"
 #include "Params.h"
