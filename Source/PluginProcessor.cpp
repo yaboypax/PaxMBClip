@@ -35,11 +35,8 @@ PaxMBClipAudioProcessor::PaxMBClipAudioProcessor()
     )
 #endif
 {
-
     initializeParameters();
-
-
-    //addParameter(waveType = new juce::AudioParameterInt("wavetype", "Wavetype", 0, 5, 0));
+    m_resizedBuffer = std::make_unique<juce::AudioBuffer<float>>(2, 0);
 }
 
 PaxMBClipAudioProcessor::~PaxMBClipAudioProcessor()
@@ -293,7 +290,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    m_resizedBuffer->setSize(2, buffer.getNumSamples() * m_oversample, false, true, true);
+    m_resizedBuffer->setSize(buffer.getNumChannels(), buffer.getNumSamples() * m_oversample, false, true, true);
     m_resizedBuffer->clear();
 
     updateState();
@@ -303,22 +300,19 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     if (*inputGainParam != m_inputGain)
     {
-        buffer.applyGainRamp(0, buffer.getNumSamples(), m_inputGain, *inputGainParam);
+        auto start = juce::Decibels::decibelsToGain(m_inputGain);
+        auto end = juce::Decibels::decibelsToGain(inputGainParam->get());
+        buffer.applyGainRamp(0, buffer.getNumSamples(), start, end);
         m_inputGain = *inputGainParam;
     }
     else
     {
-        buffer.applyGain(*inputGainParam);
+        buffer.applyGain(juce::Decibels::decibelsToGain(inputGainParam->get()));
     }
-
-
-    
-
-    
 
     if (m_oversample > 1)
     {
-        overSampleZS(&buffer, m_resizedBuffer, buffer.getNumChannels());
+        overSampleZS(&buffer, m_resizedBuffer.get(), buffer.getNumChannels());
 
         m_resizedBuffer->applyGain(m_oversample);
 
@@ -341,7 +335,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         //m_oversamplingFilter2.process(postContext);
         m_oversamplingFilter2.process(m_resizedBuffer->getNumSamples(), m_resizedBuffer->getArrayOfWritePointers());
 
-        decimate(m_resizedBuffer, &buffer, buffer.getNumChannels());
+        decimate(m_resizedBuffer.get(), &buffer, buffer.getNumChannels());
     }
     else
     {
@@ -362,12 +356,14 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     if (*outputGainParam != m_outputGain)
     {
-        buffer.applyGainRamp(0, buffer.getNumSamples(), m_outputGain, *outputGainParam);
+        auto start = juce::Decibels::decibelsToGain(m_outputGain);
+        auto end = juce::Decibels::decibelsToGain(outputGainParam->get());
+        buffer.applyGainRamp(0, buffer.getNumSamples(), start, end);
         m_outputGain = *outputGainParam;
     }
     else
     {
-        buffer.applyGain(*outputGainParam);
+        buffer.applyGain(juce::Decibels::decibelsToGain(outputGainParam->get()));
     }
 
 }
@@ -453,9 +449,12 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
             auto& clipper = clippers[i];
             if (clipper.solo->get())
             {
-                for (auto i = 0; i < numChannels; ++i)
+                for (size_t i = 0; i < filterBuffers.size(); ++i)
                 {
-                    buffer.addFrom(i, 0, filterBuffers[i], i, 0, numSamples);
+                    for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
+                    {
+                        buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
+                    }
                 }
             }
             else
@@ -474,9 +473,12 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
             auto& clipper = clippers[i];
             if (!clipper.mute->get())
             {
-                for (auto i = 0; i < numChannels; ++i)
+                for (size_t i = 0; i < filterBuffers.size(); ++i)
                 {
-                    buffer.addFrom(i, 0, filterBuffers[i], i, 0, numSamples);
+                    for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
+                    {
+                        buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
+                    }
                 }
             }
         }

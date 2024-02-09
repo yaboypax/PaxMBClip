@@ -94,6 +94,10 @@ public:
 
 private:
     //==============================================================================
+    std::array<juce::AudioBuffer<float>, 3> filterBuffers;
+    std::unique_ptr<juce::AudioBuffer<float>> m_resizedBuffer;
+
+
     // Crossover Filters
     using xOverFilter = juce::dsp::LinkwitzRileyFilter<float>;
     //           fc0  fc1
@@ -101,13 +105,17 @@ private:
                  HP1, LP2,
                  HP2;
 
-    std::array<juce::AudioBuffer<float>, 3> filterBuffers;
-
     // Oversampling filters (butterworth)
     using oversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <F_ORDER>, 2>;
     oversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
+
     int m_oversample = 1;
-    juce::AudioBuffer<float>* m_resizedBuffer;
+    int m_forder = F_ORDER;
+    const int m_maxOversample = 32;
+    const float m_sampleShift = 0.0;
+
+    void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
+    const void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans);
 
 
     float m_inputGain, m_outputGain;
@@ -120,14 +128,11 @@ private:
     Clipper& lowBandClip = clippers[0];
     Clipper& midBandClip = clippers[1];
     Clipper& highBandClip = clippers[2];
+
     bool m_postClip = false;
     Clipper m_masterClip;
 
-    int m_forder = F_ORDER;
-    void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
-    const void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans);
-    const int m_maxOversample = 32;
-    const float m_sampleShift = 0.0;
+
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessor)
