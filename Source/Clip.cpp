@@ -5,9 +5,6 @@
     Created: 28 Aug 2023 5:04:32pm
     Author:  Paxton Fleming
 
-
-	Attach parameter to waveType
-
   ==============================================================================
 */
 
@@ -37,7 +34,7 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
 	buffer.applyGain(1 / clipCeiling);
 
 	if (!isBypassed)
-		clipSamples(&buffer, buffer.getNumChannels());
+		clipSamples(&buffer);
 
 	buffer.applyGain(clipCeiling);
 	
@@ -48,12 +45,12 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
     rmsOutputLevelDb.store(juce::Decibels::gainToDecibels(preRMS));
 }
 
-void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, int numchans)
+void Clipper::clipSamples(juce::AudioBuffer<float>* buffer)
 {
 	if (waveType)
 		m_waveType = static_cast<WaveType>(waveType->get());
 
-	for (int j = 0; j < numchans; j++)
+	for (int j = 0; j < buffer->getNumChannels(); j++)
 	{
 		float* bufferData = buffer->getWritePointer(j);
 
@@ -88,6 +85,21 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, int numchans)
 				break;
 			}
 
+			bufferData[i] = newval;
+		}
+	}
+}
+
+void Clipper::masterClip(juce::AudioBuffer<float>* buffer)
+{
+	for (int j = 0; j < buffer->getNumChannels(); j++)
+	{
+		float* bufferData = buffer->getWritePointer(j);
+
+		for (int i = 0; i < buffer->getNumSamples(); i++)
+		{
+			float newval = 0.0f;
+			newval = hardclip(bufferData[i]);
 			bufferData[i] = newval;
 		}
 	}

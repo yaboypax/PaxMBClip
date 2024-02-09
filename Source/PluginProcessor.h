@@ -43,6 +43,8 @@ public:
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void splitBands(const juce::AudioBuffer<float>& inputBuffer);
+    void recombineBands(juce::AudioBuffer<float>& buffer);
+
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -121,6 +123,8 @@ private:
     Clipper& lowBandClip = clippers[0];
     Clipper& midBandClip = clippers[1];
     Clipper& highBandClip = clippers[2];
+    bool m_postClip = false;
+    Clipper masterClip;
 
     int m_forder = F_ORDER;
     void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);

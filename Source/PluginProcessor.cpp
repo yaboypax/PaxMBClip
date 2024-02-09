@@ -308,7 +308,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     
 
-    splitBands(buffer);
+    
 
     if (m_oversample > 1)
     {
@@ -318,78 +318,32 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
         //oFilter1.process(m_bufferResized->getNumSamples(), m_bufferResized->getArrayOfWritePointers());
 
+        splitBands(*m_resizedBuffer);
+
         for (size_t i = 0; i < filterBuffers.size(); ++i)
         {
             clippers[i].process(filterBuffers[i]);
         }
+
+        recombineBands(*m_resizedBuffer);
 
         //oFilter2.process(m_bufferResized->getNumSamples(), m_bufferResized->getArrayOfWritePointers());
 
         decimate(m_resizedBuffer, &buffer, buffer.getNumChannels());
-
     }
     else
     {
-
+        splitBands(buffer);
         for (size_t i = 0; i < filterBuffers.size(); ++i)
         {
             clippers[i].process(filterBuffers[i]);
         }
+        recombineBands(buffer);
     }
 
-    auto numSamples = buffer.getNumSamples();
-    auto numChannels = buffer.getNumChannels();
-
-    buffer.clear();
-
-    auto addFilterBand = [numSamples, numChannels](auto& inputBuffer, const auto& source)
+    if (m_postClip)
     {
-        for (auto i = 0; i < numChannels; ++i)
-        {
-            inputBuffer.addFrom(i, 0, source, i, 0, numSamples);
-        }
-    };
-
-    auto bandsAreSoloed = false;
-    for (auto& clipper : clippers)
-    {
-        if (clipper.solo->get())
-        {
-            bandsAreSoloed = true;
-            break;
-        }
-    }
-
-    if (bandsAreSoloed)
-    {
-        for (size_t i = 0; i < clippers.size(); ++i)
-        {
-            auto& clipper = clippers[i];
-            if (clipper.solo->get())
-            {
-                addFilterBand(buffer, filterBuffers[i]);
-            }
-            else
-            {
-                if (auto param = clipper.mute)
-                {
-                    param->beginChangeGesture();
-                    param->setValueNotifyingHost(1.0f);
-                    param->endChangeGesture();
-                }
-            }
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < clippers.size(); ++i)
-        {
-            auto& clipper = clippers[i];
-            if (!clipper.mute->get())
-            {
-                addFilterBand(buffer, filterBuffers[i]);
-            }
-        }
+        masterClip.masterClip(&buffer);
     }
 
     if (*outputGainParam != m_outputGain)
@@ -458,6 +412,61 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
     LP2.process(fb1Ctx);
 
     HP2.process(fb2Ctx);
+}
+
+void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
+{
+    auto numSamples = buffer.getNumSamples();
+    auto numChannels = buffer.getNumChannels();
+
+    buffer.clear();
+
+
+    auto bandsAreSoloed = false;
+    for (auto& clipper : clippers)
+    {
+        if (clipper.solo->get())
+        {
+            bandsAreSoloed = true;
+            break;
+        }
+    }
+
+    if (bandsAreSoloed)
+    {
+        for (size_t i = 0; i < clippers.size(); ++i)
+        {
+            auto& clipper = clippers[i];
+            if (clipper.solo->get())
+            {
+                for (auto i = 0; i < numChannels; ++i)
+                {
+                    buffer.addFrom(i, 0, filterBuffers[i], i, 0, numSamples);
+                }
+            }
+            else
+            {
+                //auto param = clipper.mute;
+                //param->beginChangeGesture();
+                //param->setValueNotifyingHost(1.0f);
+                //param->endChangeGesture();
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < clippers.size(); ++i)
+        {
+            auto& clipper = clippers[i];
+            if (!clipper.mute->get())
+            {
+                for (auto i = 0; i < numChannels; ++i)
+                {
+                    buffer.addFrom(i, 0, filterBuffers[i], i, 0, numSamples);
+                }
+            }
+        }
+    }
 }
 
 void PaxMBClipAudioProcessor::setBandFocus(BandFocus inFocus)

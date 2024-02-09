@@ -43,8 +43,14 @@ public:
     float getRMSOutputLevelDb() const { return rmsOutputLevelDb; }
     float getRMSInputLevelDb() const { return rmsInputLevelDb; }
 
-    void clipSamples(juce::AudioBuffer<float>* buffer, int numchans);
+    void masterClip(juce::AudioBuffer<float>* buffer);
 
+
+
+private:
+
+    float m_softness = 0.0;
+    void clipSamples(juce::AudioBuffer<float>* buffer);
     float sinclip(float& s);
     float logiclip(float& s);
     float hardclip(float& s);
@@ -54,10 +60,6 @@ public:
     float algclip(float& s, float soft);
     float arcClip(float& s, float& soft);
 
-
-private:
-
-    float m_softness = 0.0;
 
     std::atomic<float> rmsInputLevelDb{ PaxMBClip::NEG_INFINITY };
     std::atomic<float> rmsOutputLevelDb{ PaxMBClip::NEG_INFINITY };
