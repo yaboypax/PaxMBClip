@@ -11,7 +11,7 @@
 #include <array>
 
 #include "DspFilters/Dsp.h"
-#define F_ORDER 12 
+#define F_ORDER 12
 
 
 //====================================================================
@@ -94,6 +94,10 @@ public:
 
 private:
     //==============================================================================
+    const int m_maxOversample = 32;
+    const float m_sampleShift = 0.0;
+
+
     std::array<juce::AudioBuffer<float>, 3> filterBuffers;
     std::unique_ptr<juce::AudioBuffer<float>> m_resizedBuffer;
 
@@ -108,19 +112,17 @@ private:
     // Oversampling filters (butterworth)
     using oversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <F_ORDER>, 2>;
     oversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
-
-    int m_oversample = 1;
     int m_forder = F_ORDER;
-    const int m_maxOversample = 32;
-    const float m_sampleShift = 0.0;
-
+    
     void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
     const void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans);
 
+    int m_oversample = 1;
+    juce::AudioParameterInt* m_oversampleParam{ nullptr };
 
     float m_inputGain, m_outputGain;
-    juce::AudioParameterFloat* inputGainParam{ nullptr };
-    juce::AudioParameterFloat* outputGainParam{ nullptr };
+    juce::AudioParameterFloat* m_inputGainParam{ nullptr };
+    juce::AudioParameterFloat* m_outputGainParam{ nullptr };
 
     BandFocus m_globalBandFocus = BandFocus::unfocused;
 

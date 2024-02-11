@@ -44,7 +44,8 @@ namespace Params
         Solo_High,
 
         Gain_In,
-        Gain_Out
+        Gain_Out,
+        Oversample
     };
 
     inline const std::map<Names, juce::String>& GetParams()
@@ -79,7 +80,8 @@ namespace Params
             {Solo_High, "Solo High"},
 
             {Gain_In, "Gain In"},
-            {Gain_Out, "Gain Out"}
+            {Gain_Out, "Gain Out"},
+            {Oversample, "Oversample"}
         };
 
         return params;
