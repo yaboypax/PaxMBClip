@@ -27,6 +27,10 @@ namespace
     constexpr int xOverSize = 58;
 }
 
+static juce::String getOversamplingPower(int ovr)
+{
+    return static_cast<juce::String>(pow(2, ovr)) + "x Oversampling";
+}
 
 GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
 {
@@ -51,6 +55,12 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(midHighXoverSlider);
     addAndMakeVisible(outGainSlider);
 
+    for (int i = 0; i <= 5; ++i)
+    {
+        oversamplingSelection.addItem(getOversamplingPower(i), i + 1);
+    }
+
+    makeAttachment(oversamplingAttachment, apvts, params, Names::Oversample, oversamplingSelection);
     addAndMakeVisible(oversamplingSelection);
 }
 
