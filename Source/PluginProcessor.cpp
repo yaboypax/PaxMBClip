@@ -6,7 +6,7 @@
 
   TO DO:
   
-  - add oversampling and post clip artefact logic
+  - fix band solo/mute logic
   - add level meters 
   ? scroll wheel for clip controls
   ? add Overhead font and gater aesthetic
@@ -396,15 +396,7 @@ const void PaxMBClipAudioProcessor::decimate(juce::AudioBuffer<float>* upBuffer,
     {
         for (int j = 0; j < numchans; j++)
         {
-            /*if (m_postClipType == 3)
-            {
-                float s = upBuffer->getSample(j, i * m_ioversample + (int)(sampleShift * (m_ioversample - 1)));
-                downBuffer->setSample(j, i, hardclip(s));
-            }*/
-            //else
-            //{
-                downBuffer->setSample(j, i, upBuffer->getSample(j, i * m_oversample + (int)(m_sampleShift * (m_oversample - 1))));
-            //}
+            downBuffer->setSample(j, i, upBuffer->getSample(j, i * m_oversample + (int)(m_sampleShift * (m_oversample - 1))));
         }
     }
 }
@@ -459,20 +451,17 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
             auto& clipper = clippers[i];
             if (clipper.solo->get())
             {
-                for (size_t i = 0; i < filterBuffers.size(); ++i)
-                {
                     for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
                     {
                         buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
                     }
-                }
             }
             else
             {
-                //auto param = clipper.mute;
-                //param->beginChangeGesture();
-                //param->setValueNotifyingHost(1.0f);
-                //param->endChangeGesture();
+               /* auto param = clipper.mute;
+                param->beginChangeGesture();
+                param->setValueNotifyingHost(1.0f);
+                param->endChangeGesture();*/
             }
         }
     }
@@ -483,13 +472,10 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
             auto& clipper = clippers[i];
             if (!clipper.mute->get())
             {
-                for (size_t i = 0; i < filterBuffers.size(); ++i)
-                {
                     for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
                     {
                         buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
                     }
-                }
             }
         }
     }
