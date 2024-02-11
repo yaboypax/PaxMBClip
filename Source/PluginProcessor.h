@@ -11,7 +11,6 @@
 #include <array>
 
 #include "DspFilters/Dsp.h"
-#define F_ORDER 12
 
 
 //====================================================================
@@ -94,6 +93,7 @@ public:
 
 private:
     //==============================================================================
+    static const int m_forder = 12;
     const int m_maxOversample = 32;
     const float m_sampleShift = 0.0;
 
@@ -110,9 +110,9 @@ private:
                  HP2;
 
     // Oversampling filters (butterworth)
-    using oversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <F_ORDER>, 2>;
+    using oversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
     oversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
-    int m_forder = F_ORDER;
+    
     
     void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
     const void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans);
