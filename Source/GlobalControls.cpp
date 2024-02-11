@@ -15,7 +15,7 @@ namespace
     constexpr int sliderX = 26;
     constexpr int sliderY = 53;
     constexpr int sliderWidth = 48;
-    constexpr int sliderHeight = 355;
+    //constexpr int sliderHeight = 355;
 
     constexpr int overX = 26;
     constexpr int overY = 22;
@@ -23,7 +23,7 @@ namespace
     constexpr int overH = 20;
 
     constexpr int xoverX = 16;
-    constexpr int xoverY = 405;
+    //constexpr int xoverY = 405;
     constexpr int xOverSize = 58;
 }
 
@@ -72,9 +72,11 @@ void GlobalControls::paint(juce::Graphics& g)
 
 void GlobalControls::resized()
 {
+    const int sliderHeight = getHeight() - 113;
     inGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
     outGainSlider.setBounds(inGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
 
+    const int xoverY = getHeight() - 63;
     lowMidXoverSlider.setBounds(xoverX, xoverY, xOverSize, xOverSize);
     midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xOverSize, xOverSize);
 

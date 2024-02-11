@@ -75,6 +75,7 @@ public:
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
     void setCrossoverFilters();
+
     void setBandFocus(BandFocus inFocus);
     BandFocus getBandFocus();
 

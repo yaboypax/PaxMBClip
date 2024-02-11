@@ -6,7 +6,7 @@
 
   TO DO:
   
-  - fix band solo/mute logic
+  - resizable display
   - add level meters 
   ? scroll wheel for clip controls
   ? add Overhead font and gater aesthetic
@@ -455,13 +455,6 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
                     {
                         buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
                     }
-            }
-            else
-            {
-               /* auto param = clipper.mute;
-                param->beginChangeGesture();
-                param->setValueNotifyingHost(1.0f);
-                param->endChangeGesture();*/
             }
         }
     }

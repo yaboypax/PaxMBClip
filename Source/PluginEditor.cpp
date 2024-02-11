@@ -14,6 +14,9 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     : AudioProcessorEditor(&p), audioProcessor(p)
 
 {
+    setResizable(true, true);
+    setResizeLimits(800, 500, 1600, 1000);
+
     controlBar.analyzerButton.onClick = [this]()
     {
         bool shouldBeOn = controlBar.analyzerButton.getToggleState();
@@ -34,7 +37,6 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     addAndMakeVisible(globalControls);
     addAndMakeVisible(bandControls);
 
-    setSize (800, 500);
     startTimerHz(40);
 }
 
@@ -55,11 +57,9 @@ void PaxMBClipAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
 
     controlBar.setBounds(bounds.removeFromTop(32));
-    analyzer.setBounds(0, 32, 500, 500 - 32);
-
-    
-    bandControls.setBounds(500, 32, 150, 500-32);
-    globalControls.setBounds(500 + 150, 32, 150, 500 - 32);
+    analyzer.setBounds(0, 32, getWidth()-300, getHeight() - 32);
+    bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
+    globalControls.setBounds(getWidth() - 150, 32, 150, getHeight() - 32);
 }
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()
