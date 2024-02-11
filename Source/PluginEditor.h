@@ -33,7 +33,7 @@ private:
     LookAndFeel lnf;
 
     
-    ControlBar controlBar;
+    ControlBar controlBar {audioProcessor};
     GlobalControls globalControls {audioProcessor.apvts};
     ClipperBandControls bandControls {audioProcessor};
     SpectrumAnalyzer analyzer {audioProcessor};

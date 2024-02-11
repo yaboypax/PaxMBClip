@@ -133,6 +133,7 @@ private:
 
     bool m_postClip = false;
     Clipper m_masterClip;
+    juce::AudioParameterBool* m_masterClipParam{ nullptr };
 
 
 

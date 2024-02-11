@@ -81,6 +81,8 @@ void PaxMBClipAudioProcessor::initializeParameters()
     midBandClip.solo = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Solo_Mid)));
     highBandClip.solo = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Solo_High)));
 
+    m_masterClipParam = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Master_Clip)));
+
 
 }
 
@@ -127,6 +129,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), gainLow, gainHigh, 0.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainLow, gainHigh, 0.0f));
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Oversample), params.at(Names::Oversample), 0, 5, 0));
+    layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Master_Clip), params.at(Names::Master_Clip), false));
 
     return layout;
 }
@@ -218,6 +221,8 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
         clipper.prepare(spec);
     }
 
+    m_masterClip.prepare(spec);
+
     LP1.prepare(spec);
     HP1.prepare(spec);
     LP2.prepare(spec);
@@ -284,8 +289,9 @@ void PaxMBClipAudioProcessor::updateState()
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
 
-    m_inputGain = *m_inputGainParam;
-    m_outputGain = *m_outputGainParam;
+    m_inputGain = m_inputGainParam->get();
+    m_outputGain = m_outputGainParam->get();
+    m_postClip = m_masterClipParam->get();
 
 }
 void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -375,7 +381,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 void PaxMBClipAudioProcessor::overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans)
 {
     for (int i = 0; i < oldBuffer->getNumSamples(); i++)
-    {
+    {       
         for (int j = 0; j < numchans; j++)
         {
             newBuffer->setSample(j, i * m_oversample, oldBuffer->getSample(j, i));

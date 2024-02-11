@@ -45,7 +45,8 @@ namespace Params
 
         Gain_In,
         Gain_Out,
-        Oversample
+        Oversample,
+        Master_Clip
     };
 
     inline const std::map<Names, juce::String>& GetParams()
@@ -81,7 +82,8 @@ namespace Params
 
             {Gain_In, "Gain In"},
             {Gain_Out, "Gain Out"},
-            {Oversample, "Oversample"}
+            {Oversample, "Oversample"},
+            {Master_Clip, "Master Clip"}
         };
 
         return params;
