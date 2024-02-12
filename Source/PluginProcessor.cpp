@@ -6,7 +6,6 @@
 
   TO DO:
   
-  - resizable display
   - add level meters 
   ? scroll wheel for clip controls
   ? add Overhead font and gater aesthetic

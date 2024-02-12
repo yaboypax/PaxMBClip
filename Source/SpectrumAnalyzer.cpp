@@ -114,6 +114,38 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     g.setColour(juce::Colour(188, 198, 206));
     g.drawVerticalLine(m_midHighX, top, bottom);
 
+    auto highlight = bounds;
+    g.setColour(juce::Colour(0x05FFFFFF));
+    switch (m_processor.getBandFocus())
+    {
+    case BandFocus::unfocused:
+        break;
+
+        case BandFocus::Low:
+            highlight.setX(0);
+            highlight.setRight(m_lowMidX);
+            g.fillRect(highlight);
+            break;
+
+        case BandFocus::Mid:
+            highlight.setX(m_lowMidX);
+            highlight.setRight(m_midHighX);
+            g.fillRect(highlight);
+            break;
+
+        case BandFocus::High:
+            highlight.setX(m_midHighX);
+            highlight.setRight(getWidth()-1);
+            g.fillRect(highlight);
+            break;
+
+
+    }
+        
+
+
+
+
     auto mapGainY = [bottom, top](float db) {
 
         return juce::jmap(db, -24.f, 24.f, float(bottom), float(top));
