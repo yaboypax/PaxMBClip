@@ -14,7 +14,7 @@
 
 SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_processor(p),
-    leftPathProducer(m_processor.leftChannelFifo),
+    leftPathProducer(m_processor.monoChannelFifo),
     rightPathProducer(m_processor.rightChannelFifo)
 {
     const auto& params = m_processor.getParameters();
@@ -38,7 +38,7 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
  
 
-    startTimerHz(60);
+    startTimerHz(20);
 }
 
 SpectrumAnalyzer::~SpectrumAnalyzer()
@@ -61,11 +61,11 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
 
     if (shouldShowFFTAnalysis)
     {
-        auto leftChannelFFTPath = leftPathProducer.getPath();
-        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
+        auto monoChannelFFTPath = leftPathProducer.getPath();
+        monoChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
 
         g.setColour(Colour(97u, 18u, 167u)); //purple-
-        g.strokePath(leftChannelFFTPath, PathStrokeType(1.f));
+        g.strokePath(monoChannelFFTPath, PathStrokeType(1.f));
 
         auto rightChannelFFTPath = rightPathProducer.getPath();
         rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));

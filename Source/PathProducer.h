@@ -18,25 +18,25 @@
 struct PathProducer
 {
     PathProducer(SingleChannelSampleFifo<PaxMBClipAudioProcessor::BlockType>& scsf) :
-        leftChannelFifo(&scsf)
+        monoChannelFifo(&scsf)
     {
-        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);
-        monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
+        monoChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);
+        monoBuffer.setSize(1, monoChannelFFTDataGenerator.getFFTSize());
     }
     void process(juce::Rectangle<float> fftBounds, double sampleRate);
-    juce::Path getPath() { return leftChannelFFTPath; }
+    juce::Path getPath() { return monoChannelFFTPath; }
 
     void updateNegativeInfinity(float nf) { negativeInfinity = nf; }
 private:
-    SingleChannelSampleFifo<PaxMBClipAudioProcessor::BlockType>* leftChannelFifo;
+    SingleChannelSampleFifo<PaxMBClipAudioProcessor::BlockType>* monoChannelFifo;
 
     juce::AudioBuffer<float> monoBuffer;
 
-    FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
+    FFTDataGenerator<std::vector<float>> monoChannelFFTDataGenerator;
 
     AnalyzerPathGenerator<juce::Path> pathProducer;
 
-    juce::Path leftChannelFFTPath;
+    juce::Path monoChannelFFTPath;
 
     float negativeInfinity{ -48.f };
 };

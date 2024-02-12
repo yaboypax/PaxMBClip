@@ -13,9 +13,9 @@
 void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
 {
     juce::AudioBuffer<float> tempIncomingBuffer;
-    while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
+    while (monoChannelFifo->getNumCompleteBuffersAvailable() > 0)
     {
-        if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
+        if (monoChannelFifo->getAudioBuffer(tempIncomingBuffer))
         {
             auto size = tempIncomingBuffer.getNumSamples();
             size = juce::jmin(size, monoBuffer.getNumSamples());
@@ -33,17 +33,17 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
                 tempIncomingBuffer.getReadPointer(0, 0),
                 size);
 
-            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, negativeInfinity);
+            monoChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, negativeInfinity);
         }
     }
 
-    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
+    const auto fftSize = monoChannelFFTDataGenerator.getFFTSize();
     const auto binWidth = sampleRate / double(fftSize);
 
-    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
+    while (monoChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
     {
         std::vector<float> fftData;
-        if (leftChannelFFTDataGenerator.getFFTData(fftData))
+        if (monoChannelFFTDataGenerator.getFFTData(fftData))
         {
             pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, negativeInfinity);
         }
@@ -51,6 +51,6 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
 
     while (pathProducer.getNumPathsAvailable() > 0)
     {
-        pathProducer.getPath(leftChannelFFTPath);
+        pathProducer.getPath(monoChannelFFTPath);
     }
 }

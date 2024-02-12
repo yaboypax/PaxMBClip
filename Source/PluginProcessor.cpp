@@ -241,7 +241,7 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
         buffer.setSize(spec.numChannels, samplesPerBlock);
     }
 
-    leftChannelFifo.prepare(samplesPerBlock);
+    monoChannelFifo.prepare(samplesPerBlock);
     rightChannelFifo.prepare(samplesPerBlock);
 
     m_resizedBuffer->setSize(2, samplesPerBlock * m_maxOversample, false, true, false);
@@ -303,7 +303,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     m_resizedBuffer->clear();
 
     updateState();
-    leftChannelFifo.update(buffer);
+    monoChannelFifo.update(buffer);
     rightChannelFifo.update(buffer);
 
 
