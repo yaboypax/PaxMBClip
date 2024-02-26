@@ -35,8 +35,12 @@ ControlBar::ControlBar(PaxMBClipAudioProcessor& inProcessor)
 void ControlBar::paint(juce::Graphics& g)
 {
     g.setColour(juce::Colours::white);
-    g.setFont(18.f);
-    g.drawText("Ya Boy Pax               CHOMP           Multiband Clipper", 100, 5, 500, 18, juce::Justification::centred, false);
+    g.setFont(Chomp::Overhead.withHeight(38.f));
+    g.drawText("Ya Boy Pax    CHOMP  Multiband Clipper", 50, 2, 500, 18, juce::Justification::centred, false);
+
+    //juce::DrawableImage icon = Chomp::icon;
+    //juce::Rectangle<float> iconBounds = { 183.f, 2.f, 100.f, 27.5f };
+    //icon.drawWithin(g, iconBounds, juce::Justification::centred, 1.f);
 }
 
 void ControlBar::resized()
