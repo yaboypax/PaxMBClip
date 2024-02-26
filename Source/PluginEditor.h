@@ -34,7 +34,7 @@ private:
 
     
     ControlBar controlBar {audioProcessor};
-    GlobalControls globalControls {audioProcessor.apvts};
+    GlobalControls globalControls {audioProcessor};
     ClipperBandControls bandControls {audioProcessor};
     SpectrumAnalyzer analyzer {audioProcessor};
 

@@ -13,6 +13,7 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel.h"
 #include "Params.h"
+#include "Utilities.h"
 
 class ControlBar : public juce::Component
 {
@@ -27,7 +28,10 @@ public:
     PowerButton globalBypassButton;
 private:
     PaxMBClipAudioProcessor* m_processor;
-    juce::TextButton masterClipButton;
+
+    juce::ComboBox oversamplingSelection;
+    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+    std::unique_ptr<ComboBoxAttachment> oversamplingAttachment;
 
     juce::DrawableImage icon = juce::DrawableImage(juce::ImageCache::getFromMemory(BinaryData::chomp_icon_png, BinaryData::chomp_icon_pngSize));
 };

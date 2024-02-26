@@ -11,6 +11,7 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "PluginProcessor.h"
 #include "Utilities.h"
 #include "LookAndFeel.h"
 #include "RotarySlider.h"
@@ -19,20 +20,22 @@
 
 struct GlobalControls : juce::Component
 {
-    GlobalControls(juce::AudioProcessorValueTreeState& apvts);
+    GlobalControls(PaxMBClipAudioProcessor& inProcessor);
     void paint(juce::Graphics& g) override;
     void resized() override;
 
 private:
+
+    PaxMBClipAudioProcessor* m_processor;
+
     RotarySlider lowMidXoverSlider, midHighXoverSlider;
     juce::Slider inGainSlider, outGainSlider;
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     std::unique_ptr<SliderAttachment> lowMidXoverSliderAttachment, midHighXoverSliderAttachment, inGainSliderAttachment, outGainSliderAttachment;
 
-    juce::ComboBox oversamplingSelection;
-    
-    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
-    std::unique_ptr<ComboBoxAttachment> oversamplingAttachment;
+
+
+    juce::TextButton masterClipButton;
 
 };

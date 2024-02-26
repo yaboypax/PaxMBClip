@@ -27,20 +27,19 @@ namespace
     constexpr int xOverSize = 58;
 }
 
-static juce::String getOversamplingPower(int ovr)
-{
-    return static_cast<juce::String>(pow(2, ovr)) + "x Oversampling";
-}
 
-GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
+
+GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
 {
+    m_processor = &inProcessor;
+
     using namespace Params;
     const auto& params = GetParams();
 
-    makeAttachment(inGainSliderAttachment, apvts, params, Names::Gain_In, inGainSlider);
-    makeAttachment(lowMidXoverSliderAttachment, apvts, params, Names::Low_Mid_Crossover_Freq, lowMidXoverSlider);
-    makeAttachment(midHighXoverSliderAttachment, apvts, params, Names::Mid_High_Crossover_Freq, midHighXoverSlider);
-    makeAttachment(outGainSliderAttachment, apvts, params, Names::Gain_Out, outGainSlider);
+    makeAttachment(inGainSliderAttachment, m_processor->apvts, params, Names::Gain_In, inGainSlider);
+    makeAttachment(lowMidXoverSliderAttachment, m_processor->apvts, params, Names::Low_Mid_Crossover_Freq, lowMidXoverSlider);
+    makeAttachment(midHighXoverSliderAttachment, m_processor->apvts, params, Names::Mid_High_Crossover_Freq, midHighXoverSlider);
+    makeAttachment(outGainSliderAttachment, m_processor->apvts, params, Names::Gain_Out, outGainSlider);
 
     inGainSlider.setSliderStyle(juce::Slider::LinearVertical);
     inGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
@@ -55,13 +54,19 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(midHighXoverSlider);
     addAndMakeVisible(outGainSlider);
 
-    for (int i = 0; i <= 5; ++i)
-    {
-        oversamplingSelection.addItem(getOversamplingPower(i), i + 1);
-    }
+    masterClipButton.setButtonText("Master Clip");
+    addAndMakeVisible(masterClipButton);
 
-    makeAttachment(oversamplingAttachment, apvts, params, Names::Oversample, oversamplingSelection);
-    addAndMakeVisible(oversamplingSelection);
+    masterClipButton.setClickingTogglesState(true);
+    masterClipButton.onClick = [this] {
+        auto param = m_processor->apvts.getParameter(Params::GetParams().at(Params::Names::Master_Clip));
+        param->beginChangeGesture();
+        param->setValueNotifyingHost(masterClipButton.getToggleState());
+        param->endChangeGesture();
+        };
+
+
+
 }
 
 void GlobalControls::paint(juce::Graphics& g)
@@ -80,5 +85,5 @@ void GlobalControls::resized()
     lowMidXoverSlider.setBounds(xoverX, xoverY, xOverSize, xOverSize);
     midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xOverSize, xOverSize);
 
-    oversamplingSelection.setBounds(overX, overY, overW, overH);
+    masterClipButton.setBounds(overX, overY, overW, overH);
 }

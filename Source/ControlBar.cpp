@@ -19,17 +19,16 @@ ControlBar::ControlBar(PaxMBClipAudioProcessor& inProcessor)
     globalBypassButton.setToggleState(false, juce::NotificationType::dontSendNotification);
     addAndMakeVisible(globalBypassButton);
 
-    masterClipButton.setButtonText("Master Clip");
-    addAndMakeVisible(masterClipButton);
 
-    masterClipButton.setClickingTogglesState(true);
-    masterClipButton.onClick = [this] {
-        auto param = m_processor->apvts.getParameter(Params::GetParams().at(Params::Names::Master_Clip));
-        param->beginChangeGesture();
-        param->setValueNotifyingHost(masterClipButton.getToggleState());
-        param->endChangeGesture();
-        };
-     
+    using namespace Params;
+    const auto& params = GetParams();
+    for (int i = 0; i <= 5; ++i)
+    {
+        oversamplingSelection.addItem(getOversamplingPower(i), i + 1);
+    }
+
+    makeAttachment(oversamplingAttachment, m_processor->apvts, params, Names::Oversample, oversamplingSelection);
+    addAndMakeVisible(oversamplingSelection);
 }
 
 void ControlBar::paint(juce::Graphics& g)
@@ -47,5 +46,5 @@ void ControlBar::resized()
     auto bounds = getLocalBounds();
     analyzerButton.setBounds(getX() + 4, getY() + 4, 50, getHeight() - 8);
     globalBypassButton.setBounds(getWidth() - 54, getY() + 4, 50, getHeight() - 8);
-    masterClipButton.setBounds(globalBypassButton.getX() - 150, 4, 100, getHeight() - 8);
+    oversamplingSelection.setBounds(globalBypassButton.getX() - 150, 4, 120, getHeight() - 8);
 }

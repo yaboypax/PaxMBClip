@@ -62,3 +62,8 @@ static inline float calcCutoff(float sampleRate)
 {
     return (sampleRate / 2) * 0.98;
 }
+
+static inline juce::String getOversamplingPower(int ovr)
+{
+    return static_cast<juce::String>(pow(2, ovr)) + "x Oversampling";
+}
