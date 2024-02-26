@@ -28,4 +28,6 @@ public:
 private:
     PaxMBClipAudioProcessor* m_processor;
     juce::TextButton masterClipButton;
+
+    juce::DrawableImage icon = juce::DrawableImage(juce::ImageCache::getFromMemory(BinaryData::chomp_icon_png, BinaryData::chomp_icon_pngSize));
 };

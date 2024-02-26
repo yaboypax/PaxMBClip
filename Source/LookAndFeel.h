@@ -15,8 +15,6 @@ namespace Chomp
 {
     static auto typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::Overhead_ttf, BinaryData::Overhead_ttfSize);
     static juce::Font Overhead = juce::Font(typeface);
-
-    static juce::DrawableImage icon = juce::DrawableImage(juce::ImageCache::getFromMemory(BinaryData::chomp_icon_png, BinaryData::chomp_icon_pngSize));
 };
 
 static void drawModuleBackground(juce::Graphics& g, juce::Rectangle<int> bounds)
