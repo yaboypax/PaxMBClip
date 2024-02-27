@@ -8,7 +8,6 @@
   
   - add level meters 
   ? scroll wheel for clip controls
-  ? add Overhead font and gater aesthetic
 
   - add support for waveform analyzer
     - switch analysis with current analyzer button in cb
