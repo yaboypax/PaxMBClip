@@ -39,7 +39,8 @@ private:
     LevelMeter m_inputMeter{ levelMeterInLAF };
     LevelMeter m_outputMeter{ levelMeterOutLAF };
 
-
+    using BtnAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
+    std::unique_ptr<BtnAttachment> masterClipAttachment;
     juce::TextButton masterClipButton;
 
 };

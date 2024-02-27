@@ -17,9 +17,9 @@ namespace
     constexpr int sliderWidth = 48;
 
     constexpr int clipX = 26;
-    constexpr int clipY = 22;
+    constexpr int clipY = 18;
     constexpr int clipW = 100;
-    constexpr int clipH = 20;
+    constexpr int clipH = 24;
 
     constexpr int meterX = 25;
     constexpr int meterY = 53;
@@ -59,15 +59,11 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
     addAndMakeVisible(outGainSlider);
 
     masterClipButton.setButtonText("Master Clip");
+    masterClipButton.setLookAndFeel(chompLAF);
     addAndMakeVisible(masterClipButton);
 
     masterClipButton.setClickingTogglesState(true);
-    masterClipButton.onClick = [this] {
-        auto param = m_processor->apvts.getParameter(Params::GetParams().at(Params::Names::Master_Clip));
-        param->beginChangeGesture();
-        param->setValueNotifyingHost(masterClipButton.getToggleState());
-        param->endChangeGesture();
-        };
+    makeAttachment(masterClipAttachment, m_processor->apvts, params, Names::Master_Clip, masterClipButton);
 }
 
 GlobalControls::~GlobalControls()

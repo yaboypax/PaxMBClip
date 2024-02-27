@@ -83,35 +83,22 @@ void ChompLookAndFeel::drawToggleButton(juce::Graphics& g,
 void ChompLookAndFeel::drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
 
-    auto cornerSize = 9.0f;
+    auto cornerSize = 2.0f;
     auto bounds = button.getLocalBounds();
-    g.setColour(juce::Colours::black);
-    g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
-    bounds.reduce(2, 2);
 
-    g.setColour(backgroundColour);
+    g.setColour(button.getToggleState() ? juce::Colour(0xFFFF817F) : juce::Colours::black);
     g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
 
 }
 
 void ChompLookAndFeel::drawButtonText(juce::Graphics& g, juce::TextButton& button, bool, bool)
 {
+    auto bounds = button.getLocalBounds();
+    bounds.setY(bounds.getY() - 4);
     juce::Font font = Chomp::Overhead;
-    g.setFont(font);
-    g.setColour(juce::Colours::black);
-
-    const int yIndent = juce::jmin(4, button.proportionOfHeight(2.0f));
-    const int cornerSize = juce::jmin(button.getHeight(), button.getWidth()) / 2;
-
-    const int fontHeight = juce::roundToInt(font.getHeight());
-    const int leftIndent = juce::jmin(fontHeight, cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
-    const int rightIndent = juce::jmin(fontHeight, cornerSize / (button.isConnectedOnRight() ? 4 : 2));
-    const int textWidth = button.getWidth() - leftIndent - rightIndent;
-
-    if (textWidth > 0)
-        g.drawFittedText(button.getButtonText(),
-            leftIndent, yIndent + 5, textWidth, button.getHeight() - yIndent * 2,
-            juce::Justification::centred, 2);
+    g.setFont(font.withHeight(32.f));
+    g.setColour(button.getToggleState() ? juce::Colours::black : juce::Colours::white);
+    g.drawFittedText(button.getButtonText(), bounds, juce::Justification::centred, 1);
 }
 
 void ChompLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
