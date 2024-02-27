@@ -35,6 +35,7 @@ public:
     void mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel) override;
 
     void createCrossoverSliders(const juce::Point<int> point);
+    void deleteCrossoverSliders();
 
     void toggleAnalysisEnablement(bool enabled)
     {
@@ -80,7 +81,8 @@ private:
     juce::AudioParameterFloat* m_midGainParam{ nullptr };
     juce::AudioParameterFloat* m_highGainParam{ nullptr };
 
-    std::vector<std::shared_ptr<juce::Slider>> m_crossoverSliders;
+    std::vector<std::shared_ptr<RotarySlider>> m_crossoverSliders;
+    std::atomic<bool> m_showCrossoverSliders;
 
 };
 

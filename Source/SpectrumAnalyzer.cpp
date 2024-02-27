@@ -198,7 +198,16 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
     }
     else if (e.mods.isRightButtonDown())
     {
-        createCrossoverSliders(e.getMouseDownPosition());
+        m_showCrossoverSliders = !m_showCrossoverSliders;
+
+        if (m_showCrossoverSliders)
+        {
+            createCrossoverSliders(e.getMouseDownPosition());
+        }
+        else
+        {
+            deleteCrossoverSliders();
+        }
     }
 }
 
@@ -229,26 +238,22 @@ void SpectrumAnalyzer::mouseUp(const juce::MouseEvent& e)
 {
     m_lowMidDragging = false;
     m_midHighDragging = false;
-    
-    lowCrossoverAttachment = nullptr;
-    highCrossoverAttachment = nullptr;
-    m_crossoverSliders.clear();
-
 }
 
 
 void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
 {
-    std::shared_ptr<juce::Slider> lowCrossover = std::make_shared<juce::Slider>();
-    std::shared_ptr<juce::Slider> highCrossover = std::make_shared<juce::Slider>();
+    std::shared_ptr<RotarySlider> lowCrossover = std::make_shared<RotarySlider>();
+    std::shared_ptr<RotarySlider> highCrossover = std::make_shared<RotarySlider>();
     
     using namespace Params;
     const auto& params = GetParams();
     makeAttachment(lowCrossoverAttachment, m_processor.apvts, params, Names::Low_Mid_Crossover_Freq, *lowCrossover);
     makeAttachment(highCrossoverAttachment, m_processor.apvts, params, Names::Mid_High_Crossover_Freq, *highCrossover);
 
-    lowCrossover->setBounds(point.getX(), point.getY(), 58, 58);
-    highCrossover->setBounds(lowCrossover->getRight() + 5, point.getY(), 58, 58);
+    auto size = 78;
+    lowCrossover->setBounds(point.getX(), point.getY(), size, size);
+    highCrossover->setBounds(lowCrossover->getRight() + 5, point.getY(), size, size);
 
     addAndMakeVisible(*lowCrossover);
     addAndMakeVisible(*highCrossover);
@@ -257,6 +262,13 @@ void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
     m_crossoverSliders.push_back(highCrossover);
 
     
+}
+
+void SpectrumAnalyzer::deleteCrossoverSliders()
+{
+    lowCrossoverAttachment = nullptr;
+    highCrossoverAttachment = nullptr;
+    m_crossoverSliders.clear();
 }
 
 void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
