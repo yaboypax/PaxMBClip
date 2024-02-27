@@ -246,8 +246,9 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     m_resizedBuffer->setSize(2, samplesPerBlock * m_maxOversample, false, true, false);
     m_resizedBuffer->clear();
 
-    levelMeterSourceIn.resize(getTotalNumOutputChannels(), sampleRate * 0.1 / samplesPerBlock);
-    levelMeterSourceOut.resize(getTotalNumOutputChannels(), sampleRate * 0.1 / samplesPerBlock);
+    levelMeterSourceIn.resize(2, ceil((8192.0 / samplesPerBlock) * (sampleRate / 48000)));
+    levelMeterSourceOut.resize(2, ceil((8192.0 / samplesPerBlock) * (sampleRate / 48000)));
+
 }
 
 void PaxMBClipAudioProcessor::releaseResources()

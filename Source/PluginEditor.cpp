@@ -35,8 +35,6 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
 
 PaxMBClipAudioProcessorEditor::~PaxMBClipAudioProcessorEditor()
 {
-    m_inputMeter.setLookAndFeel(nullptr);
-    m_outputMeter.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -55,8 +53,9 @@ void PaxMBClipAudioProcessorEditor::resized()
     bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
     globalControls.setBounds(getWidth() - 150, 32, 150, getHeight() - 32);
 
-    m_inputMeter.setBounds(0, 32, 20, getHeight() - 32);
-    m_outputMeter.setBounds(25, 32, 20, getHeight() - 32);
+    
+    m_inputMeter.setBounds(0, 32, 50, getHeight() - 32);
+    m_outputMeter.setBounds(55, 32, 50, getHeight() - 32);
 }
 void PaxMBClipAudioProcessorEditor::setupLevelMeters()
 {
@@ -71,9 +70,6 @@ void PaxMBClipAudioProcessorEditor::setupLevelMeters()
     levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::white);
     levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
     levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour, juce::Colours::white);
-
-    m_inputMeter.setLookAndFeel(levelMeterInLAF);
-    m_outputMeter.setLookAndFeel(levelMeterOutLAF);
 
     m_inputMeter.setMeterSource(&m_processor.getMeterSourceIn());
     m_outputMeter.setMeterSource(&m_processor.getMeterSourceOut());

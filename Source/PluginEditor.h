@@ -42,11 +42,12 @@ private:
 
     std::array<juce::AudioParameterBool*, 3> getBypassParams();
 
-    LevelMeter m_inputMeter;
-    LevelMeter m_outputMeter;
-
     LevelMeterLookAndFeel* levelMeterInLAF {new LevelMeterLookAndFeelVertical()};
     LevelMeterLookAndFeel* levelMeterOutLAF{ new LevelMeterLookAndFeelVertical() };
+
+    LevelMeter m_inputMeter{ levelMeterInLAF };
+    LevelMeter m_outputMeter{ levelMeterOutLAF };
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessorEditor)
 };
