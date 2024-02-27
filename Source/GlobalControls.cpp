@@ -65,9 +65,31 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
         param->endChangeGesture();
         };
 
-
+    setupLevelMeters();
 
 }
+
+void GlobalControls::setupLevelMeters()
+{
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterGradientLowColour, juce::Colours::green);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterMaxOverColour, juce::Colours::red);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::transparentWhite);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour, juce::Colours::transparentWhite);
+
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterGradientLowColour, juce::Colours::green);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterMaxOverColour, juce::Colours::red);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::transparentWhite);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour, juce::Colours::transparentWhite);
+
+    m_inputMeter.setMeterSource(&m_processor->getMeterSourceIn());
+    m_outputMeter.setMeterSource(&m_processor->getMeterSourceOut());
+
+    addAndMakeVisible(m_inputMeter);
+    addAndMakeVisible(m_outputMeter);
+}
+
 
 void GlobalControls::paint(juce::Graphics& g)
 {
@@ -86,4 +108,11 @@ void GlobalControls::resized()
     midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xOverSize, xOverSize);
 
     masterClipButton.setBounds(overX, overY, overW, overH);
+
+    auto x = JUCE_LIVE_CONSTANT(25);
+    auto y = JUCE_LIVE_CONSTANT(53);
+    auto h = JUCE_LIVE_CONSTANT(115);
+
+    m_inputMeter.setBounds(x, y, 50, getHeight() - h);
+    m_outputMeter.setBounds(x + JUCE_LIVE_CONSTANT(55), y, 50, getHeight() - h);
 }

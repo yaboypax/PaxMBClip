@@ -29,8 +29,6 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     addAndMakeVisible(globalControls);
     addAndMakeVisible(bandControls);
 
-    setupLevelMeters();
-
 }
 
 PaxMBClipAudioProcessorEditor::~PaxMBClipAudioProcessorEditor()
@@ -52,32 +50,7 @@ void PaxMBClipAudioProcessorEditor::resized()
     analyzer.setBounds(0, 32, getWidth()-300, getHeight() - 32);
     bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
     globalControls.setBounds(getWidth() - 150, 32, 150, getHeight() - 32);
-
-    
-    m_inputMeter.setBounds(0, 32, 50, getHeight() - 32);
-    m_outputMeter.setBounds(55, 32, 50, getHeight() - 32);
 }
-void PaxMBClipAudioProcessorEditor::setupLevelMeters()
-{
-    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterGradientLowColour, juce::Colours::green);
-    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterMaxOverColour, juce::Colours::red);
-    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::white);
-    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
-    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour, juce::Colours::white);
-
-    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterGradientLowColour, juce::Colours::green);
-    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterMaxOverColour, juce::Colours::red);
-    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::white);
-    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
-    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour, juce::Colours::white);
-
-    m_inputMeter.setMeterSource(&m_processor.getMeterSourceIn());
-    m_outputMeter.setMeterSource(&m_processor.getMeterSourceOut());
-
-    addAndMakeVisible(m_inputMeter);
-    addAndMakeVisible(m_outputMeter);
-}
-
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()
 {

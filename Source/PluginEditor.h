@@ -26,7 +26,6 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void setupLevelMeters();
 
 private:
     PaxMBClipAudioProcessor& m_processor;
@@ -41,12 +40,6 @@ private:
     void updateGlobalBypassButton();
 
     std::array<juce::AudioParameterBool*, 3> getBypassParams();
-
-    LevelMeterLookAndFeel* levelMeterInLAF {new LevelMeterLookAndFeelVertical()};
-    LevelMeterLookAndFeel* levelMeterOutLAF{ new LevelMeterLookAndFeelVertical() };
-
-    LevelMeter m_inputMeter{ levelMeterInLAF };
-    LevelMeter m_outputMeter{ levelMeterOutLAF };
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessorEditor)

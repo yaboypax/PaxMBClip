@@ -24,6 +24,8 @@ struct GlobalControls : juce::Component
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    void setupLevelMeters();
+
 private:
 
     PaxMBClipAudioProcessor* m_processor;
@@ -34,6 +36,11 @@ private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     std::unique_ptr<SliderAttachment> lowMidXoverSliderAttachment, midHighXoverSliderAttachment, inGainSliderAttachment, outGainSliderAttachment;
 
+    LevelMeterLookAndFeel* levelMeterInLAF{ new LevelMeterLookAndFeelVertical() };
+    LevelMeterLookAndFeel* levelMeterOutLAF{ new LevelMeterLookAndFeelVertical() };
+
+    LevelMeter m_inputMeter{ levelMeterInLAF };
+    LevelMeter m_outputMeter{ levelMeterOutLAF };
 
 
     juce::TextButton masterClipButton;
