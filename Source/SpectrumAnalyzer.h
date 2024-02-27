@@ -11,6 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "PathProducer.h"
+#include "RotarySlider.h"
 
 class SpectrumAnalyzer : public juce::Component,
     public juce::AudioProcessorParameter::Listener,
@@ -33,6 +34,7 @@ public:
     void mouseUp(const juce::MouseEvent& e) override;
     void mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel) override;
 
+    void createCrossoverSliders(const juce::Point<int> point);
 
     void toggleAnalysisEnablement(bool enabled)
     {
@@ -59,10 +61,13 @@ private:
     PathProducer leftPathProducer, rightPathProducer;
 
     void drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds);
-    juce::AudioParameterFloat* m_lowMidXoverParam{ nullptr };
-    juce::AudioParameterFloat* m_midHighXoverParam{ nullptr };
+    juce::AudioParameterFloat* m_lowCrossoverParam{ nullptr };
+    juce::AudioParameterFloat* m_highCrossoverParam{ nullptr };
     
     int m_lowMidX, m_midHighX;
+
+    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    std::unique_ptr<SliderAttachment> lowCrossoverAttachment, highCrossoverAttachment;
 
     bool m_lowMidDragging = false;
     bool m_midHighDragging = false;
@@ -74,6 +79,8 @@ private:
     juce::AudioParameterFloat* m_lowGainParam{ nullptr };
     juce::AudioParameterFloat* m_midGainParam{ nullptr };
     juce::AudioParameterFloat* m_highGainParam{ nullptr };
+
+    std::vector<std::shared_ptr<juce::Slider>> m_crossoverSliders;
 
 };
 

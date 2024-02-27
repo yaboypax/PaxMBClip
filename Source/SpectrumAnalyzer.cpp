@@ -26,8 +26,8 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     using namespace Params;
     const auto& paramNames = GetParams();
 
-    m_lowMidXoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Mid_Crossover_Freq)));
-    m_midHighXoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_High_Crossover_Freq)));
+    m_lowCrossoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Mid_Crossover_Freq)));
+    m_highCrossoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_High_Crossover_Freq)));
 
     m_lowClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Clip)));
     m_midClipParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Clip)));
@@ -106,11 +106,11 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
         return (left + width * normX);
     };
 
-    m_lowMidX = mapX(m_lowMidXoverParam->get());
+    m_lowMidX = mapX(m_lowCrossoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
     g.drawVerticalLine(m_lowMidX, top, bottom);
 
-    m_midHighX = mapX(m_midHighXoverParam->get());
+    m_midHighX = mapX(m_highCrossoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
     g.drawVerticalLine(m_midHighX, top, bottom);
 
@@ -170,28 +170,35 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
 
 void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
 {
-    auto x = e.getMouseDownX();
+    if (e.mods.isLeftButtonDown())
+    {
+        auto x = e.getMouseDownX();
 
-    if (x < m_lowMidX - 5)
-    {
-        m_processor.setBandFocus(BandFocus::Low);
-    }
-    else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
-    {
-        m_processor.setBandFocus(BandFocus::Mid);
-    }
-    else if (x > m_midHighX + 5)
-    {
-        m_processor.setBandFocus(BandFocus::High);
-    }
+        if (x < m_lowMidX - 5)
+        {
+            m_processor.setBandFocus(BandFocus::Low);
+        }
+        else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
+        {
+            m_processor.setBandFocus(BandFocus::Mid);
+        }
+        else if (x > m_midHighX + 5)
+        {
+            m_processor.setBandFocus(BandFocus::High);
+        }
 
-    if (x > m_lowMidX - 5 && x < m_lowMidX + 5)
-    {
-        m_lowMidDragging = true;
+        if (x > m_lowMidX - 5 && x < m_lowMidX + 5)
+        {
+            m_lowMidDragging = true;
+        }
+        else if (x > m_midHighX - 5 && x < m_midHighX + 5)
+        {
+            m_midHighDragging = true;
+        }
     }
-    else if (x > m_midHighX - 5 && x < m_midHighX + 5)
+    else if (e.mods.isRightButtonDown())
     {
-        m_midHighDragging = true;
+        createCrossoverSliders(e.getMouseDownPosition());
     }
 }
 
@@ -202,17 +209,17 @@ void SpectrumAnalyzer::mouseDrag(const juce::MouseEvent& e)
 
     if (m_lowMidDragging == true)
     {
-        m_lowMidXoverParam->beginChangeGesture();
-        m_lowMidXoverParam->setValueNotifyingHost(frequency);
-        m_lowMidXoverParam->endChangeGesture();
+        m_lowCrossoverParam->beginChangeGesture();
+        m_lowCrossoverParam->setValueNotifyingHost(frequency);
+        m_lowCrossoverParam->endChangeGesture();
         repaint();
     }
 
     if (m_midHighDragging == true)
     {
-        m_midHighXoverParam->beginChangeGesture();
-        m_midHighXoverParam->setValueNotifyingHost(frequency);
-        m_midHighXoverParam->endChangeGesture();
+        m_highCrossoverParam->beginChangeGesture();
+        m_highCrossoverParam->setValueNotifyingHost(frequency);
+        m_highCrossoverParam->endChangeGesture();
         repaint();
     }
 }
@@ -222,12 +229,41 @@ void SpectrumAnalyzer::mouseUp(const juce::MouseEvent& e)
 {
     m_lowMidDragging = false;
     m_midHighDragging = false;
+    
+    lowCrossoverAttachment = nullptr;
+    highCrossoverAttachment = nullptr;
+    m_crossoverSliders.clear();
+
+}
+
+
+void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
+{
+    std::shared_ptr<juce::Slider> lowCrossover = std::make_shared<juce::Slider>();
+    std::shared_ptr<juce::Slider> highCrossover = std::make_shared<juce::Slider>();
+    
+    using namespace Params;
+    const auto& params = GetParams();
+    makeAttachment(lowCrossoverAttachment, m_processor.apvts, params, Names::Low_Mid_Crossover_Freq, *lowCrossover);
+    makeAttachment(highCrossoverAttachment, m_processor.apvts, params, Names::Mid_High_Crossover_Freq, *highCrossover);
+
+    lowCrossover->setBounds(point.getX(), point.getY(), 58, 58);
+    highCrossover->setBounds(lowCrossover->getRight() + 5, point.getY(), 58, 58);
+
+    addAndMakeVisible(*lowCrossover);
+    addAndMakeVisible(*highCrossover);
+
+    m_crossoverSliders.push_back(lowCrossover);
+    m_crossoverSliders.push_back(highCrossover);
+
+    
 }
 
 void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
 {
 
 }
+
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()
 {
