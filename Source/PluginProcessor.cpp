@@ -6,7 +6,6 @@
 
   TO DO:
   
-  - add level meters 
   ? scroll wheel for clip controls
 
   - add support for waveform analyzer

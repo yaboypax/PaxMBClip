@@ -24,7 +24,12 @@ namespace
 
     constexpr int xoverX = 16;
     //constexpr int xoverY = 405;
-    constexpr int xOverSize = 58;
+    constexpr int xoverSize = 58;
+
+    constexpr int meterX = 25;
+    constexpr int meterY = 53;
+    constexpr int meterH = 115;
+
 }
 
 
@@ -37,8 +42,6 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
     const auto& params = GetParams();
 
     makeAttachment(inGainSliderAttachment, m_processor->apvts, params, Names::Gain_In, inGainSlider);
-    makeAttachment(lowMidXoverSliderAttachment, m_processor->apvts, params, Names::Low_Mid_Crossover_Freq, lowMidXoverSlider);
-    makeAttachment(midHighXoverSliderAttachment, m_processor->apvts, params, Names::Mid_High_Crossover_Freq, midHighXoverSlider);
     makeAttachment(outGainSliderAttachment, m_processor->apvts, params, Names::Gain_Out, outGainSlider);
 
     inGainSlider.setSliderStyle(juce::Slider::LinearVertical);
@@ -50,8 +53,6 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
     outGainSlider.setRange(-24.0, 24.0, 0.1);
 
     addAndMakeVisible(inGainSlider);
-    addAndMakeVisible(lowMidXoverSlider);
-    addAndMakeVisible(midHighXoverSlider);
     addAndMakeVisible(outGainSlider);
 
     masterClipButton.setButtonText("Master Clip");
@@ -104,15 +105,11 @@ void GlobalControls::resized()
     outGainSlider.setBounds(inGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
 
     const int xoverY = getHeight() - 63;
-    lowMidXoverSlider.setBounds(xoverX, xoverY, xOverSize, xOverSize);
-    midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xOverSize, xOverSize);
+    //lowMidXoverSlider.setBounds(xoverX, xoverY, xoverSize, xoverSize);
+    //midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xoverSize, xoverSize);
 
     masterClipButton.setBounds(overX, overY, overW, overH);
-
-    auto x = JUCE_LIVE_CONSTANT(25);
-    auto y = JUCE_LIVE_CONSTANT(53);
-    auto h = JUCE_LIVE_CONSTANT(115);
-
-    m_inputMeter.setBounds(x, y, 50, getHeight() - h);
-    m_outputMeter.setBounds(x + JUCE_LIVE_CONSTANT(55), y, 50, getHeight() - h);
+        
+    m_inputMeter.setBounds(meterX, meterY, 50, getHeight() - meterH);
+    m_outputMeter.setBounds(meterX + 53, meterY, 50, getHeight() - meterH);
 }

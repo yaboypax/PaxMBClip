@@ -14,7 +14,6 @@
 #include "PluginProcessor.h"
 #include "Utilities.h"
 #include "LookAndFeel.h"
-#include "RotarySlider.h"
 #include "Params.h"
 
 
@@ -29,12 +28,10 @@ struct GlobalControls : juce::Component
 private:
 
     PaxMBClipAudioProcessor* m_processor;
-
-    RotarySlider lowMidXoverSlider, midHighXoverSlider;
     juce::Slider inGainSlider, outGainSlider;
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-    std::unique_ptr<SliderAttachment> lowMidXoverSliderAttachment, midHighXoverSliderAttachment, inGainSliderAttachment, outGainSliderAttachment;
+    std::unique_ptr<SliderAttachment> inGainSliderAttachment, outGainSliderAttachment;
 
     LevelMeterLookAndFeel* levelMeterInLAF{ new LevelMeterLookAndFeelVertical() };
     LevelMeterLookAndFeel* levelMeterOutLAF{ new LevelMeterLookAndFeelVertical() };
