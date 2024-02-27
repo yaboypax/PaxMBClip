@@ -240,6 +240,82 @@ void SpectrumAnalyzer::mouseUp(const juce::MouseEvent& e)
     m_midHighDragging = false;
 }
 
+void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
+{
+    const float scrollSpeed = 50.0f;
+    juce::AudioParameterFloat* param{ nullptr };
+    bool isCmdDown = event.mods.isCommandDown();
+
+    isCmdDown ? scrollGain(wheel.deltaY, scrollSpeed, nullptr) : scrollClip(wheel.deltaY, scrollSpeed, nullptr);
+}
+
+void SpectrumAnalyzer::scrollClip(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param)
+{
+    switch (m_processor.getBandFocus())
+    {
+    case BandFocus::unfocused:
+        break;
+
+    case BandFocus::Low:
+        param = m_lowClipParam;
+        break;
+
+    case BandFocus::Mid:
+        param = m_midClipParam;
+        break;
+
+    case BandFocus::High:
+        param = m_highClipParam;
+        break;
+    }
+
+    if (param)
+    {
+        int scrollPosition = juce::jmap(param->get(), -48.f, 0.f, -(float)getHeight(), 0.f);
+        scrollPosition += static_cast<int>(deltaY * scrollSpeed);
+
+        float newValue = juce::jmap((float)scrollPosition, -(float)getHeight(), 0.f, 0.f, 1.f);
+
+        param->beginChangeGesture();
+        param->setValueNotifyingHost(newValue);
+        param->endChangeGesture();
+    }
+}
+
+void SpectrumAnalyzer::scrollGain(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param)
+{
+    switch (m_processor.getBandFocus())
+    {
+    case BandFocus::unfocused:
+        break;
+
+    case BandFocus::Low:
+        param = m_lowGainParam;
+        break;
+
+    case BandFocus::Mid:
+        param = m_midGainParam;
+        break;
+
+    case BandFocus::High:
+        param = m_highGainParam;
+        break;
+    }
+
+    if (param)
+    {
+        int scrollPosition = juce::jmap(param->get(), -24.f, 24.f, -(float)getHeight(), 0.f);
+        scrollPosition += static_cast<int>(deltaY * scrollSpeed);
+
+        float newValue = juce::jmap((float)scrollPosition, -(float)getHeight(), 0.f, 0.f, 1.f);
+
+        param->beginChangeGesture();
+        param->setValueNotifyingHost(newValue);
+        param->endChangeGesture();
+    }
+}
+
+
 
 void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
 {
@@ -271,10 +347,7 @@ void SpectrumAnalyzer::deleteCrossoverSliders()
     m_crossoverSliders.clear();
 }
 
-void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
-{
 
-}
 
 
 std::vector<float> SpectrumAnalyzer::getFrequencies()

@@ -34,6 +34,9 @@ public:
     void mouseUp(const juce::MouseEvent& e) override;
     void mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel) override;
 
+    void scrollClip(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
+    void scrollGain(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
+
     void createCrossoverSliders(const juce::Point<int> point);
     void deleteCrossoverSliders();
 
