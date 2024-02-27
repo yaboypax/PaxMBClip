@@ -29,7 +29,7 @@ public:
 
 private:
     PaxMBClipAudioProcessor& m_processor;
-    LookAndFeel lnf;
+    juce::SharedResourcePointer<ChompLookAndFeel> chompLAF;
 
     ControlBar controlBar {m_processor};
     GlobalControls globalControls {m_processor};

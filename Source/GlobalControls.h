@@ -20,13 +20,13 @@
 struct GlobalControls : juce::Component
 {
     GlobalControls(PaxMBClipAudioProcessor& inProcessor);
+    ~GlobalControls();
     void paint(juce::Graphics& g) override;
     void resized() override;
 
     void setupLevelMeters();
 
 private:
-
     PaxMBClipAudioProcessor* m_processor;
     juce::Slider inGainSlider, outGainSlider;
 

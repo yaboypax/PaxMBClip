@@ -21,8 +21,8 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     };
 
 
-    controlBar.setLookAndFeel(&lnf);
-    bandControls.setLookAndFeel(&lnf);
+    controlBar.setLookAndFeel(chompLAF);
+    bandControls.setLookAndFeel(chompLAF);
 
     addAndMakeVisible(controlBar);
     addAndMakeVisible(analyzer);

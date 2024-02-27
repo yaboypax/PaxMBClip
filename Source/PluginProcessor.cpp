@@ -5,12 +5,12 @@
   Chomp - Multiband Clipper VST
 
   TO DO:
-  
-  ? scroll wheel for clip controls
-
+  - top bar settings window
+  - preset menu
   - add support for waveform analyzer
     - switch analysis with current analyzer button in cb
     ? possible different display without bands
+  ? maybe smooth analysis splines (quinticTo() or cubicTo()  
 
   - design release GUI
   =============================================================================

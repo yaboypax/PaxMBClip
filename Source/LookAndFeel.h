@@ -31,7 +31,7 @@ static void drawModuleBackground(juce::Graphics& g, juce::Rectangle<int> bounds)
     g.drawRect(localBounds);
 }
 
-struct LookAndFeel : juce::LookAndFeel_V4
+struct ChompLookAndFeel : juce::LookAndFeel_V4
 {
     //void drawRotarySlider(juce::Graphics&,
     //    int x, int y, int width, int height,
@@ -44,6 +44,17 @@ struct LookAndFeel : juce::LookAndFeel_V4
         juce::ToggleButton& toggleButton,
         bool shouldDrawButtonAsHighlighted,
         bool shouldDrawButtonAsDown) override;
+
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
+    void drawButtonText(juce::Graphics& g, juce::TextButton& button, bool, bool) override;
+
+    void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
+        const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider) override;
+    void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
+        float sliderPos,
+        float minSliderPos,
+        float maxSliderPos,
+        const juce::Slider::SliderStyle style, juce::Slider& slider) override;
 
 };
 
@@ -72,5 +83,4 @@ struct AnalyzerButton : juce::ToggleButton
 
     juce::Path randomPath;
 };
-
 

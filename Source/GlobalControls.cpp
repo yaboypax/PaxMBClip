@@ -44,13 +44,16 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
     makeAttachment(inGainSliderAttachment, m_processor->apvts, params, Names::Gain_In, inGainSlider);
     makeAttachment(outGainSliderAttachment, m_processor->apvts, params, Names::Gain_Out, outGainSlider);
 
+    auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
     inGainSlider.setSliderStyle(juce::Slider::LinearVertical);
     inGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
     inGainSlider.setRange(-24.0, 24.0, 0.1);
+    inGainSlider.setLookAndFeel(chompLAF);
 
     outGainSlider.setSliderStyle(juce::Slider::LinearVertical);
     outGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
     outGainSlider.setRange(-24.0, 24.0, 0.1);
+    outGainSlider.setLookAndFeel(chompLAF);
 
     addAndMakeVisible(inGainSlider);
     addAndMakeVisible(outGainSlider);
@@ -65,6 +68,12 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
         param->setValueNotifyingHost(masterClipButton.getToggleState());
         param->endChangeGesture();
         };
+}
+
+GlobalControls::~GlobalControls()
+{
+    inGainSlider.setLookAndFeel(nullptr);
+    outGainSlider.setLookAndFeel(nullptr);
 }
 
 void GlobalControls::setupLevelMeters()
