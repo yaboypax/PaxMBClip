@@ -15,20 +15,19 @@ namespace
     constexpr int sliderX = 26;
     constexpr int sliderY = 53;
     constexpr int sliderWidth = 48;
-    //constexpr int sliderHeight = 355;
 
-    constexpr int overX = 26;
-    constexpr int overY = 22;
-    constexpr int overW = 100;
-    constexpr int overH = 20;
-
-    constexpr int xoverX = 16;
-    //constexpr int xoverY = 405;
-    constexpr int xoverSize = 58;
+    constexpr int clipX = 26;
+    constexpr int clipY = 22;
+    constexpr int clipW = 100;
+    constexpr int clipH = 20;
 
     constexpr int meterX = 25;
     constexpr int meterY = 53;
     constexpr int meterH = 115;
+
+    constexpr int txMargin = 6;
+    constexpr int tyMargin = 0;
+    constexpr int textSize = 40;
 
 }
 
@@ -37,6 +36,7 @@ namespace
 GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
 {
     m_processor = &inProcessor;
+    setupLevelMeters();
 
     using namespace Params;
     const auto& params = GetParams();
@@ -65,9 +65,6 @@ GlobalControls::GlobalControls(PaxMBClipAudioProcessor& inProcessor)
         param->setValueNotifyingHost(masterClipButton.getToggleState());
         param->endChangeGesture();
         };
-
-    setupLevelMeters();
-
 }
 
 void GlobalControls::setupLevelMeters()
@@ -96,20 +93,23 @@ void GlobalControls::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
     drawModuleBackground(g, bounds);
+    
+    g.setColour(juce::Colours::white);
+    g.setFont(Chomp::Overhead.withHeight(42.f));
+
+    g.drawText("IN", inGainSlider.getX() + txMargin, inGainSlider.getBottom() + tyMargin, textSize, textSize, juce::Justification::centred);
+    g.drawText("OUT", outGainSlider.getX() + txMargin, outGainSlider.getBottom() + tyMargin, textSize, textSize, juce::Justification::centred);
 }
 
 void GlobalControls::resized()
 {
+    m_inputMeter.setBounds(meterX, meterY, 50, getHeight() - meterH);
+    m_outputMeter.setBounds(meterX + 53, meterY, 50, getHeight() - meterH);
+
     const int sliderHeight = getHeight() - 113;
     inGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
     outGainSlider.setBounds(inGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
 
-    const int xoverY = getHeight() - 63;
-    //lowMidXoverSlider.setBounds(xoverX, xoverY, xoverSize, xoverSize);
-    //midHighXoverSlider.setBounds(lowMidXoverSlider.getRight() + 5, xoverY, xoverSize, xoverSize);
-
-    masterClipButton.setBounds(overX, overY, overW, overH);
-        
-    m_inputMeter.setBounds(meterX, meterY, 50, getHeight() - meterH);
-    m_outputMeter.setBounds(meterX + 53, meterY, 50, getHeight() - meterH);
+    masterClipButton.setBounds(clipX, clipY, clipW, clipH);
+       
 }
