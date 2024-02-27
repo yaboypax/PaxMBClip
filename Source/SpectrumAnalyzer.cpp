@@ -115,7 +115,7 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     g.drawVerticalLine(m_midHighX, top, bottom);
 
     auto highlight = bounds;
-    g.setColour(juce::Colour(0x05FFFFFF));
+    g.setColour(juce::Colour(0x10FFFFFF));
     switch (m_processor.getBandFocus())
     {
     case BandFocus::unfocused:
