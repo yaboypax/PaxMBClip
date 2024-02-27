@@ -29,21 +29,21 @@ public:
     void setupLevelMeters();
 
 private:
-    PaxMBClipAudioProcessor& audioProcessor;
+    PaxMBClipAudioProcessor& m_processor;
     LookAndFeel lnf;
 
-    ControlBar controlBar {audioProcessor};
-    GlobalControls globalControls {audioProcessor};
-    ClipperBandControls bandControls {audioProcessor};
-    SpectrumAnalyzer analyzer {audioProcessor};
+    ControlBar controlBar {m_processor};
+    GlobalControls globalControls {m_processor};
+    ClipperBandControls bandControls {m_processor};
+    SpectrumAnalyzer analyzer {m_processor};
 
     void toggleGlobalBypassState();
     void updateGlobalBypassButton();
 
     std::array<juce::AudioParameterBool*, 3> getBypassParams();
 
-    LevelMeter inputMeter;
-    LevelMeter outputMeter;
+    LevelMeter m_inputMeter;
+    LevelMeter m_outputMeter;
 
     LevelMeterLookAndFeel* levelMeterInLAF {new LevelMeterLookAndFeelVertical()};
     LevelMeterLookAndFeel* levelMeterOutLAF{ new LevelMeterLookAndFeelVertical() };
