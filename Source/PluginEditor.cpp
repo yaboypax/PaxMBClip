@@ -37,12 +37,33 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     addAndMakeVisible(globalControls);
     addAndMakeVisible(bandControls);
 
-    startTimerHz(40);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterGradientLowColour, juce::Colours::green);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterMaxOverColour, juce::Colours::red);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::white);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
+    levelMeterInLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour,juce::Colours::white);
+
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterGradientLowColour, juce::Colours::green);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmMeterMaxOverColour, juce::Colours::red);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmBackgroundColour, juce::Colours::white);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmTicksColour, juce::Colours::transparentBlack);
+    levelMeterOutLAF->setMeterColour(LevelMeterLookAndFeel::lmOutlineColour, juce::Colours::white);
+
+    inputMeter.setLookAndFeel(levelMeterInLAF);
+    outputMeter.setLookAndFeel(levelMeterOutLAF);
+
+    inputMeter.setMeterSource(&p.getMeterSourceIn());
+    outputMeter.setMeterSource(&p.getMeterSourceOut());
+
+    addAndMakeVisible(inputMeter);
+    addAndMakeVisible(outputMeter);
+
 }
 
 PaxMBClipAudioProcessorEditor::~PaxMBClipAudioProcessorEditor()
 {
-    stopTimer();
+    inputMeter.setLookAndFeel(nullptr);
+    outputMeter.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -50,6 +71,7 @@ void PaxMBClipAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(juce::Colours::black);
+    updateGlobalBypassButton();
 }
 
 void PaxMBClipAudioProcessorEditor::resized()
@@ -60,7 +82,15 @@ void PaxMBClipAudioProcessorEditor::resized()
     analyzer.setBounds(0, 32, getWidth()-300, getHeight() - 32);
     bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
     globalControls.setBounds(getWidth() - 150, 32, 150, getHeight() - 32);
+
+    inputMeter.setBounds(0, 32, 20, getHeight() - 32);
+    outputMeter.setBounds(25, 32, 20, getHeight() - 32);
 }
+void PaxMBClipAudioProcessorEditor::setupLevelMeters()
+{
+
+}
+
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()
 {
@@ -98,11 +128,6 @@ std::array<juce::AudioParameterBool*, 3> PaxMBClipAudioProcessorEditor::getBypas
         midBypassParam,
         highBypassParam
     };
-}
-
-void PaxMBClipAudioProcessorEditor::timerCallback()
-{
-    updateGlobalBypassButton();
 }
 
 void PaxMBClipAudioProcessorEditor::updateGlobalBypassButton()

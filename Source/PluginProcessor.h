@@ -92,6 +92,11 @@ public:
     SingleChannelSampleFifo<BlockType> monoChannelFifo{ Channel::Left };
     SingleChannelSampleFifo<BlockType> rightChannelFifo{ Channel::Right };
 
+    LevelMeterSource levelMeterSourceIn;
+    LevelMeterSource levelMeterSourceOut;
+    LevelMeterSource& getMeterSourceIn() { return levelMeterSourceIn; }
+    LevelMeterSource& getMeterSourceOut() { return levelMeterSourceOut; }
+
 private:
     //==============================================================================
     static const int m_forder = 12;

@@ -17,7 +17,7 @@
 #include "LookAndFeel.h"
 //===============================================================================
 
-class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
+class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     PaxMBClipAudioProcessorEditor (PaxMBClipAudioProcessor& p);
@@ -26,13 +26,12 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void timerCallback();
+    void setupLevelMeters();
 
 private:
     PaxMBClipAudioProcessor& audioProcessor;
     LookAndFeel lnf;
 
-    
     ControlBar controlBar {audioProcessor};
     GlobalControls globalControls {audioProcessor};
     ClipperBandControls bandControls {audioProcessor};
@@ -42,6 +41,12 @@ private:
     void updateGlobalBypassButton();
 
     std::array<juce::AudioParameterBool*, 3> getBypassParams();
+
+    LevelMeter inputMeter;
+    LevelMeter outputMeter;
+
+    LevelMeterLookAndFeel* levelMeterInLAF {new LevelMeterLookAndFeelVertical()};
+    LevelMeterLookAndFeel* levelMeterOutLAF{ new LevelMeterLookAndFeelVertical() };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessorEditor)
 };

@@ -245,6 +245,9 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 
     m_resizedBuffer->setSize(2, samplesPerBlock * m_maxOversample, false, true, false);
     m_resizedBuffer->clear();
+
+    levelMeterSourceIn.resize(getTotalNumOutputChannels(), sampleRate * 0.1 / samplesPerBlock);
+    levelMeterSourceOut.resize(getTotalNumOutputChannels(), sampleRate * 0.1 / samplesPerBlock);
 }
 
 void PaxMBClipAudioProcessor::releaseResources()
@@ -318,6 +321,10 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.applyGain(juce::Decibels::decibelsToGain(m_inputGainParam->get()));
     }
 
+    levelMeterSourceIn.measureBlock(buffer);
+
+
+
     if (m_oversample > 1)
     {
         overSampleZS(&buffer, m_resizedBuffer.get(), buffer.getNumChannels());
@@ -373,6 +380,8 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     {
         buffer.applyGain(juce::Decibels::decibelsToGain(m_outputGainParam->get()));
     }
+
+    levelMeterSourceOut.measureBlock(buffer);
 
 }
 
