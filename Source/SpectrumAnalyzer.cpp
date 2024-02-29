@@ -331,6 +331,10 @@ void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
     lowCrossover->setBounds(point.getX(), point.getY(), size, size);
     highCrossover->setBounds(lowCrossover->getRight() + 5, point.getY(), size, size);
 
+    auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
+    lowCrossover->setLookAndFeel(chompLAF);
+    highCrossover->setLookAndFeel(chompLAF);
+
     addAndMakeVisible(*lowCrossover);
     addAndMakeVisible(*highCrossover);
 

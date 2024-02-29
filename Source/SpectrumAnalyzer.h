@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "PathProducer.h"
 #include "RotarySlider.h"
+#include "LookAndFeel.h"
 
 class SpectrumAnalyzer : public juce::Component,
     public juce::AudioProcessorParameter::Listener,

@@ -104,14 +104,14 @@ void ChompLookAndFeel::drawButtonText(juce::Graphics& g, juce::TextButton& butto
 void ChompLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
     const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
- /*   auto outline = slider.findColour(juce::Slider::rotarySliderOutlineColourId);
-    auto fill = slider.findColour(juce::Slider::rotarySliderFillColourId);
+    auto outline = juce::Colours::white;
+    auto fill = juce::Colours::transparentBlack;
 
     auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat().reduced(10);
 
     auto radius = juce::jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f;
     auto toAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-    auto lineW = jmin(8.0f, radius * 0.5f);
+    auto lineW = juce::jmin(8.0f, radius * 0.5f);
     auto arcRadius = radius - lineW * 0.5f;
 
     g.setColour(outline);
@@ -120,7 +120,7 @@ void ChompLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wid
     if (slider.isEnabled())
     {
         juce::Path valueArc;
-        juce::valueArc.addCentredArc(bounds.getCentreX(),
+        valueArc.addCentredArc(bounds.getCentreX(),
             bounds.getCentreY(),
             arcRadius,
             arcRadius,
@@ -132,14 +132,14 @@ void ChompLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wid
 
     float halfLineLength = 10.0f;
 
-    juce::Point<float> midPoint(bounds.getCentreX() + arcRadius * std::cos(toAngle - MathConstants<float>::halfPi),
-        bounds.getCentreY() + arcRadius * std::sin(toAngle - MathConstants<float>::halfPi));
-    Point<float> lineStart(midPoint.x - halfLineLength * std::cos(toAngle - MathConstants<float>::halfPi),
-        midPoint.y - halfLineLength * std::sin(toAngle - MathConstants<float>::halfPi));
-    Point<float> lineEnd(midPoint.x + halfLineLength * std::cos(toAngle - MathConstants<float>::halfPi),
-        midPoint.y + halfLineLength * std::sin(toAngle - MathConstants<float>::halfPi));
+    juce::Point<float> midPoint(bounds.getCentreX() + arcRadius * std::cos(toAngle - juce::MathConstants<float>::halfPi),
+        bounds.getCentreY() + arcRadius * std::sin(toAngle - juce::MathConstants<float>::halfPi));
+    juce::Point<float> lineStart(midPoint.x - halfLineLength * std::cos(toAngle - juce::MathConstants<float>::halfPi),
+        midPoint.y - halfLineLength * std::sin(toAngle - juce::MathConstants<float>::halfPi));
+    juce::Point<float> lineEnd(midPoint.x + halfLineLength * std::cos(toAngle - juce::MathConstants<float>::halfPi),
+        midPoint.y + halfLineLength * std::sin(toAngle - juce::MathConstants<float>::halfPi));
 
-    g.drawLine(Line<float>(lineStart, lineEnd), lineW);*/
+    g.drawLine(juce::Line<float>(lineStart, lineEnd), lineW);
 }
 
 void ChompLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
@@ -194,4 +194,34 @@ void ChompLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wid
 
     g.setColour(juce::Colours::white);
     g.drawLine(juce::Line<float>(lineStart, lineEnd), 5);
+}
+
+void ChompLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, bool,
+    int, int, int, int, juce::ComboBox& box)
+{
+    auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+    juce::Rectangle<int> boxBounds(0, 0, width, height);
+
+    g.setColour(juce::Colours::black);
+    g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
+
+    g.setColour(juce::Colours::white);
+    g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f, 0.5f), cornerSize, 1.0f);
+
+    juce::Rectangle<int> arrowZone(width - 30, 0, 20, height);
+    juce::Path path;
+    path.startNewSubPath((float)arrowZone.getX() + 3.0f, (float)arrowZone.getCentreY() - 2.0f);
+    path.lineTo((float)arrowZone.getCentreX(), (float)arrowZone.getCentreY() + 3.0f);
+    path.lineTo((float)arrowZone.getRight() - 3.0f, (float)arrowZone.getCentreY() - 2.0f);
+
+    g.setColour(juce::Colours::white.withAlpha((box.isEnabled() ? 0.9f : 0.2f)));
+    g.strokePath(path, juce::PathStrokeType(2.0f));
+}
+
+void ChompLookAndFeel::drawPopupMenuBackground(juce::Graphics& g, int width, int height)
+{
+
+    g.fillAll(juce::Colours::black);
+    g.setColour(juce::Colours::white);
+    g.drawRect(0, 0, width, height, 2);
 }

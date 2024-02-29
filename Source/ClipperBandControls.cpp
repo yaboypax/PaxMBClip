@@ -75,6 +75,8 @@ void ClipperBandControls::layoutSliders()
 
 void ClipperBandControls::layoutWaveSelector()
 {
+    auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
+    waveSelection.setLookAndFeel(chompLAF); 
     for (int i = 0; i <= 5; i++)
     {
         waveSelection.addItem(waveTypeNames[i], i + 1);

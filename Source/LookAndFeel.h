@@ -33,13 +33,6 @@ static void drawModuleBackground(juce::Graphics& g, juce::Rectangle<int> bounds)
 
 struct ChompLookAndFeel : juce::LookAndFeel_V4
 {
-    //void drawRotarySlider(juce::Graphics&,
-    //    int x, int y, int width, int height,
-    //    float sliderPosProportional,
-    //    float rotaryStartAngle,
-    //    float rotaryEndAngle,
-    //    juce::Slider&) override;
-
     void drawToggleButton(juce::Graphics& g,
         juce::ToggleButton& toggleButton,
         bool shouldDrawButtonAsHighlighted,
@@ -55,6 +48,11 @@ struct ChompLookAndFeel : juce::LookAndFeel_V4
         float minSliderPos,
         float maxSliderPos,
         const juce::Slider::SliderStyle style, juce::Slider& slider) override;
+
+    void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
+        int buttonX, int buttonY, int buttonW, int buttonH,
+        juce::ComboBox&) override;
+    void drawPopupMenuBackground(juce::Graphics& g, int width, int height) override;
 
 };
 
