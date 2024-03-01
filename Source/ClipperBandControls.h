@@ -28,7 +28,6 @@ public:
 
     void layoutSliders();
     void layoutButtons();
-    void layoutWaveSelector();
 
     void updateAttachments();
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
@@ -46,15 +45,8 @@ private:
     std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
-    juce::ComboBox waveSelection;
-    std::unique_ptr<ComboAttachment> waveSelectionAttachment;
+    WaveSelector m_clipWave;
+    std::unique_ptr<ComboAttachment> m_clipWaveAttachment;
 
-    juce::StringArray waveTypeNames = {
-    "Hard Clip",
-    "Quintic",
-    "Cubic",
-    "Hyperbolic Tan",
-    "Algebraic",
-    "Arctangent"
-    };
+
 };

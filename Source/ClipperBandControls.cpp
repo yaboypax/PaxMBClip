@@ -35,7 +35,8 @@ ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
 
     layoutButtons();
     layoutSliders();
-    layoutWaveSelector();
+
+    addAndMakeVisible(m_clipWave);
 
     updateAttachments();
 
@@ -73,18 +74,6 @@ void ClipperBandControls::layoutSliders()
     addAndMakeVisible(bandClipSlider);
 }
 
-void ClipperBandControls::layoutWaveSelector()
-{
-    auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
-    waveSelection.setLookAndFeel(chompLAF); 
-    for (int i = 0; i <= 5; i++)
-    {
-        waveSelection.addItem(waveTypeNames[i], i + 1);
-    }
-
-    addAndMakeVisible(waveSelection);
-}
-
 void ClipperBandControls::updateAttachments()
 {
 
@@ -97,6 +86,8 @@ void ClipperBandControls::updateAttachments()
     using namespace Params;
     std::vector<Names> names;
     const auto& params = GetParams();
+
+
 
     if (m_focus == BandFocus::unfocused)
         return;
@@ -164,9 +155,9 @@ void ClipperBandControls::updateAttachments()
     muteButtonAttachment.reset();
     soloButtonAttachment.reset();
 
-    waveSelectionAttachment.reset();
+    m_clipWaveAttachment.reset();
 
-    makeAttachment(waveSelectionAttachment, m_processor->apvts, params, names[Position::Wave], waveSelection);
+    makeAttachment(m_clipWaveAttachment, m_processor->apvts, params, names[Position::Wave], m_clipWave);
 
     makeAttachment(bandGainSliderAttachment, m_processor->apvts, params, names[Position::Gain], bandGainSlider);
     makeAttachment(bandClipSliderAttachment, m_processor->apvts, params, names[Position::Clip], bandClipSlider);
@@ -198,7 +189,7 @@ void ClipperBandControls::resized()
     bandClipSlider.setBounds(bandGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
 
     const int waveY = getHeight() - 46;
-    waveSelection.setBounds(waveX, waveY, waveW, waveH);
+    m_clipWave.setBounds(waveX, waveY, waveW, waveH);
 }
 
 void ClipperBandControls::changeListenerCallback(juce::ChangeBroadcaster* source)

@@ -137,9 +137,13 @@ private:
     Clipper& midBandClip = clippers[1];
     Clipper& highBandClip = clippers[2];
 
-    bool m_postClip = false;
+
     Clipper m_masterClip;
+    bool m_postClip = false;
     juce::AudioParameterBool* m_masterClipParam{ nullptr };
+
+    
+    
 
 
 

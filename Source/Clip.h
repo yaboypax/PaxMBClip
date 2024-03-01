@@ -50,7 +50,7 @@ public:
 private:
 
     float m_softness = 0.0;
-    void clipSamples(juce::AudioBuffer<float>* buffer);
+    void clipSamples(juce::AudioBuffer<float>* buffer, WaveType inWaveType);
     float sinclip(float& s);
     float logiclip(float& s);
     float hardclip(float& s);

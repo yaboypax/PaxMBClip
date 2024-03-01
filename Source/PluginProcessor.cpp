@@ -79,6 +79,7 @@ void PaxMBClipAudioProcessor::initializeParameters()
     highBandClip.solo = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Solo_High)));
 
     m_masterClipParam = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Master_Clip)));
+    m_masterClip.waveType = dynamic_cast<juce::AudioParameterInt*>(apvts.getParameter(params.at(Names::Master_Wave)));
 
 
 }
@@ -127,6 +128,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainLow, gainHigh, 0.0f));
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Oversample), params.at(Names::Oversample), 0, 5, 0));
     layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Master_Clip), params.at(Names::Master_Clip), false));
+    layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Master_Wave), params.at(Names::Master_Wave), 0, 5, 0));
 
     return layout;
 }
@@ -293,6 +295,7 @@ void PaxMBClipAudioProcessor::updateState()
     m_inputGain = m_inputGainParam->get();
     m_outputGain = m_outputGainParam->get();
     m_postClip = m_masterClipParam->get();
+    
 
 }
 void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)

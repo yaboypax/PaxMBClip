@@ -24,17 +24,21 @@ void Clipper::updateClipperSettings()
 
 void Clipper::process(juce::AudioBuffer<float>& buffer)
 {
-    auto preRMS = computeRMSLevel(buffer);
 	bool isBypassed = bypassed->get();
+	if (isBypassed)
+		return;
 
+    auto preRMS = computeRMSLevel(buffer);
     applyGain(buffer, bandGain);
 
 	float clipCeiling = juce::Decibels::decibelsToGain(clip->get());
 
 	buffer.applyGain(1 / clipCeiling);
 
-	if (!isBypassed)
-		clipSamples(&buffer);
+	if (waveType)
+		m_waveType = static_cast<WaveType>(waveType->get());
+
+	clipSamples(&buffer, m_waveType);
 
 	buffer.applyGain(clipCeiling);
 	
@@ -45,11 +49,8 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
     rmsOutputLevelDb.store(juce::Decibels::gainToDecibels(preRMS));
 }
 
-void Clipper::clipSamples(juce::AudioBuffer<float>* buffer)
+void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, WaveType inWaveType)
 {
-	if (waveType)
-		m_waveType = static_cast<WaveType>(waveType->get());
-
 	for (int j = 0; j < buffer->getNumChannels(); j++)
 	{
 		float* bufferData = buffer->getWritePointer(j);
@@ -58,7 +59,7 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer)
 		{
 			float newval = 0.0f;
 
-			switch (m_waveType)
+			switch (inWaveType)
 			{
 			case WaveType::hard:
 				newval = hardclip(bufferData[i]);
@@ -92,17 +93,10 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer)
 
 void Clipper::masterClip(juce::AudioBuffer<float>* buffer)
 {
-	for (int j = 0; j < buffer->getNumChannels(); j++)
-	{
-		float* bufferData = buffer->getWritePointer(j);
+	if (waveType)
+		m_waveType = static_cast<WaveType>(waveType->get());
 
-		for (int i = 0; i < buffer->getNumSamples(); i++)
-		{
-			float newval = 0.0f;
-			newval = hardclip(bufferData[i]);
-			bufferData[i] = newval;
-		}
-	}
+	clipSamples(buffer, m_waveType);
 }
 
 float Clipper::sinclip(float& s)
