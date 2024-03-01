@@ -14,6 +14,7 @@
 #include "GlobalControls.h"
 #include "SpectrumAnalyzer.h"
 #include "ControlBar.h"
+#include "SettingsComponent.h"
 #include "LookAndFeel.h"
 //===============================================================================
 
@@ -35,6 +36,7 @@ private:
     GlobalControls globalControls {m_processor};
     ClipperBandControls bandControls {m_processor};
     SpectrumAnalyzer analyzer {m_processor};
+    SettingsComponent settingsComponent{ m_processor };
 
     void toggleGlobalBypassState();
     void updateGlobalBypassButton();

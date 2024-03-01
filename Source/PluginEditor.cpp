@@ -20,6 +20,10 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
         toggleGlobalBypassState();
     };
 
+    controlBar.settingsButton.onClick = [this]()
+    {
+        settingsComponent.setVisible(!settingsComponent.isVisible());
+    };
 
     controlBar.setLookAndFeel(chompLAF);
     bandControls.setLookAndFeel(chompLAF);
@@ -28,6 +32,7 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     addAndMakeVisible(analyzer);
     addAndMakeVisible(globalControls);
     addAndMakeVisible(bandControls);
+    addChildComponent(settingsComponent);
 
 }
 
@@ -50,6 +55,9 @@ void PaxMBClipAudioProcessorEditor::resized()
     analyzer.setBounds(0, 32, getWidth()-300, getHeight() - 32);
     bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
     globalControls.setBounds(getWidth() - 150, 32, 150, getHeight() - 32);
+
+    bounds.reduce(200, 100);
+    settingsComponent.setBounds(bounds);
 }
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()
