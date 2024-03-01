@@ -26,12 +26,9 @@ public:
 
     AnalyzerButton analyzerButton;
     PowerButton globalBypassButton;
+    SettingsButton settingsButton;
+
 private:
     PaxMBClipAudioProcessor* m_processor;
-
-    juce::ComboBox oversamplingSelection;
-    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
-    std::unique_ptr<ComboBoxAttachment> oversamplingAttachment;
-
     juce::DrawableImage icon = juce::DrawableImage(juce::ImageCache::getFromMemory(BinaryData::chomp_icon_png, BinaryData::chomp_icon_pngSize));
 };
