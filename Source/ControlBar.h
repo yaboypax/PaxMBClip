@@ -24,7 +24,6 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
 
-    AnalyzerButton analyzerButton;
     PowerButton globalBypassButton;
     SettingsButton settingsButton;
 

@@ -39,6 +39,20 @@ SettingsComponent::SettingsComponent(PaxMBClipAudioProcessor& inProcessor)
     m_masterWaveLabel.attachToComponent(&m_masterWave, true);
     addAndMakeVisible(m_masterWaveLabel);
 
+    m_analyzerToggle.addItem("Off", 1);
+    m_analyzerToggle.addItem("On", 2);
+    m_analyzerToggle.setSelectedId(2, true);
+    m_analyzerToggle.onChange = [this]()
+        {
+            m_processor->toggleAnalyzer(static_cast<bool>(m_analyzerToggle.getSelectedId() - 1));
+        };
+    m_analyzerToggle.setLookAndFeel(chompLAF);
+    addAndMakeVisible(m_analyzerToggle);
+
+    m_analyzerLabel.setText("Analyzer On / Off", juce::NotificationType::dontSendNotification);
+    m_analyzerLabel.attachToComponent(&m_analyzerToggle, true);
+    addAndMakeVisible(m_analyzerLabel);
+
 }
 
 void SettingsComponent::paint(juce::Graphics& g)
@@ -56,4 +70,5 @@ void SettingsComponent::resized()
 {
     m_oversamplingSelection.setBounds(getWidth()/2, static_cast<int>(getHeight() * 0.2f), 120, 24);
     m_masterWave.setBounds(getWidth() / 2, m_oversamplingSelection.getBottom() + 5, 120, 24);
+    m_analyzerToggle.setBounds(getWidth() / 2, m_masterWave.getBottom() + 5, 120, 24);
 }

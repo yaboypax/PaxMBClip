@@ -9,12 +9,6 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     setResizable(true, true);
     setResizeLimits(800, 500, 1600, 1000);
 
-    controlBar.analyzerButton.onClick = [this]()
-    {
-        bool shouldBeOn = controlBar.analyzerButton.getToggleState();
-        analyzer.toggleAnalysisEnablement(shouldBeOn);
-    };
-
     controlBar.globalBypassButton.onClick = [this]()
     {
         toggleGlobalBypassState();

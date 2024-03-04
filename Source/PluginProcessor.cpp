@@ -484,6 +484,12 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
     }
 }
 
+void PaxMBClipAudioProcessor::toggleAnalyzer(bool isOn)
+{
+    isAnalyzerOn = isOn;
+    sendChangeMessage();
+}
+
 void PaxMBClipAudioProcessor::setBandFocus(BandFocus inFocus)
 {
     m_globalBandFocus = inFocus;

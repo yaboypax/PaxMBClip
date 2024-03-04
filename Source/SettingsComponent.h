@@ -31,4 +31,7 @@ private:
     WaveSelector m_masterWave;
     std::unique_ptr<ComboAttachment> m_masterWaveAttachment;
     juce::Label m_masterWaveLabel;
+
+    juce::ComboBox m_analyzerToggle;
+    juce::Label m_analyzerLabel;
 };

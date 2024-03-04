@@ -97,6 +97,8 @@ public:
     LevelMeterSource& getMeterSourceIn() { return levelMeterSourceIn; }
     LevelMeterSource& getMeterSourceOut() { return levelMeterSourceOut; }
 
+    void toggleAnalyzer(bool isOn);
+    bool getAnalyzerOn() { return isAnalyzerOn; }
 private:
     //==============================================================================
     static const int m_forder = 12;
@@ -141,6 +143,8 @@ private:
     Clipper m_masterClip;
     bool m_postClip = false;
     juce::AudioParameterBool* m_masterClipParam{ nullptr };
+
+    bool isAnalyzerOn = true;
 
     
     

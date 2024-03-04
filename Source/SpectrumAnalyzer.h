@@ -16,7 +16,7 @@
 
 class SpectrumAnalyzer : public juce::Component,
     public juce::AudioProcessorParameter::Listener,
-    public juce::Timer, public juce::MouseListener
+    public juce::Timer, public juce::MouseListener, public juce::ChangeListener
 {
 public:
 
@@ -40,11 +40,7 @@ public:
 
     void createCrossoverSliders(const juce::Point<int> point);
     void deleteCrossoverSliders();
-
-    void toggleAnalysisEnablement(bool enabled)
-    {
-        shouldShowFFTAnalysis = enabled;
-    }
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
     PaxMBClipAudioProcessor& m_processor;

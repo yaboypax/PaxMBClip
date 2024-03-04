@@ -36,7 +36,8 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_lowGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Gain)));
     m_midGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Gain)));
     m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
- 
+    
+    m_processor.addChangeListener(this);
 
     startTimerHz(20);
 }
@@ -349,6 +350,12 @@ void SpectrumAnalyzer::deleteCrossoverSliders()
     lowCrossoverAttachment = nullptr;
     highCrossoverAttachment = nullptr;
     m_crossoverSliders.clear();
+}
+
+void SpectrumAnalyzer::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    shouldShowFFTAnalysis = m_processor.getAnalyzerOn();
+    resized();
 }
 
 

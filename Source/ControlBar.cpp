@@ -13,8 +13,6 @@
 ControlBar::ControlBar(PaxMBClipAudioProcessor& inProcessor)
 {
     m_processor = &inProcessor;
-    analyzerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-    addAndMakeVisible(analyzerButton);
 
     globalBypassButton.setToggleState(false, juce::NotificationType::dontSendNotification);
     addAndMakeVisible(globalBypassButton);
@@ -35,7 +33,7 @@ void ControlBar::paint(juce::Graphics& g)
 void ControlBar::resized()
 {
     auto bounds = getLocalBounds();
-    analyzerButton.setBounds(getX() + 4, getY() + 4, 50, getHeight() - 8);
+
     globalBypassButton.setBounds(getWidth() - 54, getY() + 4, 50, getHeight() - 8);
     settingsButton.setBounds(globalBypassButton.getX() - 55, getY() + 4, 50, getHeight() - 8);
 }
