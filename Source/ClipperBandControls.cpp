@@ -14,7 +14,7 @@ namespace
 {
     constexpr int buttonX = 6;
     constexpr int buttonY = 5;
-    constexpr int buttonSize = 45;
+    constexpr int buttonSize = 44;
     constexpr int margin = 4;
 
     constexpr int sliderX = 26;
