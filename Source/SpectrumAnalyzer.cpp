@@ -49,6 +49,7 @@ SpectrumAnalyzer::~SpectrumAnalyzer()
     {
         param->removeListener(this);
     }
+    m_processor.removeChangeListener(this);
 }
 
 void SpectrumAnalyzer::paint(juce::Graphics& g)
