@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="txlWKD" name="PaxMBClip" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginManufacturer="Ya Boy Pax"
+              pluginManufacturerCode="Paxx" pluginCode="PxMB" companyName="Ya Boy Pax"
+              headerPath="C:\Users\Audio\Documents\DEV\PaxMBClip\Source\" pluginFormats="buildAUv3,buildStandalone,buildVST,buildVST3">
+  <MAINGROUP id="US7dj6" name="PaxMBClip">
+    <GROUP id="{AC27110F-D163-C661-DD6C-31DD50FE3EBF}" name="Source">
+      <GROUP id="{45DAA369-4CF4-AD2C-344C-7DCBF3FB704B}" name="dspfcpp">
+        <FILE id="wLoZ8q" name="Bessel.cpp" compile="1" resource="0" file="Source/dspfcpp/Bessel.cpp"/>
+        <FILE id="ivcrLx" name="Biquad.cpp" compile="1" resource="0" file="Source/dspfcpp/Biquad.cpp"/>
+        <FILE id="NraCMy" name="Butterworth.cpp" compile="1" resource="0" file="Source/dspfcpp/Butterworth.cpp"/>
+        <FILE id="KORwBk" name="Cascade.cpp" compile="1" resource="0" file="Source/dspfcpp/Cascade.cpp"/>
+        <FILE id="hUDFY4" name="ChebyshevI.cpp" compile="1" resource="0" file="Source/dspfcpp/ChebyshevI.cpp"/>
+        <FILE id="bDSdLI" name="ChebyshevII.cpp" compile="1" resource="0" file="Source/dspfcpp/ChebyshevII.cpp"/>
+        <FILE id="UKv6Cs" name="Custom.cpp" compile="1" resource="0" file="Source/dspfcpp/Custom.cpp"/>
+        <FILE id="YRIH9G" name="Design.cpp" compile="1" resource="0" file="Source/dspfcpp/Design.cpp"/>
+        <FILE id="tjVeza" name="Documentation.cpp" compile="1" resource="0"
+              file="Source/dspfcpp/Documentation.cpp"/>
+        <FILE id="hlVMNY" name="Elliptic.cpp" compile="1" resource="0" file="Source/dspfcpp/Elliptic.cpp"/>
+        <FILE id="bpe5sh" name="Filter.cpp" compile="1" resource="0" file="Source/dspfcpp/Filter.cpp"/>
+        <FILE id="egr7aB" name="Legendre.cpp" compile="1" resource="0" file="Source/dspfcpp/Legendre.cpp"/>
+        <FILE id="z45Pvb" name="Param.cpp" compile="1" resource="0" file="Source/dspfcpp/Param.cpp"/>
+        <FILE id="y0AIat" name="PoleFilter.cpp" compile="1" resource="0" file="Source/dspfcpp/PoleFilter.cpp"/>
+        <FILE id="HHHElZ" name="RBJ.cpp" compile="1" resource="0" file="Source/dspfcpp/RBJ.cpp"/>
+        <FILE id="Zjpjrl" name="RootFinder.cpp" compile="1" resource="0" file="Source/dspfcpp/RootFinder.cpp"/>
+        <FILE id="vHCmiU" name="State.cpp" compile="1" resource="0" file="Source/dspfcpp/State.cpp"/>
+      </GROUP>
+      <GROUP id="{A90E7E92-C78B-A5E4-BC40-626A4B76290E}" name="DspFilters">
+        <FILE id="VrEVeT" name="Bessel.h" compile="0" resource="0" file="Source/DspFilters/Bessel.h"/>
+        <FILE id="FoYvYq" name="Biquad.h" compile="0" resource="0" file="Source/DspFilters/Biquad.h"/>
+        <FILE id="owDHfB" name="Butterworth.h" compile="0" resource="0" file="Source/DspFilters/Butterworth.h"/>
+        <FILE id="QGc6iQ" name="Cascade.h" compile="0" resource="0" file="Source/DspFilters/Cascade.h"/>
+        <FILE id="CbvwE1" name="ChebyshevI.h" compile="0" resource="0" file="Source/DspFilters/ChebyshevI.h"/>
+        <FILE id="aZBcy2" name="ChebyshevII.h" compile="0" resource="0" file="Source/DspFilters/ChebyshevII.h"/>
+        <FILE id="zpMs8u" name="Common.h" compile="0" resource="0" file="Source/DspFilters/Common.h"/>
+        <FILE id="T0uGcM" name="Custom.h" compile="0" resource="0" file="Source/DspFilters/Custom.h"/>
+        <FILE id="UxO1aM" name="Design.h" compile="0" resource="0" file="Source/DspFilters/Design.h"/>
+        <FILE id="gFQXiy" name="Dsp.h" compile="0" resource="0" file="Source/DspFilters/Dsp.h"/>
+        <FILE id="opDY7C" name="Elliptic.h" compile="0" resource="0" file="Source/DspFilters/Elliptic.h"/>
+        <FILE id="QL833d" name="Filter.h" compile="0" resource="0" file="Source/DspFilters/Filter.h"/>
+        <FILE id="ltVhph" name="Layout.h" compile="0" resource="0" file="Source/DspFilters/Layout.h"/>
+        <FILE id="TooJbH" name="Legendre.h" compile="0" resource="0" file="Source/DspFilters/Legendre.h"/>
+        <FILE id="jkRK4E" name="MathSupplement.h" compile="0" resource="0"
+              file="Source/DspFilters/MathSupplement.h"/>
+        <FILE id="OujtF0" name="Params.h" compile="0" resource="0" file="Source/DspFilters/Params.h"/>
+        <FILE id="fdeLqj" name="PoleFilter.h" compile="0" resource="0" file="Source/DspFilters/PoleFilter.h"/>
+        <FILE id="VfA2jq" name="RBJ.h" compile="0" resource="0" file="Source/DspFilters/RBJ.h"/>
+        <FILE id="WVJNLF" name="RootFinder.h" compile="0" resource="0" file="Source/DspFilters/RootFinder.h"/>
+        <FILE id="KWOvIl" name="SmoothedFilter.h" compile="0" resource="0"
+              file="Source/DspFilters/SmoothedFilter.h"/>
+        <FILE id="GxyvFn" name="State.h" compile="0" resource="0" file="Source/DspFilters/State.h"/>
+        <FILE id="KsMi4d" name="Types.h" compile="0" resource="0" file="Source/DspFilters/Types.h"/>
+        <FILE id="uFFMyb" name="Utilities.h" compile="0" resource="0" file="Source/DspFilters/Utilities.h"/>
+      </GROUP>
+      <FILE id="E8YdbK" name="SettingsComponent.cpp" compile="1" resource="0"
+            file="Source/SettingsComponent.cpp"/>
+      <FILE id="B4OmO2" name="SettingsComponent.h" compile="0" resource="0"
+            file="Source/SettingsComponent.h"/>
+      <FILE id="slsz7H" name="ControlBar.cpp" compile="1" resource="0" file="Source/ControlBar.cpp"/>
+      <FILE id="VBSEsQ" name="ControlBar.h" compile="0" resource="0" file="Source/ControlBar.h"/>
+      <FILE id="GDzjKt" name="SingleChannelSampleFifo.h" compile="0" resource="0"
+            file="Source/SingleChannelSampleFifo.h"/>
+      <FILE id="nsSFPM" name="Fifo.h" compile="0" resource="0" file="Source/Fifo.h"/>
+      <FILE id="HIxoHZ" name="PathProducer.cpp" compile="1" resource="0"
+            file="Source/PathProducer.cpp"/>
+      <FILE id="QOSP3Y" name="PathProducer.h" compile="0" resource="0" file="Source/PathProducer.h"/>
+      <FILE id="PUfOdY" name="AnalyzerPathGenerator.h" compile="0" resource="0"
+            file="Source/AnalyzerPathGenerator.h"/>
+      <FILE id="e3C0Ik" name="SpectrumAnalyzer.cpp" compile="1" resource="0"
+            file="Source/SpectrumAnalyzer.cpp"/>
+      <FILE id="URa6x7" name="SpectrumAnalyzer.h" compile="0" resource="0"
+            file="Source/SpectrumAnalyzer.h"/>
+      <FILE id="DXNwvz" name="FFTDataGenerator.h" compile="0" resource="0"
+            file="Source/FFTDataGenerator.h"/>
+      <FILE id="Hn9JPk" name="GlobalControls.cpp" compile="1" resource="0"
+            file="Source/GlobalControls.cpp"/>
+      <FILE id="JUrtt6" name="GlobalControls.h" compile="0" resource="0"
+            file="Source/GlobalControls.h"/>
+      <FILE id="tc7dhu" name="ClipperBandControls.cpp" compile="1" resource="0"
+            file="Source/ClipperBandControls.cpp"/>
+      <FILE id="x49oeb" name="ClipperBandControls.h" compile="0" resource="0"
+            file="Source/ClipperBandControls.h"/>
+      <FILE id="u4kxqX" name="RotarySlider.cpp" compile="1" resource="0"
+            file="Source/RotarySlider.cpp"/>
+      <FILE id="sYz3Qa" name="RotarySlider.h" compile="0" resource="0" file="Source/RotarySlider.h"/>
+      <FILE id="SgjiQy" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/LookAndFeel.cpp"/>
+      <FILE id="DSptBJ" name="LookAndFeel.h" compile="0" resource="0" file="Source/LookAndFeel.h"/>
+      <FILE id="fURUlV" name="Utilities.h" compile="0" resource="0" file="Source/Utilities.h"/>
+      <FILE id="hqvD99" name="Clip.cpp" compile="1" resource="0" file="Source/Clip.cpp"/>
+      <FILE id="x8FAa7" name="Clip.h" compile="0" resource="0" file="Source/Clip.h"/>
+      <FILE id="mrSP5u" name="Params.h" compile="0" resource="0" file="Source/Params.h"/>
+      <FILE id="PsD7Uz" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="CKZuWn" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="o3JeIv" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="FjHaoy" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{1DB30704-E444-C8F0-D7BB-6F2F0CEE74D6}" name="Resource">
+      <FILE id="O1UDqe" name="chomp_icon.png" compile="0" resource="1" file="Resource/chomp_icon.png"/>
+      <FILE id="oQIR7r" name="Overhead.ttf" compile="0" resource="1" file="Resource/Overhead.ttf"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_dsp" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="C:\JUCE\modules"/>
+        <MODULEPATH id="ff_meters" path="."/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="ff_meters" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+</JUCERPROJECT>

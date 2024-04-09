@@ -40,4 +40,3 @@ JuceLibraryCode/include_juce_core.mm
 JuceLibraryCode/include_juce_data_structures.cpp
 JuceLibraryCode/include_juce_data_structures.mm
 JuceLibraryCode/include_juce_events.cpp
-*.jucer
