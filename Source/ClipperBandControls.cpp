@@ -33,7 +33,6 @@ ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
     m_processor = &inProcessor;
     m_processor->addChangeListener(this);
 
-    layoutButtons();
     layoutSliders();
 
     addAndMakeVisible(m_clipWave);
@@ -45,18 +44,6 @@ ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
 ClipperBandControls::~ClipperBandControls()
 {
     m_processor->removeChangeListener(this);
-}
-
-void ClipperBandControls::layoutButtons()
-{
-    bypassButton.setName("bypass");
-    soloButton.setName("solo");
-    muteButton.setName("mute");
-
-    addAndMakeVisible(bypassButton);
-    addAndMakeVisible(soloButton);
-    addAndMakeVisible(muteButton);
-
 }
 
 void ClipperBandControls::layoutSliders()
@@ -151,20 +138,12 @@ void ClipperBandControls::updateAttachments()
     bandGainSliderAttachment.reset();
     bandClipSliderAttachment.reset();
 
-    bypassButtonAttachment.reset();
-    muteButtonAttachment.reset();
-    soloButtonAttachment.reset();
-
     m_clipWaveAttachment.reset();
 
     makeAttachment(m_clipWaveAttachment, m_processor->apvts, params, names[Position::Wave], m_clipWave);
 
     makeAttachment(bandGainSliderAttachment, m_processor->apvts, params, names[Position::Gain], bandGainSlider);
     makeAttachment(bandClipSliderAttachment, m_processor->apvts, params, names[Position::Clip], bandClipSlider);
-
-    makeAttachment(bypassButtonAttachment, m_processor->apvts, params, names[Position::Bypassed], bypassButton);
-    makeAttachment(soloButtonAttachment, m_processor->apvts, params, names[Position::Solo], soloButton);
-    makeAttachment(muteButtonAttachment, m_processor->apvts, params, names[Position::Mute], muteButton);
 
     bandClipSlider.setRange(-48.0, 0.0, 0.1);
     bandGainSlider.setRange(-24.0, 24.0, 0.1);
@@ -180,9 +159,9 @@ void ClipperBandControls::paint(juce::Graphics& g)
 
 void ClipperBandControls::resized()
 {
-    bypassButton.setBounds(buttonX, buttonY, buttonSize, buttonSize);
-    muteButton.setBounds(bypassButton.getRight() + margin, buttonY, buttonSize, buttonSize);
-    soloButton.setBounds(muteButton.getRight() + margin, buttonY, buttonSize, buttonSize);
+    //bypassButton.setBounds(buttonX, buttonY, buttonSize, buttonSize);
+    //muteButton.setBounds(bypassButton.getRight() + margin, buttonY, buttonSize, buttonSize);
+    //soloButton.setBounds(muteButton.getRight() + margin, buttonY, buttonSize, buttonSize);
 
     const int sliderHeight = getHeight() - 113;
     bandGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);

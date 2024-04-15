@@ -45,6 +45,7 @@ public:
 private:
     PaxMBClipAudioProcessor& m_processor;
 
+
     bool shouldShowFFTAnalysis = true;
 
     juce::Atomic<bool> parametersChanged{ false };
@@ -69,6 +70,16 @@ private:
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     std::unique_ptr<SliderAttachment> lowCrossoverAttachment, highCrossoverAttachment;
+
+    
+    juce::ToggleButton m_soloLowButton, m_muteLowButton;
+    juce::ToggleButton m_soloMidButton, m_muteMidButton;
+    juce::ToggleButton m_soloHighButton, m_muteHighButton;
+
+    using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
+    std::unique_ptr<ButtonAttachment> m_soloLowAttachment, m_muteLowAttachment;
+    std::unique_ptr<ButtonAttachment> m_soloMidAttachment, m_muteMidAttachment;
+    std::unique_ptr<ButtonAttachment> m_soloHighAttachment, m_muteHighAttachment;
 
     bool m_lowMidDragging = false;
     bool m_midHighDragging = false;

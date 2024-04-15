@@ -26,6 +26,41 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     using namespace Params;
     const auto& paramNames = GetParams();
 
+    m_soloLowButton.setButtonText("s");
+    m_soloMidButton.setButtonText("s");
+    m_soloHighButton.setButtonText("s");
+
+    m_muteLowButton.setButtonText("m");
+    m_muteMidButton.setButtonText("m");
+    m_muteHighButton.setButtonText("m");
+
+    auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
+    m_soloLowButton.setLookAndFeel(chompLAF);
+    m_soloMidButton.setLookAndFeel(chompLAF);
+    m_soloHighButton.setLookAndFeel(chompLAF);
+
+    m_muteLowButton.setLookAndFeel(chompLAF);
+    m_muteMidButton.setLookAndFeel(chompLAF);
+    m_muteHighButton.setLookAndFeel(chompLAF);
+    
+    addAndMakeVisible(m_soloLowButton);
+    addAndMakeVisible(m_soloMidButton);
+    addAndMakeVisible(m_soloHighButton);
+    
+    addAndMakeVisible(m_muteLowButton);
+    addAndMakeVisible(m_muteMidButton);
+    addAndMakeVisible(m_muteHighButton);
+
+    m_soloLowAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Solo_Low), m_soloLowButton);
+    m_muteLowAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Mute_Low), m_muteLowButton);
+
+    m_soloMidAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Solo_Mid), m_soloMidButton);
+    m_muteMidAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Mute_Mid), m_muteMidButton);
+
+    m_soloHighAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Solo_High), m_soloHighButton);
+    m_muteHighAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Mute_High), m_muteHighButton);
+   
+
     m_lowCrossoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Mid_Crossover_Freq)));
     m_highCrossoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_High_Crossover_Freq)));
 
@@ -36,9 +71,9 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_lowGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Gain)));
     m_midGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Gain)));
     m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
+
     
     m_processor.addChangeListener(this);
-
     startTimerHz(20);
 }
 
@@ -106,7 +141,7 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     auto mapX = [left = bounds.getX(), width = bounds.getWidth()](float frequency) {
         auto normX = juce::mapFromLog10(frequency, PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY);
         return (left + width * normX);
-    };
+        };
 
     m_lowMidX = mapX(m_lowCrossoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
@@ -223,7 +258,6 @@ void SpectrumAnalyzer::mouseDrag(const juce::MouseEvent& e)
         m_lowCrossoverParam->beginChangeGesture();
         m_lowCrossoverParam->setValueNotifyingHost(frequency);
         m_lowCrossoverParam->endChangeGesture();
-        repaint();
     }
 
     if (m_midHighDragging == true)
@@ -231,8 +265,10 @@ void SpectrumAnalyzer::mouseDrag(const juce::MouseEvent& e)
         m_highCrossoverParam->beginChangeGesture();
         m_highCrossoverParam->setValueNotifyingHost(frequency);
         m_highCrossoverParam->endChangeGesture();
-        repaint();
     }
+
+    repaint();
+    resized();
 }
 
 
@@ -510,6 +546,18 @@ void SpectrumAnalyzer::resized()
 
     leftPathProducer.updateNegativeInfinity(negativeInfinity);
     rightPathProducer.updateNegativeInfinity(negativeInfinity);
+
+    int marginY = 32;
+    int size = 25;
+
+    m_muteLowButton.setBounds(m_lowMidX - 45, getHeight() - marginY, size, size);
+    m_soloLowButton.setBounds(m_lowMidX - 24, getHeight() - marginY, size, size);
+
+    m_muteMidButton.setBounds(m_midHighX - 45, getHeight() - marginY, size, size);
+    m_soloMidButton.setBounds(m_midHighX - 24, getHeight() - marginY, size, size);
+
+    m_muteHighButton.setBounds(getWidth() - 45, getHeight() - marginY, size, size);
+    m_soloHighButton.setBounds(getWidth() - 24, getHeight() - marginY, size, size);
 }
 
 void SpectrumAnalyzer::parameterValueChanged(int parameterIndex, float newValue)

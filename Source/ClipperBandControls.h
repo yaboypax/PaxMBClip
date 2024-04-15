@@ -27,7 +27,6 @@ public:
     void resized() override;
 
     void layoutSliders();
-    void layoutButtons();
 
     void updateAttachments();
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
@@ -39,10 +38,6 @@ private:
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     juce::Slider bandGainSlider, bandClipSlider;
     std::unique_ptr<Attachment> bandGainSliderAttachment, bandClipSliderAttachment;
-
-    using BtnAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
-    juce::ToggleButton bypassButton, soloButton, muteButton;
-    std::unique_ptr<BtnAttachment> bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
     WaveSelector m_clipWave;
