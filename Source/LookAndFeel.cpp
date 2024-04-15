@@ -65,16 +65,25 @@ void ChompLookAndFeel::drawToggleButton(juce::Graphics& g,
     {
         auto bounds = toggleButton.getLocalBounds().reduced(2);
         bool buttonIsOn = toggleButton.getToggleState();
+        auto buttonText = toggleButton.getButtonText();
 
         const int cornerSize = 4;
 
-        g.setColour(buttonIsOn ? juce::Colour(188, 198, 206) : juce::Colours::black);
+        if (buttonText == "s")
+        {
+            g.setColour(buttonIsOn ? juce::Colours::yellow : juce::Colours::black);
+        }
+        else if (buttonText == "m")
+        {
+            g.setColour(buttonIsOn ? juce::Colours::red : juce::Colours::black);
+        }
+        
         g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
 
         g.setColour(buttonIsOn ? juce::Colours::black : juce::Colour(188, 198, 206));
         g.drawRoundedRectangle(bounds.toFloat(), cornerSize, 1);
 
-        g.drawFittedText(toggleButton.getName(), bounds, juce::Justification::centred, 1);
+        g.drawFittedText(buttonText, bounds, juce::Justification::centred, 1);
 
     }
 }
