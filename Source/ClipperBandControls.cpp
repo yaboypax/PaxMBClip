@@ -12,13 +12,13 @@
 
 namespace
 {
-    constexpr int buttonX = 6;
-    constexpr int buttonY = 5;
-    constexpr int buttonSize = 44;
+    constexpr int rotaryX = 18;
+    constexpr int rotaryY = 5;
+    constexpr int rotarySize = 58;
     constexpr int margin = 4;
 
     constexpr int sliderX = 26;
-    constexpr int sliderY = 53;
+    constexpr int sliderY = 55;
     constexpr int sliderWidth = 48;
     //constexpr int sliderHeight = 355;
 
@@ -54,11 +54,12 @@ void ClipperBandControls::layoutSliders()
     bandGainSlider.setSliderStyle(juce::Slider::LinearVertical);
     bandGainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
 
-    bandGainSlider.onValueChange = [this] {
-        DBG(bandGainSlider.getValue());
-        };
     addAndMakeVisible(bandGainSlider);
     addAndMakeVisible(bandClipSlider);
+
+    addAndMakeVisible(m_lowMidSlider);
+    addAndMakeVisible(m_midHighSlider);
+
 }
 
 void ClipperBandControls::updateAttachments()
@@ -145,8 +146,19 @@ void ClipperBandControls::updateAttachments()
     makeAttachment(bandGainSliderAttachment, m_processor->apvts, params, names[Position::Gain], bandGainSlider);
     makeAttachment(bandClipSliderAttachment, m_processor->apvts, params, names[Position::Clip], bandClipSlider);
 
+    makeAttachment(m_lowMidAttachment, m_processor->apvts, params, Names::Low_Mid_Crossover_Freq, m_lowMidSlider);
+    makeAttachment(m_midHighAttachment, m_processor->apvts, params, Names::Mid_High_Crossover_Freq, m_midHighSlider);
+
     bandClipSlider.setRange(-48.0, 0.0, 0.1);
     bandGainSlider.setRange(-24.0, 24.0, 0.1);
+
+    m_lowMidSlider.onValueChange = [this]() {
+        m_processor->sendChangeMessage();
+        };
+
+    m_midHighSlider.onValueChange = [this]() {
+        m_processor->sendChangeMessage();
+        };
 }
 
 
@@ -169,6 +181,10 @@ void ClipperBandControls::resized()
 
     const int waveY = getHeight() - 46;
     m_clipWave.setBounds(waveX, waveY, waveW, waveH);
+
+
+    m_lowMidSlider.setBounds(rotaryX, rotaryY, rotarySize, rotarySize);
+    m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
 }
 
 void ClipperBandControls::changeListenerCallback(juce::ChangeBroadcaster* source)

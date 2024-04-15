@@ -235,7 +235,7 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
     }
     else if (e.mods.isRightButtonDown())
     {
-        m_showCrossoverSliders = !m_showCrossoverSliders;
+        /*m_showCrossoverSliders = !m_showCrossoverSliders;
 
         if (m_showCrossoverSliders)
         {
@@ -244,7 +244,7 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
         else
         {
             deleteCrossoverSliders();
-        }
+        }*/
     }
 }
 
@@ -392,6 +392,7 @@ void SpectrumAnalyzer::deleteCrossoverSliders()
 void SpectrumAnalyzer::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
     shouldShowFFTAnalysis = m_processor.getAnalyzerOn();
+    repaint();
     resized();
 }
 

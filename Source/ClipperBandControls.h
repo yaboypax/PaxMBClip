@@ -39,6 +39,9 @@ private:
     juce::Slider bandGainSlider, bandClipSlider;
     std::unique_ptr<Attachment> bandGainSliderAttachment, bandClipSliderAttachment;
 
+    RotarySlider m_lowMidSlider, m_midHighSlider;
+    std::unique_ptr<Attachment> m_lowMidAttachment, m_midHighAttachment;
+
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
     WaveSelector m_clipWave;
     std::unique_ptr<ComboAttachment> m_clipWaveAttachment;
