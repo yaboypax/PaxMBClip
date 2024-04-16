@@ -23,9 +23,34 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
         param->addListener(this);
     }
 
-    using namespace Params;
-    const auto& paramNames = GetParams();
+    layoutBandButtons();
+    setAttachments();
 
+    
+    m_processor.addChangeListener(this);
+    startTimerHz(60);
+}
+
+SpectrumAnalyzer::~SpectrumAnalyzer()
+{
+    const auto& params = m_processor.getParameters();
+    for (auto param : params)
+    {
+        param->removeListener(this);
+    }
+    m_processor.removeChangeListener(this);
+
+    m_soloLowButton.removeListener(this);
+    m_soloMidButton.removeListener(this);
+    m_soloHighButton.removeListener(this);
+
+    m_muteLowButton.removeListener(this);
+    m_muteMidButton.removeListener(this);
+    m_muteHighButton.removeListener(this);
+}
+
+void SpectrumAnalyzer::layoutBandButtons()
+{
     m_soloLowButton.setButtonText("s");
     m_soloMidButton.setButtonText("s");
     m_soloHighButton.setButtonText("s");
@@ -42,14 +67,29 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_muteLowButton.setLookAndFeel(chompLAF);
     m_muteMidButton.setLookAndFeel(chompLAF);
     m_muteHighButton.setLookAndFeel(chompLAF);
-    
+
+    m_soloLowButton.addListener(this);
+    m_soloMidButton.addListener(this);
+    m_soloHighButton.addListener(this);
+
+    m_muteLowButton.addListener(this);
+    m_muteMidButton.addListener(this);
+    m_muteHighButton.addListener(this);
+
+
     addAndMakeVisible(m_soloLowButton);
     addAndMakeVisible(m_soloMidButton);
     addAndMakeVisible(m_soloHighButton);
-    
+
     addAndMakeVisible(m_muteLowButton);
     addAndMakeVisible(m_muteMidButton);
     addAndMakeVisible(m_muteHighButton);
+}
+
+void SpectrumAnalyzer::setAttachments()
+{
+    using namespace Params;
+    const auto& paramNames = GetParams();
 
     m_soloLowAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Solo_Low), m_soloLowButton);
     m_muteLowAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Mute_Low), m_muteLowButton);
@@ -59,7 +99,7 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
 
     m_soloHighAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Solo_High), m_soloHighButton);
     m_muteHighAttachment = std::make_unique<ButtonAttachment>(m_processor.apvts, paramNames.at(Names::Mute_High), m_muteHighButton);
-   
+
 
     m_lowCrossoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Mid_Crossover_Freq)));
     m_highCrossoverParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_High_Crossover_Freq)));
@@ -71,20 +111,6 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_lowGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Gain)));
     m_midGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Gain)));
     m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
-
-    
-    m_processor.addChangeListener(this);
-    startTimerHz(60);
-}
-
-SpectrumAnalyzer::~SpectrumAnalyzer()
-{
-    const auto& params = m_processor.getParameters();
-    for (auto param : params)
-    {
-        param->removeListener(this);
-    }
-    m_processor.removeChangeListener(this);
 }
 
 void SpectrumAnalyzer::paint(juce::Graphics& g)
@@ -287,6 +313,26 @@ void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce:
     bool isCmdDown = event.mods.isCommandDown();
 
     isCmdDown ? scrollGain(wheel.deltaY, scrollSpeed, nullptr) : scrollClip(wheel.deltaY, scrollSpeed, nullptr);
+}
+
+void SpectrumAnalyzer::buttonClicked(juce::Button* button)
+{
+    if (button == &m_soloLowButton || button == &m_muteLowButton)
+    {
+        m_processor.setBandFocus(BandFocus::Low);
+        
+    }
+    else if (button == &m_soloMidButton || button == &m_muteMidButton)
+    {
+        m_processor.setBandFocus(BandFocus::Mid);
+
+    }
+    else if (button == &m_soloHighButton || button == &m_muteHighButton)
+    {
+        m_processor.setBandFocus(BandFocus::High);
+
+    }
+
 }
 
 void SpectrumAnalyzer::scrollClip(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param)

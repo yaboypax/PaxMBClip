@@ -16,13 +16,15 @@
 
 class SpectrumAnalyzer : public juce::Component,
     public juce::AudioProcessorParameter::Listener,
-    public juce::Timer, public juce::MouseListener, public juce::ChangeListener
+    public juce::Timer, public juce::MouseListener, public juce::ChangeListener, public juce::Button::Listener
 {
 public:
 
     SpectrumAnalyzer(PaxMBClipAudioProcessor&);
     ~SpectrumAnalyzer();
 
+    void layoutBandButtons();
+    void setAttachments();
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
 
@@ -34,6 +36,8 @@ public:
     void mouseDrag(const juce::MouseEvent& e) override;
     void mouseUp(const juce::MouseEvent& e) override;
     void mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel) override;
+
+    void buttonClicked(juce::Button* button) override;
 
     void scrollClip(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
     void scrollGain(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
