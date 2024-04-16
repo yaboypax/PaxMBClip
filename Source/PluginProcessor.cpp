@@ -126,7 +126,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), gainLow, gainHigh, 0.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainLow, gainHigh, 0.0f));
-    layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Oversample), params.at(Names::Oversample), 0, 5, 0));
+    layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Oversample), params.at(Names::Oversample), 0, 5, 1));
     layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Master_Clip), params.at(Names::Master_Clip), false));
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Master_Wave), params.at(Names::Master_Wave), 0, 5, 0));
 
