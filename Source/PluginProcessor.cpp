@@ -233,6 +233,13 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     m_oversamplingFilter1.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
 
+    m_tiltFilter.prepare(spec);
+    *m_tiltFilter.get<0>().state = *juce::dsp::IIR::Coefficients<float>::makeLowShelf(sampleRate, 400, 1.f, juce::Decibels::decibelsToGain(-12.f));
+    *m_tiltFilter.get<1>().state = *juce::dsp::IIR::Coefficients<float>::makeHighShelf(sampleRate, 400, 1.f, juce::Decibels::decibelsToGain(12.f));
+
+
+
+
     //f 
     //f2
 
@@ -312,10 +319,16 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     updateState();
 
+    //Spectrum Input Meter
     juce::AudioBuffer<float> spectrumInputBuffer;
     spectrumInputBuffer.makeCopyOf(buffer, false);
-    monoInFifo.update(sumBufferToMono(spectrumInputBuffer));
 
+    juce::dsp::AudioBlock<float> inBlock(spectrumInputBuffer);
+    juce::dsp::ProcessContextReplacing<float> inContext(inBlock);
+    m_tiltFilter.process(inContext);
+
+    spectrumInputBuffer.applyGain(juce::Decibels::decibelsToGain(12.f));
+    monoInFifo.update(sumBufferToMono(spectrumInputBuffer));
 
     if (*m_inputGainParam != m_inputGain)
     {
@@ -330,8 +343,6 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
 
     levelMeterSourceIn.measureBlock(buffer);
-
-
 
     if (m_oversample > 1)
     {
@@ -389,9 +400,15 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.applyGain(juce::Decibels::decibelsToGain(m_outputGainParam->get()));
     }
 
-
+    // Spectrum Output Meter
     juce::AudioBuffer<float> spectrumOutputBuffer;
     spectrumOutputBuffer.makeCopyOf(buffer, false);
+
+    juce::dsp::AudioBlock<float> outBlock(spectrumOutputBuffer);
+    juce::dsp::ProcessContextReplacing<float> outContext(outBlock);
+    m_tiltFilter.process(outContext);
+
+    spectrumOutputBuffer.applyGain(juce::Decibels::decibelsToGain(12.f));
     monoOutFifo.update(sumBufferToMono(spectrumOutputBuffer));
 
     levelMeterSourceOut.measureBlock(buffer);

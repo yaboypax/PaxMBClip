@@ -121,8 +121,12 @@ private:
                  HP2;
 
     // Oversampling filters (butterworth)
-    using oversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
-    oversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
+    using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
+    OversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
+
+    // tilt filters for spectrum display
+    using TiltFilter = juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>>;
+    juce::dsp::ProcessorChain<TiltFilter, TiltFilter> m_tiltFilter;
     
     
     void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
