@@ -40,22 +40,13 @@ struct AnalyzerPathGenerator
                 bottom, top);
         };
 
-        auto y = map(renderData[0]);
-
-        //        jassert( !std::isnan(y) && !std::isinf(y) );
-        if (std::isnan(y) || std::isinf(y))
-            y = bottom;
-
-        auto startY = y;
         p.startNewSubPath(0, bottom);
 
-        const int pathResolution = 1; //you can draw line-to's every 'pathResolution' pixels.
+        const int pathResolution = 1;
 
         for (int binNum = 2; binNum < numBins; binNum += pathResolution)
         {
-            y = map(renderData[binNum]);
-
-            //            jassert( !std::isnan(y) && !std::isinf(y) );
+            auto y = map(renderData[binNum]);
 
             if (!std::isnan(y) && !std::isinf(y))
             {
@@ -68,7 +59,6 @@ struct AnalyzerPathGenerator
 
         p.lineTo(width, bottom);
         p.lineTo(0, bottom);
-        //p.lineTo(0, startY);
 
         pathFifo.push(p);
     }
@@ -84,7 +74,4 @@ struct AnalyzerPathGenerator
     }
 private:
     Fifo<PathType> pathFifo;
-
-    float m_peakY = 0.f;
-    float m_decay = 0.8f;
 };
