@@ -39,6 +39,7 @@ public:
     void scrollGain(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
 
     void createCrossoverSliders(const juce::Point<int> point);
+    int mapX(const float frequency);
     void deleteCrossoverSliders();
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
@@ -66,7 +67,8 @@ private:
     juce::AudioParameterFloat* m_lowCrossoverParam{ nullptr };
     juce::AudioParameterFloat* m_highCrossoverParam{ nullptr };
     
-    int m_lowMidX, m_midHighX;
+    int m_lowMidX = 200;
+    int m_midHighX = 2000;
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     std::unique_ptr<SliderAttachment> lowCrossoverAttachment, highCrossoverAttachment;

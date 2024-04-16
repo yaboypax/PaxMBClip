@@ -130,6 +130,13 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
 
 }
 
+int SpectrumAnalyzer::mapX(const float frequency)
+{
+    auto bounds = getAnalysisArea();
+    auto normX = juce::mapFromLog10(frequency, PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY);
+    return (getX() + bounds.getWidth() * normX);
+}
+
 void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
     const auto top = bounds.getY();
@@ -137,11 +144,6 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     
     const auto left = bounds.getX();
     const auto right = bounds.getRight();
-
-    auto mapX = [left = bounds.getX(), width = bounds.getWidth()](float frequency) {
-        auto normX = juce::mapFromLog10(frequency, PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY);
-        return (left + width * normX);
-        };
 
     m_lowMidX = mapX(m_lowCrossoverParam->get());
     g.setColour(juce::Colour(188, 198, 206));
@@ -547,6 +549,9 @@ void SpectrumAnalyzer::resized()
 
     leftPathProducer.updateNegativeInfinity(negativeInfinity);
     rightPathProducer.updateNegativeInfinity(negativeInfinity);
+
+    m_lowMidX = mapX(m_lowCrossoverParam->get());
+    m_midHighX = mapX(m_highCrossoverParam->get());
 
     int marginY = 32;
     int size = 25;
