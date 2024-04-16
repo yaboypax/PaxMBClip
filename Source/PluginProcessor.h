@@ -89,8 +89,11 @@ public:
     }
 
     using BlockType = juce::AudioBuffer<float>;
-    SingleChannelSampleFifo<BlockType> monoChannelFifo{ Channel::Left };
-    SingleChannelSampleFifo<BlockType> rightChannelFifo{ Channel::Right };
+    SingleChannelSampleFifo<BlockType> monoInFifo{ Channel::Left };
+    SingleChannelSampleFifo<BlockType> rightInFifo{ Channel::Right };
+
+    SingleChannelSampleFifo<BlockType> monoOutFifo{ Channel::Left };
+    SingleChannelSampleFifo<BlockType> rightOutFifo{ Channel::Right };
 
     LevelMeterSource levelMeterSourceIn;
     LevelMeterSource levelMeterSourceOut;

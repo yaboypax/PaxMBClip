@@ -14,8 +14,8 @@
 
 SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_processor(p),
-    leftPathProducer(m_processor.monoChannelFifo),
-    rightPathProducer(m_processor.rightChannelFifo)
+    inPathProducer(m_processor.monoInFifo),
+    outPathProducer(m_processor.monoOutFifo)
 {
     const auto& params = m_processor.getParameters();
     for (auto param : params)
@@ -74,7 +74,7 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
 
     
     m_processor.addChangeListener(this);
-    startTimerHz(20);
+    startTimerHz(60);
 }
 
 SpectrumAnalyzer::~SpectrumAnalyzer()
@@ -98,17 +98,17 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
 
     if (shouldShowFFTAnalysis)
     {
-        auto monoChannelFFTPath = leftPathProducer.getPath();
-        monoChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
+        auto inChannelFFTPath = inPathProducer.getPath();
+        inChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
 
-        g.setColour(Colour(97u, 18u, 167u)); //purple-
-        g.strokePath(monoChannelFFTPath, PathStrokeType(1.f));
+        g.setColour(juce::Colours::white.withAlpha(0.5f)); 
+        g.strokePath(inChannelFFTPath, PathStrokeType(2.f));
 
-        auto rightChannelFFTPath = rightPathProducer.getPath();
-        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
+        auto outChannelFFTPath = outPathProducer.getPath();
+        outChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
 
-        g.setColour(Colour(215u, 201u, 134u));
-        g.strokePath(rightChannelFFTPath, PathStrokeType(1.f));
+        g.setColour(juce::Colours::lightgoldenrodyellow);
+        g.strokePath(outChannelFFTPath, PathStrokeType(2.f));
     }
 
     g.setColour(Colours::white);
@@ -547,8 +547,8 @@ void SpectrumAnalyzer::resized()
     auto fftBounds = getAnalysisArea().toFloat();
     auto negativeInfinity = juce::jmap(getLocalBounds().toFloat().getBottom(), fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
 
-    leftPathProducer.updateNegativeInfinity(negativeInfinity);
-    rightPathProducer.updateNegativeInfinity(negativeInfinity);
+    inPathProducer.updateNegativeInfinity(negativeInfinity);
+    outPathProducer.updateNegativeInfinity(negativeInfinity);
 
     m_lowMidX = mapX(m_lowCrossoverParam->get());
     m_midHighX = mapX(m_highCrossoverParam->get());
@@ -582,8 +582,8 @@ void SpectrumAnalyzer::timerCallback()
         fftBounds.setBottom(getLocalBounds().getBottom());
         auto sampleRate = m_processor.getSampleRate();
 
-        leftPathProducer.process(fftBounds, sampleRate);
-        rightPathProducer.process(fftBounds, sampleRate);
+        inPathProducer.process(fftBounds, sampleRate);
+        outPathProducer.process(fftBounds, sampleRate);
     }
 
     if (parametersChanged.compareAndSetBool(false, true))

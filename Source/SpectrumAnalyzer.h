@@ -61,7 +61,7 @@ private:
     juce::Rectangle<int> getRenderArea();
     juce::Rectangle<int> getAnalysisArea();
 
-    PathProducer leftPathProducer, rightPathProducer;
+    PathProducer inPathProducer, outPathProducer;
 
     void drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds);
     juce::AudioParameterFloat* m_lowCrossoverParam{ nullptr };

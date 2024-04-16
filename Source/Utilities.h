@@ -67,3 +67,10 @@ static inline juce::String getOversamplingPower(int ovr)
 {
     return static_cast<juce::String>(pow(2, ovr)) + "x Oversampling";
 }
+
+static inline juce::AudioBuffer<float> sumBufferToMono(juce::AudioBuffer<float> buffer)
+{
+    buffer.addFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
+    buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
+    return buffer;
+}

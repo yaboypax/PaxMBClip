@@ -241,8 +241,11 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
         buffer.setSize(spec.numChannels, samplesPerBlock);
     }
 
-    monoChannelFifo.prepare(samplesPerBlock);
-    rightChannelFifo.prepare(samplesPerBlock);
+    monoInFifo.prepare(samplesPerBlock);
+    rightInFifo.prepare(samplesPerBlock);
+
+    monoOutFifo.prepare(samplesPerBlock);
+    rightOutFifo.prepare(samplesPerBlock);
 
     m_resizedBuffer->setSize(2, samplesPerBlock * m_maxOversample, false, true, false);
     m_resizedBuffer->clear();
@@ -308,8 +311,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     m_resizedBuffer->clear();
 
     updateState();
-    monoChannelFifo.update(buffer);
-    rightChannelFifo.update(buffer);
+    monoInFifo.update(sumBufferToMono(buffer));
 
 
     if (*m_inputGainParam != m_inputGain)
@@ -383,6 +385,9 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     {
         buffer.applyGain(juce::Decibels::decibelsToGain(m_outputGainParam->get()));
     }
+
+
+    monoOutFifo.update(sumBufferToMono(buffer));
 
     levelMeterSourceOut.measureBlock(buffer);
 
