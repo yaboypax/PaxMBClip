@@ -311,7 +311,10 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     m_resizedBuffer->clear();
 
     updateState();
-    monoInFifo.update(sumBufferToMono(buffer));
+
+    juce::AudioBuffer<float> spectrumInputBuffer;
+    spectrumInputBuffer.makeCopyOf(buffer, false);
+    monoInFifo.update(sumBufferToMono(spectrumInputBuffer));
 
 
     if (*m_inputGainParam != m_inputGain)
@@ -387,7 +390,9 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
 
 
-    monoOutFifo.update(sumBufferToMono(buffer));
+    juce::AudioBuffer<float> spectrumOutputBuffer;
+    spectrumOutputBuffer.makeCopyOf(buffer, false);
+    monoOutFifo.update(sumBufferToMono(spectrumOutputBuffer));
 
     levelMeterSourceOut.measureBlock(buffer);
 
