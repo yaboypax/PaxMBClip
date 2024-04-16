@@ -102,7 +102,7 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
         inChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));
 
         g.setColour(juce::Colours::white.withAlpha(0.5f)); 
-        g.strokePath(inChannelFFTPath, PathStrokeType(2.f));
+        g.fillPath(inChannelFFTPath);
 
         auto outChannelFFTPath = outPathProducer.getPath();
         outChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0));

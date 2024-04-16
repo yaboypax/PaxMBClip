@@ -46,7 +46,8 @@ struct AnalyzerPathGenerator
         if (std::isnan(y) || std::isinf(y))
             y = bottom;
 
-        p.startNewSubPath(0, y);
+        auto startY = y;
+        p.startNewSubPath(0, startY);
 
         const int pathResolution = 1; //you can draw line-to's every 'pathResolution' pixels.
 
@@ -64,6 +65,10 @@ struct AnalyzerPathGenerator
                 p.lineTo(binX, y);
             }
         }
+
+        p.lineTo(width, bottom);
+        p.lineTo(0, bottom);
+        p.lineTo(0, startY);
 
         pathFifo.push(p);
     }
