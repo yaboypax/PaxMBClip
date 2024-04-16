@@ -47,11 +47,11 @@ struct AnalyzerPathGenerator
             y = bottom;
 
         auto startY = y;
-        p.startNewSubPath(0, startY);
+        p.startNewSubPath(0, bottom);
 
         const int pathResolution = 1; //you can draw line-to's every 'pathResolution' pixels.
 
-        for (int binNum = 1; binNum < numBins; binNum += pathResolution)
+        for (int binNum = 2; binNum < numBins; binNum += pathResolution)
         {
             y = map(renderData[binNum]);
 
@@ -61,14 +61,14 @@ struct AnalyzerPathGenerator
             {
                 auto binFreq = binNum * binWidth;
                 auto normalizedBinX = juce::mapFromLog10(binFreq, 20.f, 20000.f);
-                int binX = std::floor(normalizedBinX * width);
+                float binX = std::floor(normalizedBinX * width);
                 p.lineTo(binX, y);
             }
         }
 
         p.lineTo(width, bottom);
         p.lineTo(0, bottom);
-        p.lineTo(0, startY);
+        //p.lineTo(0, startY);
 
         pathFifo.push(p);
     }
@@ -84,4 +84,7 @@ struct AnalyzerPathGenerator
     }
 private:
     Fifo<PathType> pathFifo;
+
+    float m_peakY = 0.f;
+    float m_decay = 0.8f;
 };

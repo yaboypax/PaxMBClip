@@ -31,6 +31,10 @@ private:
     SingleChannelSampleFifo<PaxMBClipAudioProcessor::BlockType>* monoChannelFifo;
 
     juce::AudioBuffer<float> monoBuffer;
+    std::vector<float> previousFFTBinMagnitudes;
+    float attackRate = 0.1f;
+    float decayRate = 0.01f;
+
 
     FFTDataGenerator<std::vector<float>> monoChannelFFTDataGenerator;
 

@@ -45,7 +45,20 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
         std::vector<float> fftData;
         if (monoChannelFFTDataGenerator.getFFTData(fftData))
         {
+            // Initialize previous magnitudes if empty
+            if (previousFFTBinMagnitudes.empty()) {
+                previousFFTBinMagnitudes.resize(fftData.size(), 0.0f);
+            }
+
+            // Apply dynamic low-pass filter
+            for (size_t i = 0; i < fftData.size(); i++) {
+                float rate = fftData[i] > previousFFTBinMagnitudes[i] ? attackRate : decayRate;
+                fftData[i] = previousFFTBinMagnitudes[i] + rate * (fftData[i] - previousFFTBinMagnitudes[i]);
+                previousFFTBinMagnitudes[i] = fftData[i];
+            }
+
             pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, negativeInfinity);
+       
         }
     }
 
