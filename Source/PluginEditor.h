@@ -17,7 +17,26 @@
 #include "SettingsComponent.h"
 #include "LookAndFeel.h"
 //===============================================================================
+struct ResizeInfo
+{
+    bool isResized = false;
+    int width;
+    int height;
 
+    void setSize(int inWidth, int inHeight)
+    {
+        width = inWidth;
+        height = inHeight;
+        isResized = true;
+
+        DBG(juce::String(width) + "/n" + juce::String(height) + "/n");
+    }
+
+    operator bool() const
+    { 
+        return isResized;
+    }
+};
 class PaxMBClipAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
@@ -42,6 +61,7 @@ private:
     void updateGlobalBypassButton();
 
     std::array<juce::AudioParameterBool*, 3> getBypassParams();
+    ResizeInfo m_resized;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessorEditor)

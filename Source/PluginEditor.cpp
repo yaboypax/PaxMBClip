@@ -52,6 +52,8 @@ void PaxMBClipAudioProcessorEditor::resized()
 
     bounds.reduce(200, 100);
     settingsComponent.setBounds(bounds);
+    
+    //m_resized.setSize(getWidth(), getHeight());
 }
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()
