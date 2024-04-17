@@ -74,7 +74,7 @@ struct FFTDataGenerator
         auto fftSize = getFFTSize();
 
         forwardFFT = std::make_unique<juce::dsp::FFT>(order);
-        window = std::make_unique<juce::dsp::WindowingFunction<float>>(fftSize, juce::dsp::WindowingFunction<float>::blackmanHarris);
+        window = std::make_unique<juce::dsp::WindowingFunction<float>>(fftSize, juce::dsp::WindowingFunction<float>::hann);
 
         fftData.clear();
         fftData.resize(fftSize * 2, 0);

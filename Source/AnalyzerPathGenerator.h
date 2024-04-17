@@ -11,8 +11,6 @@
 #pragma once
 #include <JuceHeader.h>
 
-
-template<typename PathType>
 struct AnalyzerPathGenerator
 {
     /*
@@ -30,7 +28,7 @@ struct AnalyzerPathGenerator
 
         int numBins = (int)fftSize / 2;
 
-        PathType p;
+        juce::Path p;
         p.preallocateSpace(3 * (int)fftBounds.getWidth());
 
         auto map = [bottom, top, negativeInfinity](float v)
@@ -43,24 +41,26 @@ struct AnalyzerPathGenerator
         p.startNewSubPath(0, bottom);
 
         const int pathResolution = 1;
-
-        for (int binNum = 2; binNum < numBins; binNum += pathResolution)
+        for (int binNum = 1; binNum < numBins; binNum += pathResolution)
         {
             auto y = map(renderData[binNum]);
 
             if (!std::isnan(y) && !std::isinf(y))
             {
                 auto binFreq = binNum * binWidth;
-                auto normalizedBinX = juce::mapFromLog10(binFreq, 20.f, 20000.f);
-                float binX = std::floor(normalizedBinX * width);
-                p.lineTo(binX, y);
+                auto normalizedBinX = juce::mapFromLog10(binFreq, PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY);
+                float x = std::floor(normalizedBinX * width);
+                p.lineTo(x, y);
+
+              
             }
         }
 
-        p.lineTo(width, bottom);
-        p.lineTo(0, bottom);
+        p.lineTo(width, bottom + 50);
+        p.lineTo(0, bottom + 50);
 
-        pathFifo.push(p);
+        auto outputPath = p.juce::Path::createPathWithRoundedCorners(48.f);
+        pathFifo.push(outputPath);
     }
 
     int getNumPathsAvailable() const
@@ -68,10 +68,10 @@ struct AnalyzerPathGenerator
         return pathFifo.getNumAvailableForReading();
     }
 
-    bool getPath(PathType& path)
+    bool getPath(juce::Path& path)
     {
         return pathFifo.pull(path);
     }
 private:
-    Fifo<PathType> pathFifo;
+    Fifo<juce::Path> pathFifo;
 };

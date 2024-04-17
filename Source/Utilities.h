@@ -23,7 +23,7 @@ enum FFTOrder
 
 namespace PaxMBClip
 {
-    static constexpr float MIN_FREQUENCY = 20.f;
+    static constexpr float MIN_FREQUENCY = 5.f;
     static constexpr float MAX_FREQUENCY = 20000.f;
 
     static constexpr float NEG_INFINITY = -72.f;

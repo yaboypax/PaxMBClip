@@ -57,13 +57,13 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
                 previousFFTBinMagnitudes[i] = fftData[i];
             }
 
-            pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, negativeInfinity);
+            analyzerPathGenerator.generatePath(fftData, fftBounds, fftSize, binWidth, negativeInfinity);
        
         }
     }
 
-    while (pathProducer.getNumPathsAvailable() > 0)
+    while (analyzerPathGenerator.getNumPathsAvailable() > 0)
     {
-        pathProducer.getPath(monoChannelFFTPath);
+        analyzerPathGenerator.getPath(monoChannelFFTPath);
     }
 }

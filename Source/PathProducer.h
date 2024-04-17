@@ -20,6 +20,7 @@ struct PathProducer
     PathProducer(SingleChannelSampleFifo<PaxMBClipAudioProcessor::BlockType>& scsf) :
         monoChannelFifo(&scsf)
     {
+        
         monoChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);
         monoBuffer.setSize(1, monoChannelFFTDataGenerator.getFFTSize());
     }
@@ -38,7 +39,7 @@ private:
 
     FFTDataGenerator<std::vector<float>> monoChannelFFTDataGenerator;
 
-    AnalyzerPathGenerator<juce::Path> pathProducer;
+    AnalyzerPathGenerator analyzerPathGenerator;
 
     juce::Path monoChannelFFTPath;
 
