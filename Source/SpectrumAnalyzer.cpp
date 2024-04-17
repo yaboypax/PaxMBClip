@@ -12,6 +12,14 @@
 #include "Params.h"
 #include "Utilities.h"
 
+namespace
+{
+    constexpr int marginY = 32;
+    constexpr int size = 25;
+    constexpr int muteOffset = 51;
+    constexpr int soloOffset = 27;
+}
+
 SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     m_processor(p),
     inPathProducer(m_processor.monoInFifo),
@@ -599,17 +607,14 @@ void SpectrumAnalyzer::resized()
     m_lowMidX = mapX(m_lowCrossoverParam->get());
     m_midHighX = mapX(m_highCrossoverParam->get());
 
-    int marginY = 32;
-    int size = 25;
+    m_muteLowButton.setBounds(m_lowMidX - muteOffset, getHeight() - marginY, size, size);
+    m_soloLowButton.setBounds(m_lowMidX - soloOffset, getHeight() - marginY, size, size);
 
-    m_muteLowButton.setBounds(m_lowMidX - 45, getHeight() - marginY, size, size);
-    m_soloLowButton.setBounds(m_lowMidX - 24, getHeight() - marginY, size, size);
+    m_muteMidButton.setBounds(m_midHighX - muteOffset, getHeight() - marginY, size, size);
+    m_soloMidButton.setBounds(m_midHighX - soloOffset, getHeight() - marginY, size, size);
 
-    m_muteMidButton.setBounds(m_midHighX - 45, getHeight() - marginY, size, size);
-    m_soloMidButton.setBounds(m_midHighX - 24, getHeight() - marginY, size, size);
-
-    m_muteHighButton.setBounds(getWidth() - 45, getHeight() - marginY, size, size);
-    m_soloHighButton.setBounds(getWidth() - 24, getHeight() - marginY, size, size);
+    m_muteHighButton.setBounds(getWidth() - muteOffset, getHeight() - marginY, size, size);
+    m_soloHighButton.setBounds(getWidth() - soloOffset, getHeight() - marginY, size, size);
 }
 
 void SpectrumAnalyzer::parameterValueChanged(int parameterIndex, float newValue)

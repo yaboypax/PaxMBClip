@@ -51,8 +51,6 @@ struct AnalyzerPathGenerator
                 auto normalizedBinX = juce::mapFromLog10(binFreq, PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY);
                 float x = std::floor(normalizedBinX * width);
                 p.lineTo(x, y);
-
-              
             }
         }
 

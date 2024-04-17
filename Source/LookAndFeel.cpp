@@ -71,11 +71,11 @@ void ChompLookAndFeel::drawToggleButton(juce::Graphics& g,
 
         if (buttonText == "s")
         {
-            g.setColour(buttonIsOn ? juce::Colours::yellow : juce::Colours::black);
+            g.setColour(buttonIsOn ? juce::Colours::yellow.withAlpha(0.4f) : juce::Colours::black.withAlpha(0.1f));
         }
         else if (buttonText == "m")
         {
-            g.setColour(buttonIsOn ? juce::Colours::red : juce::Colours::black);
+            g.setColour(buttonIsOn ? juce::Colours::red.withAlpha(0.4f) : juce::Colours::black.withAlpha(0.1f));
         }
         
         g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
