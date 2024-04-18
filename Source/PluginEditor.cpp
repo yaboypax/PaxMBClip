@@ -6,6 +6,15 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     : AudioProcessorEditor(&p), m_processor(p)
 
 {
+    if (m_processor.getSavedSize().getX() != 0 && m_processor.getSavedSize().getY() != 0)
+    {
+        setSize(m_processor.getSavedSize().getX(), m_processor.getSavedSize().getY());
+    }
+    else
+    {
+        setSize(800, 500);
+    }
+
     setResizable(true, true);
     setResizeLimits(800, 500, 1600, 1000);
 
@@ -53,7 +62,7 @@ void PaxMBClipAudioProcessorEditor::resized()
     bounds.reduce(200, 100);
     settingsComponent.setBounds(bounds);
     
-    //m_resized.setSize(getWidth(), getHeight());
+    m_processor.setSavedSize(getWidth(), getHeight());
 }
 
 void PaxMBClipAudioProcessorEditor::toggleGlobalBypassState()

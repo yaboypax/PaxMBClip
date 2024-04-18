@@ -32,6 +32,11 @@ public:
     PaxMBClipAudioProcessor();
     ~PaxMBClipAudioProcessor() override;
 
+    juce::Point<int> m_savedSize;
+    juce::Point<int> getSavedSize() { return m_savedSize; }
+    void setSavedSize(int x, int y) { m_savedSize = { x, y }; }
+
+
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
