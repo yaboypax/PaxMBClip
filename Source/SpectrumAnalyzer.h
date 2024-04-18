@@ -42,8 +42,10 @@ public:
     void scrollClip(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
     void scrollGain(float deltaY, const float scrollSpeed, juce::AudioParameterFloat* param);
 
+    int mapFrequencyToX(const float frequency);
+    int mapXToFrequency(const int x);
+
     void createCrossoverSliders(const juce::Point<int> point);
-    int mapX(const float frequency);
     void deleteCrossoverSliders();
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
@@ -100,6 +102,8 @@ private:
 
     std::vector<std::shared_ptr<RotarySlider>> m_crossoverSliders;
     std::atomic<bool> m_showCrossoverSliders;
+
+    juce::Label m_frequencyDisplay;
 
 };
 
