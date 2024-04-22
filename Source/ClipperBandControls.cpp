@@ -171,6 +171,9 @@ void ClipperBandControls::paint(juce::Graphics& g)
 
 void ClipperBandControls::resized()
 {
+    
+    if (m_focus == BandFocus::unfocused)
+        return;
     //bypassButton.setBounds(buttonX, buttonY, buttonSize, buttonSize);
     //muteButton.setBounds(bypassButton.getRight() + margin, buttonY, buttonSize, buttonSize);
     //soloButton.setBounds(muteButton.getRight() + margin, buttonY, buttonSize, buttonSize);
