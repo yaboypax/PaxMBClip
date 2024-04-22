@@ -323,7 +323,6 @@ void SpectrumAnalyzer::mouseUp(const juce::MouseEvent& e)
 void SpectrumAnalyzer::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
 {
     const float scrollSpeed = 50.0f;
-    juce::AudioParameterFloat* param{ nullptr };
     bool isCmdDown = event.mods.isCommandDown();
 
     isCmdDown ? scrollGain(wheel.deltaY, scrollSpeed, nullptr) : scrollClip(wheel.deltaY, scrollSpeed, nullptr);

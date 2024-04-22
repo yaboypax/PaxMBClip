@@ -46,7 +46,7 @@ void Clipper::process(juce::AudioBuffer<float>& buffer)
 
     auto postRMS = computeRMSLevel(buffer);
     rmsInputLevelDb.store(juce::Decibels::gainToDecibels(preRMS));
-    rmsOutputLevelDb.store(juce::Decibels::gainToDecibels(preRMS));
+    rmsOutputLevelDb.store(juce::Decibels::gainToDecibels(postRMS));
 }
 
 void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, WaveType inWaveType)

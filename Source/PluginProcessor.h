@@ -4,7 +4,6 @@
 #include <JuceHeader.h>
 #include "Params.h"
 #include "Clip.h"
-#include "utilities.h"
 
 #include "Fifo.h"
 #include "SingleChannelSampleFifo.h"

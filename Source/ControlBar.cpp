@@ -36,8 +36,6 @@ void ControlBar::paint(juce::Graphics& g)
 
 void ControlBar::resized()
 {
-    auto bounds = getLocalBounds();
-
     globalBypassButton.setBounds(getWidth() - 54, getY() + 4, 50, getHeight() - 8);
     settingsButton.setBounds(globalBypassButton.getX() - 44, getY() + 4, 50, getHeight() - 8);
 }
