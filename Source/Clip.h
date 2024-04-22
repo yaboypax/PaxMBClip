@@ -16,11 +16,8 @@
 enum class WaveType
 {
     hard = 0,
-    quintic,
-    cubic,
-    tan,
-    alg,
-    arc
+    soft,
+    smooth
 };
 
 class Clipper
@@ -66,7 +63,7 @@ private:
 
     juce::dsp::Gain<float> bandGain;
 
-    WaveType m_waveType = WaveType::quintic;
+    WaveType m_waveType = WaveType::soft;
 
 
     template<typename T>

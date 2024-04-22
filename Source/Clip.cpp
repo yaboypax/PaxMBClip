@@ -65,23 +65,24 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, WaveType inWaveType)
 				newval = hardclip(bufferData[i]);
 				break;
 
-			case WaveType::quintic:
+            case WaveType::soft:
 				newval = quintic(bufferData[i]);
 				break;
 
-			case WaveType::cubic:
-				newval = cubicBasic(bufferData[i]);
-				break;
+                    
+//			case WaveType::cubic:
+//				newval = cubicBasic(bufferData[i]);
+//				break;
+//
+//			case WaveType::tan:
+//				newval = tanclip(bufferData[i], m_softness);
+//				break;
+//
+//			case WaveType::alg:
+//				newval = algclip(bufferData[i], m_softness);
+//				break;
 
-			case WaveType::tan:
-				newval = tanclip(bufferData[i], m_softness);
-				break;
-
-			case WaveType::alg:
-				newval = algclip(bufferData[i], m_softness);
-				break;
-
-			case WaveType::arc:
+			case WaveType::smooth:
 				newval = arcClip(bufferData[i], m_softness);
 				break;
 			}

@@ -124,12 +124,9 @@ struct SettingsButton : juce::TextButton
 struct WaveSelector : juce::ComboBox
 {
     juce::StringArray waveTypeNames = {
-        "Hard Clip",
-        "Quintic",
-        "Cubic",
-        "Hyperbolic Tan",
-        "Algebraic",
-        "Arctangent"
+        "Hard",
+        "Soft",
+        "Smooth"
     };
 
     WaveSelector()
