@@ -104,6 +104,7 @@ private:
     std::atomic<bool> m_showCrossoverSliders;
 
     juce::Label m_frequencyDisplay;
+    bool m_shouldDisplayWaveform = false;
 
 };
 

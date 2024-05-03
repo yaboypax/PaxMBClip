@@ -133,6 +133,8 @@ public:
 
     void toggleAnalyzer(bool isOn);
     bool getAnalyzerOn() { return isAnalyzerOn; }
+    juce::AudioVisualiserComponent m_waveformDisplay;
+
 private:
     //==============================================================================
     static const int m_forder = 12;

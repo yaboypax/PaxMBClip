@@ -36,6 +36,7 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     addChildComponent(m_frequencyDisplay);
     
     m_processor.addChangeListener(this);
+    addChildComponent(m_processor.m_waveformDisplay);
     startTimerHz(40);
 }
 
@@ -219,9 +220,9 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
             highlight.setRight(getWidth()-1);
             g.fillRect(highlight);
             break;
-
-
     }
+    m_processor.m_waveformDisplay.setBounds(highlight);
+    m_processor.m_waveformDisplay.toFront(false);
         
 
 
@@ -251,22 +252,23 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
 
 void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
 {
+    auto x = e.getMouseDownX();
+
+    if (x < m_lowMidX - 5)
+    {
+        m_processor.setBandFocus(BandFocus::Low);
+    }
+    else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
+    {
+        m_processor.setBandFocus(BandFocus::Mid);
+    }
+    else if (x > m_midHighX + 5)
+    {
+        m_processor.setBandFocus(BandFocus::High);
+    }
+
     if (e.mods.isLeftButtonDown())
     {
-        auto x = e.getMouseDownX();
-
-        if (x < m_lowMidX - 5)
-        {
-            m_processor.setBandFocus(BandFocus::Low);
-        }
-        else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
-        {
-            m_processor.setBandFocus(BandFocus::Mid);
-        }
-        else if (x > m_midHighX + 5)
-        {
-            m_processor.setBandFocus(BandFocus::High);
-        }
 
         if (x > m_lowMidX - 5 && x < m_lowMidX + 5)
         {
@@ -279,13 +281,11 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
     }
     else if (e.mods.isRightButtonDown())
     {
-        auto x = e.getMouseDownX();
-        auto y = e.getMouseDownY();
-        auto frequency = mapXToFrequency(x);
-
-        m_frequencyDisplay.setText(juce::String(frequency), juce::NotificationType::dontSendNotification);
-        m_frequencyDisplay.setBounds(x + 10, y, 100, 20);
-        m_frequencyDisplay.setVisible(true);
+        
+        m_shouldDisplayWaveform = !m_shouldDisplayWaveform;
+        m_processor.m_waveformDisplay.setVisible(m_shouldDisplayWaveform);
+        m_processor.m_waveformDisplay.toFront(false);
+        this->grabKeyboardFocus();
     }
 }
 
@@ -642,12 +642,8 @@ void SpectrumAnalyzer::timerCallback()
         outPathProducer.process(fftBounds, sampleRate);
     }
 
-    if (parametersChanged.compareAndSetBool(false, true))
-    {
-
-    }
-
     repaint();
+
 }
 
 juce::Rectangle<int> SpectrumAnalyzer::getRenderArea()

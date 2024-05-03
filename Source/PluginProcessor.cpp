@@ -26,9 +26,13 @@ PaxMBClipAudioProcessor::PaxMBClipAudioProcessor()
 #endif
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    )
+    ),
 #endif
+    m_waveformDisplay(1)
 {
+    m_waveformDisplay.setRepaintRate(40);
+    m_waveformDisplay.setBufferSize(256);
+
     initializeParameters();
     m_resizedBuffer = std::make_unique<juce::AudioBuffer<float>>(2, 0);
 }
@@ -353,7 +357,6 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
         //auto preContext = juce::dsp::ProcessContextReplacing<float>(preBlock);
         //m_oversamplingFilter1.process(preContext);
         m_oversamplingFilter1.process(m_resizedBuffer->getNumSamples(), m_resizedBuffer->getArrayOfWritePointers());
-
         splitBands(*m_resizedBuffer);
 
         for (size_t i = 0; i < filterBuffers.size(); ++i)
@@ -381,7 +384,11 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
 
         recombineBands(buffer);
     }
-
+    if (m_globalBandFocus != BandFocus::unfocused)
+    {
+        auto waveformDisplayBuffer = sumBufferToMono(filterBuffers[(size_t)m_globalBandFocus - 1]);
+        m_waveformDisplay.pushBuffer(waveformDisplayBuffer);
+    }
     if (m_postClip)
     {
         m_masterClip.masterClip(&buffer);
