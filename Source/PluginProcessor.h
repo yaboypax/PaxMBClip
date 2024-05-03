@@ -12,19 +12,46 @@
 #include "DspFilters/Dsp.h"
 
 
+template<class IIR>
+class FIR
+{
+public:
+    FIR(IIR i, size_t firOrder)
+        : iir(i)
+    {
+        firCoeff.resize(firOrder, 0.0f) :
+    }
+    void recordImpulseResponse() {
+        for (int i = 0; i < targetCoeff.size(); i++)
+        {
+            auto input = i == 0 ? 1.0f : 0.0f;
+            firCoeff[i] = iir(input);
+        }
+    }
+
+    IIR iir;
+    std::vector<float> firCoeff;
+};
+
 //====================================================================
 enum class BandFocus
 {
-    unfocused=0,
+    unfocused = 0,
     Low,
     Mid,
     High
 };
 
-class PaxMBClipAudioProcessor  : public juce::AudioProcessor, public juce::ChangeBroadcaster
-                            #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
-                            #endif 
+enum class PhaseResponse
+{
+    linear = 0,
+    minimum
+};
+
+class PaxMBClipAudioProcessor : public juce::AudioProcessor, public juce::ChangeBroadcaster
+#if JucePlugin_Enable_ARA
+    , public juce::AudioProcessorARAExtension
+#endif 
 {
 public:
     //==============================================================================
@@ -37,14 +64,14 @@ public:
 
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#ifndef JucePlugin_PreferredChannelConfigurations
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+#endif
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void splitBands(const juce::AudioBuffer<float>& inputBuffer);
     void recombineBands(juce::AudioBuffer<float>& buffer);
 
@@ -63,15 +90,15 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const juce::String getProgramName(int index) override;
+    void changeProgramName(int index, const juce::String& newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void getStateInformation(juce::MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
     void updateState();
-    
+
     void initializeParameters();
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
@@ -117,12 +144,18 @@ private:
     std::unique_ptr<juce::AudioBuffer<float>> m_resizedBuffer;
 
 
-    // Crossover Filters
-    using xOverFilter = juce::dsp::LinkwitzRileyFilter<float>;
-    //           fc0  fc1
-    xOverFilter  LP1, AP2,
-                 HP1, LP2,
-                 HP2;
+    // Minimum Phase Crossover Filters
+    using minimumPhaseFilter = juce::dsp::LinkwitzRileyFilter<float>;
+    //                  fc0  fc1
+    minimumPhaseFilter  LP1, AP2,
+        HP1, LP2,
+        HP2;
+
+    // Linear Phase Crossover Filters
+    using linearPhaseFilter = juce::dsp::IIR::Filter<float>;
+    linearPhaseFilter LP3, AP4,
+        HP3, LP4,
+        HP4;
 
     // Oversampling filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
@@ -131,8 +164,8 @@ private:
     // tilt filters for spectrum display
     using TiltFilter = juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>>;
     juce::dsp::ProcessorChain<TiltFilter, TiltFilter> m_tiltFilter;
-    
-    
+
+
     void overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans);
     const void decimate(juce::AudioBuffer<float>* upBuffer, juce::AudioBuffer<float>* downBuffer, int numchans);
 
@@ -144,6 +177,7 @@ private:
     juce::AudioParameterFloat* m_outputGainParam{ nullptr };
 
     BandFocus m_globalBandFocus = BandFocus::unfocused;
+    PhaseResponse m_phaseResponse = PhaseResponse::minimum;
 
     std::array<Clipper, 3> clippers;
     Clipper& lowBandClip = clippers[0];
@@ -157,11 +191,11 @@ private:
 
     bool isAnalyzerOn = true;
 
-    
-    
 
 
 
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PaxMBClipAudioProcessor)
+
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PaxMBClipAudioProcessor)
 };

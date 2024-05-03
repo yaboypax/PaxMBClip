@@ -1,18 +1,15 @@
 /*
   =============================================================================
-     
+
 
   Chomp - Multiband Clipper VST
 
   TO DO:
-  - top bar settings window
+  - Linear phase mode
   - preset menu
   - add support for waveform analyzer
     - switch analysis with current analyzer button in cb
     ? possible different display without bands
-  ? maybe smooth analysis splines (quinticTo() or cubicTo()  
-
-  - design release GUI
   =============================================================================
 */
 
@@ -91,12 +88,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
     using namespace Params;
     const auto& params = GetParams();
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Mid_Crossover_Freq), params.at(Names::Low_Mid_Crossover_Freq), juce::NormalisableRange<float> (PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY, 1.f, 0.2f), 200.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Low_Mid_Crossover_Freq), params.at(Names::Low_Mid_Crossover_Freq), juce::NormalisableRange<float>(PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY, 1.f, 0.2f), 200.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Mid_High_Crossover_Freq), params.at(Names::Mid_High_Crossover_Freq), juce::NormalisableRange<float>(PaxMBClip::MIN_FREQUENCY, PaxMBClip::MAX_FREQUENCY, 1.f, 0.2f), 2000.f));
 
     auto clipLow = -48.0f;
     auto clipHigh = 0.0f;
-    
+
     auto gainLow = -24.0f;
     auto gainHigh = 24.0f;
 
@@ -154,29 +151,29 @@ const juce::String PaxMBClipAudioProcessor::getName() const
 
 bool PaxMBClipAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool PaxMBClipAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool PaxMBClipAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double PaxMBClipAudioProcessor::getTailLengthSeconds() const
@@ -194,21 +191,21 @@ int PaxMBClipAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void PaxMBClipAudioProcessor::setCurrentProgram (int index)
+void PaxMBClipAudioProcessor::setCurrentProgram(int index)
 {
 }
 
-const juce::String PaxMBClipAudioProcessor::getProgramName (int index)
+const juce::String PaxMBClipAudioProcessor::getProgramName(int index)
 {
     return {};
 }
 
-void PaxMBClipAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void PaxMBClipAudioProcessor::changeProgramName(int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
@@ -227,6 +224,12 @@ void PaxMBClipAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     LP2.prepare(spec);
     HP2.prepare(spec);
     AP2.prepare(spec);
+
+    LP3.prepare(spec);
+    HP3.prepare(spec);
+    LP4.prepare(spec);
+    HP4.prepare(spec);
+    AP4.prepare(spec);
 
     setCrossoverFilters();
 
@@ -260,23 +263,23 @@ void PaxMBClipAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool PaxMBClipAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool PaxMBClipAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
+#if JucePlugin_IsMidiEffect
+    juce::ignoreUnused(layouts);
     return true;
-  #else
+#else
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-   #if ! JucePlugin_IsSynth
+#if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+#endif
 
     return true;
-  #endif
+#endif
 }
 #endif
 void PaxMBClipAudioProcessor::updateState()
@@ -290,6 +293,9 @@ void PaxMBClipAudioProcessor::updateState()
     LP1.setCutoffFrequency(lowMidCutoffFreq);
     HP1.setCutoffFrequency(lowMidCutoffFreq);
 
+    //LP3.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, lowMidCutoffFreq, 1.f, juce::Decibels::decibelsToGain(-6.f));;
+    //HP3.setCutoffFrequency(lowMidCutoffFreq);
+
     auto midHighCutoffFreq = midHighCrossover->get();
     AP2.setCutoffFrequency(midHighCutoffFreq);
     LP2.setCutoffFrequency(midHighCutoffFreq);
@@ -298,13 +304,13 @@ void PaxMBClipAudioProcessor::updateState()
     m_inputGain = m_inputGainParam->get();
     m_outputGain = m_outputGainParam->get();
     m_postClip = m_masterClipParam->get();
-    
+
 
 }
-void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
     m_resizedBuffer->setSize(buffer.getNumChannels(), buffer.getNumSamples() * m_oversample, false, true, true);
@@ -411,7 +417,7 @@ void PaxMBClipAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 void PaxMBClipAudioProcessor::overSampleZS(juce::AudioBuffer<float>* oldBuffer, juce::AudioBuffer<float>* newBuffer, int numchans)
 {
     for (int i = 0; i < oldBuffer->getNumSamples(); i++)
-    {       
+    {
         for (int j = 0; j < numchans; j++)
         {
             newBuffer->setSample(j, i * m_oversample, oldBuffer->getSample(j, i));
@@ -446,14 +452,28 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
     auto fb1Ctx = juce::dsp::ProcessContextReplacing<float>(fb1Block);
     auto fb2Ctx = juce::dsp::ProcessContextReplacing<float>(fb2Block);
 
-    LP1.process(fb0Ctx);
-    AP2.process(fb0Ctx);
+    if (m_phaseResponse == PhaseResponse::minimum)
+    {
+        LP1.process(fb0Ctx);
+        AP2.process(fb0Ctx);
 
-    HP1.process(fb1Ctx);
-    filterBuffers[2] = filterBuffers[1];
-    LP2.process(fb1Ctx);
+        HP1.process(fb1Ctx);
+        filterBuffers[2] = filterBuffers[1];
+        LP2.process(fb1Ctx);
 
-    HP2.process(fb2Ctx);
+        HP2.process(fb2Ctx);
+    }
+    else if (m_phaseResponse == PhaseResponse::linear)
+    {
+        LP3.process(fb0Ctx);
+        AP4.process(fb0Ctx);
+
+        HP3.process(fb1Ctx);
+        filterBuffers[2] = filterBuffers[1];
+        LP4.process(fb1Ctx);
+
+        HP4.process(fb2Ctx);
+    }
 }
 
 void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
@@ -481,10 +501,10 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
             auto& clipper = clippers[i];
             if (clipper.solo->get())
             {
-                    for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
-                    {
-                        buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
-                    }
+                for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
+                {
+                    buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
+                }
             }
         }
     }
@@ -495,10 +515,10 @@ void PaxMBClipAudioProcessor::recombineBands(juce::AudioBuffer<float>& buffer)
             auto& clipper = clippers[i];
             if (!clipper.mute->get())
             {
-                    for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
-                    {
-                        buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
-                    }
+                for (auto j = 0; j < filterBuffers[i].getNumChannels(); ++j)
+                {
+                    buffer.addFrom(j, 0, filterBuffers[i], j, 0, numSamples);
+                }
             }
         }
     }
@@ -528,17 +548,17 @@ bool PaxMBClipAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* PaxMBClipAudioProcessor::createEditor()
 {
-    return new PaxMBClipAudioProcessorEditor (*this);
+    return new PaxMBClipAudioProcessorEditor(*this);
 }
 
 //==============================================================================
-void PaxMBClipAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void PaxMBClipAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     juce::MemoryOutputStream mos(destData, true);
     apvts.state.writeToStream(mos);
 }
 
-void PaxMBClipAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void PaxMBClipAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
     if (tree.isValid())
