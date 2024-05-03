@@ -32,6 +32,9 @@ PaxMBClipAudioProcessor::PaxMBClipAudioProcessor()
 {
     m_waveformDisplay.setRepaintRate(40);
     m_waveformDisplay.setBufferSize(256);
+    m_waveformDisplay.setOpaque(false);
+    m_waveformDisplay.setInterceptsMouseClicks(false, false);
+    m_waveformDisplay.setColours(juce::Colours::transparentBlack, juce::Colours::white);
 
     initializeParameters();
     m_resizedBuffer = std::make_unique<juce::AudioBuffer<float>>(2, 0);

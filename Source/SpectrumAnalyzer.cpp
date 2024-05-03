@@ -223,9 +223,6 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     }
     m_processor.m_waveformDisplay.setBounds(highlight);
     m_processor.m_waveformDisplay.toFront(false);
-        
-
-
 
 
     auto mapGainY = [bottom, top](float db) {
@@ -281,11 +278,8 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
     }
     else if (e.mods.isRightButtonDown())
     {
-        
         m_shouldDisplayWaveform = !m_shouldDisplayWaveform;
         m_processor.m_waveformDisplay.setVisible(m_shouldDisplayWaveform);
-        m_processor.m_waveformDisplay.toFront(false);
-        this->grabKeyboardFocus();
     }
 }
 
