@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="txlWKD" name="PaxMBClip" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="txlWKD" name="Chomp" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginManufacturer="Ya Boy Pax"
               pluginManufacturerCode="Paxx" pluginCode="PxMB" companyName="Ya Boy Pax"
-              headerPath="C:\Users\Audio\Documents\DEV\PaxMBClip\Source\" pluginFormats="buildAUv3,buildStandalone,buildVST,buildVST3">
-  <MAINGROUP id="US7dj6" name="PaxMBClip">
+              headerPath="C:\Users\Audio\Documents\DEV\PaxMBClip\Source\" pluginFormats="buildAUv3,buildStandalone,buildVST,buildVST3"
+              version="0.0.2">
+  <MAINGROUP id="US7dj6" name="Chomp">
     <GROUP id="{AC27110F-D163-C661-DD6C-31DD50FE3EBF}" name="Source">
       <GROUP id="{45DAA369-4CF4-AD2C-344C-7DCBF3FB704B}" name="dspfcpp">
         <FILE id="wLoZ8q" name="Bessel.cpp" compile="1" resource="0" file="Source/dspfcpp/Bessel.cpp"/>
