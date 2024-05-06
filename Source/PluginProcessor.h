@@ -189,7 +189,7 @@ private:
                         HP1, LP2,
                         HP2;
 
-    juce::dsp::FIR::Filter<float> FIR1, FIR2, FIR3, FIR4, FIR5;
+    juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>> FIR1, FIR2, FIR3, FIR4, FIR5;
 
     // Linear Phase Crossover Filters
     //using linearPhaseFilter = Falco::Dsp::SimpleFilter <Falco::Dsp::Bessel::LowPass <m_forder>, 2>;
@@ -222,6 +222,7 @@ private:
 
     BandFocus m_globalBandFocus = BandFocus::unfocused;
     PhaseResponse m_phaseResponse = PhaseResponse::minimum;
+    juce::AudioParameterInt* m_phaseResponseParam{ nullptr };
 
     std::array<Clipper, 3> clippers;
     Clipper& lowBandClip = clippers[0];
@@ -232,7 +233,6 @@ private:
     Clipper m_masterClip;
     bool m_postClip = false;
     juce::AudioParameterBool* m_masterClipParam{ nullptr };
-
     bool isAnalyzerOn = true;
 
 
@@ -249,19 +249,12 @@ private:
         captureImpulseResponse(LP2, impulseResponse4);
         captureImpulseResponse(HP2, impulseResponse5);
 
-        // Create FIR coefficients from the impulse responses
-        auto coefficients1 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse1.data(), impulseResponse1.size());
-        auto coefficients2 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse2.data(), impulseResponse2.size());
-        auto coefficients3 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse3.data(), impulseResponse3.size());
-        auto coefficients4 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse4.data(), impulseResponse4.size());
-        auto coefficients5 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse5.data(), impulseResponse5.size());
-
         // Initialize FIR filters using the coefficients
-        FIR1.coefficients = juce::ReferenceCountedObjectPtr(coefficients1.get());
-        FIR2.coefficients = juce::ReferenceCountedObjectPtr(coefficients2.get());
-        FIR3.coefficients = juce::ReferenceCountedObjectPtr(coefficients3.get());
-        FIR4.coefficients = juce::ReferenceCountedObjectPtr(coefficients4.get());
-        FIR5.coefficients = juce::ReferenceCountedObjectPtr(coefficients5.get());
+        *FIR1.state = juce::dsp::FIR::Coefficients<float>(impulseResponse1.data(), impulseResponse1.size());
+        *FIR2.state = juce::dsp::FIR::Coefficients<float>(impulseResponse2.data(), impulseResponse2.size());
+        *FIR3.state = juce::dsp::FIR::Coefficients<float>(impulseResponse3.data(), impulseResponse3.size());
+        *FIR4.state = juce::dsp::FIR::Coefficients<float>(impulseResponse4.data(), impulseResponse4.size());
+        *FIR5.state = juce::dsp::FIR::Coefficients<float>(impulseResponse5.data(), impulseResponse5.size());
     }
 
     void captureImpulseResponse(juce::dsp::LinkwitzRileyFilter<float>& filter, std::vector<float>& response)

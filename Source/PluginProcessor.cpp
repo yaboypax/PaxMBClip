@@ -84,6 +84,7 @@ void PaxMBClipAudioProcessor::initializeParameters()
 
     m_masterClipParam = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Master_Clip)));
     m_masterClip.waveType = dynamic_cast<juce::AudioParameterInt*>(apvts.getParameter(params.at(Names::Master_Wave)));
+    m_phaseResponseParam = dynamic_cast<juce::AudioParameterInt*>(apvts.getParameter(params.at(Names::Phase_Response)));
 
 
 }
@@ -130,9 +131,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout PaxMBClipAudioProcessor::cre
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_In), params.at(Names::Gain_In), gainLow, gainHigh, 0.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Names::Gain_Out), params.at(Names::Gain_Out), gainLow, gainHigh, 0.0f));
+
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Oversample), params.at(Names::Oversample), 0, 5, 1));
     layout.add(std::make_unique<juce::AudioParameterBool>(params.at(Names::Master_Clip), params.at(Names::Master_Clip), false));
     layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Master_Wave), params.at(Names::Master_Wave), 0, 2, 0));
+    layout.add(std::make_unique<juce::AudioParameterInt>(params.at(Names::Phase_Response), params.at(Names::Phase_Response), 0, 1, 1));
 
     return layout;
 }
@@ -232,11 +235,13 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     HP2.prepare(spec);
     AP2.prepare(spec);
 
-    FIR1.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
-    FIR2.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
-    FIR3.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
-    FIR4.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
-    FIR5.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
+    setCrossoverFilters();
+
+    FIR1.prepare(spec);
+    FIR2.prepare(spec);
+    FIR3.prepare(spec);
+    FIR4.prepare(spec);
+    FIR5.prepare(spec);
 
         
     m_oversamplingFilter1.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
@@ -304,6 +309,7 @@ void PaxMBClipAudioProcessor::updateState()
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
 
+    m_phaseResponse = static_cast<PhaseResponse>(m_phaseResponseParam->get());
     if (m_phaseResponse == PhaseResponse::linear)
     {
         createFIRFilters();

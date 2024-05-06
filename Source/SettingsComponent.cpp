@@ -53,6 +53,17 @@ SettingsComponent::SettingsComponent(PaxMBClipAudioProcessor& inProcessor)
     m_analyzerLabel.attachToComponent(&m_analyzerToggle, true);
     addAndMakeVisible(m_analyzerLabel);
 
+    m_phaseSetting.addItem("linear", 1);
+    m_phaseSetting.addItem("minimum", 2);
+    m_phaseSetting.setSelectedId(2, true);
+    makeAttachment(m_phaseSettingAttachment, m_processor->apvts, params, Names::Phase_Response, m_phaseSetting);
+    m_phaseSetting.setLookAndFeel(chompLAF);
+    addAndMakeVisible(m_phaseSetting);
+
+    m_phaseSettingLabel.setText("Phase Response", juce::NotificationType::dontSendNotification);
+    m_phaseSettingLabel.attachToComponent(&m_phaseSetting, true);
+    addAndMakeVisible(m_phaseSettingLabel);
+
 }
 
 void SettingsComponent::paint(juce::Graphics& g)
@@ -71,4 +82,5 @@ void SettingsComponent::resized()
     m_oversamplingSelection.setBounds(getWidth()/2, static_cast<int>(getHeight() * 0.2f), 120, 24);
     m_masterWave.setBounds(getWidth() / 2, m_oversamplingSelection.getBottom() + 5, 120, 24);
     m_analyzerToggle.setBounds(getWidth() / 2, m_masterWave.getBottom() + 5, 120, 24);
+    m_phaseSetting.setBounds(getWidth() / 2, m_analyzerToggle.getBottom() + 5, 120, 24);
 }

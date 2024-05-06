@@ -34,4 +34,8 @@ private:
 
     juce::ComboBox m_analyzerToggle;
     juce::Label m_analyzerLabel;
+
+    juce::ComboBox m_phaseSetting;
+    std::unique_ptr<ComboAttachment> m_phaseSettingAttachment;
+    juce::Label m_phaseSettingLabel;
 };
