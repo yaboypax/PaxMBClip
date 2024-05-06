@@ -8,9 +8,9 @@
 #include "Fifo.h"
 #include "SingleChannelSampleFifo.h"
 #include <array>
-
 #include "DspFilters/Dsp.h"
 
+constexpr int impulseSize = 128;
 
 template<class IIR>
 class FIR
@@ -21,6 +21,20 @@ public:
     {
         firCoeff.resize(firOrder, 0.0f) :
     }
+    
+    void prepare(const juce::dsp::ProcessSpec& spec)
+    {
+        firFilter.prepare(spec); 
+    }
+
+    void process(const juce::dsp::AudioBlock<float>& block)
+    {
+        juce::dsp::ProcessContextReplacing<float> context(block);
+        firFilter.process(context);
+    }
+
+private:
+
     void recordImpulseResponse() {
         for (int i = 0; i < targetCoeff.size(); i++)
         {
@@ -28,9 +42,31 @@ public:
             firCoeff[i] = iir(input);
         }
     }
+    void applyWindowFunction(std::vector<float>& coefficients)
+    {
+        // Hamming window
+        size_t size = coefficients.size();
+        for (size_t i = 0; i < size; ++i)
+        {
+            float windowValue = 0.54 - 0.46 * cos(2 * M_PI * i / (size - 1));
+            coefficients[i] *= windowValue;
+        }
+    }
+
+    void createSymmetricFIR()
+    {
+        std::vector<float> coefficients;
+        coefficients.insert(coefficients.end(), firCoeff.begin(), firCoeff.end());
+        coefficients.insert(coefficients.end(), firCoeff.rbegin(), firCoeff.rend());
+
+        applyWindowFunction(coefficients);
+
+        firFilter.setCoefficients(coefficients);
+    }
 
     IIR iir;
     std::vector<float> firCoeff;
+    juce::dsp::FIR::Filter<float> firFilter;
 };
 
 //====================================================================
@@ -150,16 +186,22 @@ private:
     using minimumPhaseFilter = juce::dsp::LinkwitzRileyFilter<float>;
     //                  fc0  fc1
     minimumPhaseFilter  LP1, AP2,
-        HP1, LP2,
-        HP2;
+                        HP1, LP2,
+                        HP2;
+
+    juce::dsp::FIR::Filter<float> FIR1, FIR2, FIR3, FIR4, FIR5;
 
     // Linear Phase Crossover Filters
-    using linearPhaseFilter = juce::dsp::IIR::Filter<float>;
-    linearPhaseFilter LP3, AP4,
-        HP3, LP4,
-        HP4;
+    //using linearPhaseFilter = Falco::Dsp::SimpleFilter <Falco::Dsp::Bessel::LowPass <m_forder>, 2>;
+    //linearPhaseFilter iLP3, iAP4,
+    //                  iHP3, iLP4,
+    //                  iHP4;
 
-    // Oversampling filters (butterworth)
+   // FIR<IIRFilter> fLP3, fAP4,
+   //                fHP3, fLP4,
+   //                fHP4;
+
+    // OversamplingiHP4; filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
     OversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
 
@@ -194,6 +236,53 @@ private:
     bool isAnalyzerOn = true;
 
 
+    void createFIRFilters()
+    {
+
+        // Vectors to hold the captured impulse responses
+        std::vector<float> impulseResponse1, impulseResponse2, impulseResponse3, impulseResponse4, impulseResponse5;
+
+        // Capture the impulse responses
+        captureImpulseResponse(LP1, impulseResponse1);
+        captureImpulseResponse(AP2, impulseResponse2);
+        captureImpulseResponse(HP1, impulseResponse3);
+        captureImpulseResponse(LP2, impulseResponse4);
+        captureImpulseResponse(HP2, impulseResponse5);
+
+        // Create FIR coefficients from the impulse responses
+        auto coefficients1 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse1.data(), impulseResponse1.size());
+        auto coefficients2 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse2.data(), impulseResponse2.size());
+        auto coefficients3 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse3.data(), impulseResponse3.size());
+        auto coefficients4 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse4.data(), impulseResponse4.size());
+        auto coefficients5 = std::make_shared<juce::dsp::FIR::Coefficients<float>>(impulseResponse5.data(), impulseResponse5.size());
+
+        // Initialize FIR filters using the coefficients
+        FIR1.coefficients = juce::ReferenceCountedObjectPtr(coefficients1.get());
+        FIR2.coefficients = juce::ReferenceCountedObjectPtr(coefficients2.get());
+        FIR3.coefficients = juce::ReferenceCountedObjectPtr(coefficients3.get());
+        FIR4.coefficients = juce::ReferenceCountedObjectPtr(coefficients4.get());
+        FIR5.coefficients = juce::ReferenceCountedObjectPtr(coefficients5.get());
+    }
+
+    void captureImpulseResponse(juce::dsp::LinkwitzRileyFilter<float>& filter, std::vector<float>& response)
+    {
+        response.resize(impulseSize, 0.0f);
+
+        // Create an impulse signal
+        juce::AudioBuffer<float> impulseBuffer(1, impulseSize);
+        impulseBuffer.clear();
+        impulseBuffer.setSample(0, 0, 1.0f); // Set the first sample to 1 (impulse)
+
+        juce::dsp::AudioBlock<float> block(impulseBuffer);
+        juce::dsp::ProcessContextReplacing<float> context(block);
+
+        filter.prepare({ 44100, (juce::uint32)impulseSize, 1 });
+        filter.process(context);
+
+        // Copy the response
+        for (int i = 0; i < impulseSize; ++i)
+            response[i] = impulseBuffer.getSample(0, i);
+    }
 
 
 

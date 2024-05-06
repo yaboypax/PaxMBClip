@@ -232,14 +232,13 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     HP2.prepare(spec);
     AP2.prepare(spec);
 
-    LP3.prepare(spec);
-    HP3.prepare(spec);
-    LP4.prepare(spec);
-    HP4.prepare(spec);
-    AP4.prepare(spec);
+    FIR1.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
+    FIR2.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
+    FIR3.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
+    FIR4.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
+    FIR5.prepare({ sampleRate, (juce::uint32)impulseSize, 1 });
 
-    setCrossoverFilters();
-
+        
     m_oversamplingFilter1.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
 
@@ -300,13 +299,15 @@ void PaxMBClipAudioProcessor::updateState()
     LP1.setCutoffFrequency(lowMidCutoffFreq);
     HP1.setCutoffFrequency(lowMidCutoffFreq);
 
-    //LP3.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, lowMidCutoffFreq, 1.f, juce::Decibels::decibelsToGain(-6.f));;
-    //HP3.setCutoffFrequency(lowMidCutoffFreq);
-
     auto midHighCutoffFreq = midHighCrossover->get();
     AP2.setCutoffFrequency(midHighCutoffFreq);
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
+
+    if (m_phaseResponse == PhaseResponse::linear)
+    {
+        createFIRFilters();
+    }
 
     m_inputGain = m_inputGainParam->get();
     m_outputGain = m_outputGainParam->get();
@@ -332,6 +333,7 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
     juce::dsp::AudioBlock<float> inBlock(spectrumInputBuffer);
     juce::dsp::ProcessContextReplacing<float> inContext(inBlock);
     m_tiltFilter.process(inContext);
+    
 
     spectrumInputBuffer.applyGain(juce::Decibels::decibelsToGain(12.f));
     monoInFifo.update(sumBufferToMono(spectrumInputBuffer));
@@ -475,14 +477,11 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
     }
     else if (m_phaseResponse == PhaseResponse::linear)
     {
-        LP3.process(fb0Ctx);
-        AP4.process(fb0Ctx);
-
-        HP3.process(fb1Ctx);
-        filterBuffers[2] = filterBuffers[1];
-        LP4.process(fb1Ctx);
-
-        HP4.process(fb2Ctx);
+        FIR1.process(fb0Ctx);
+        FIR2.process(fb0Ctx);
+        FIR3.process(fb1Ctx);
+        FIR4.process(fb1Ctx);
+        FIR5.process(fb2Ctx);
     }
 }
 
