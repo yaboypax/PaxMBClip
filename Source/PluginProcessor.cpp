@@ -366,12 +366,8 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
     if (m_oversample > 1)
     {
         overSampleZS(&buffer, m_resizedBuffer.get(), buffer.getNumChannels());
-
         m_resizedBuffer->applyGain(m_oversample);
 
-        //auto preBlock = juce::dsp::AudioBlock<float>(*m_resizedBuffer);
-        //auto preContext = juce::dsp::ProcessContextReplacing<float>(preBlock);
-        //m_oversamplingFilter1.process(preContext);
         m_oversamplingFilter1.process(m_resizedBuffer->getNumSamples(), m_resizedBuffer->getArrayOfWritePointers());
         splitBands(*m_resizedBuffer);
 
@@ -381,10 +377,6 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
         }
 
         recombineBands(*m_resizedBuffer);
-
-        //auto postBlock = juce::dsp::AudioBlock<float>(*m_resizedBuffer);
-        //auto postContext = juce::dsp::ProcessContextReplacing<float>(postBlock);
-        //m_oversamplingFilter2.process(postContext);
         m_oversamplingFilter2.process(m_resizedBuffer->getNumSamples(), m_resizedBuffer->getArrayOfWritePointers());
 
         decimate(m_resizedBuffer.get(), &buffer, buffer.getNumChannels());

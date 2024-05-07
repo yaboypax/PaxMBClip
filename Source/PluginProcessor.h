@@ -12,63 +12,6 @@
 
 constexpr int impulseSize = 128;
 
-template<class IIR>
-class FIR
-{
-public:
-    FIR(IIR i, size_t firOrder)
-        : iir(i)
-    {
-        firCoeff.resize(firOrder, 0.0f) :
-    }
-    
-    void prepare(const juce::dsp::ProcessSpec& spec)
-    {
-        firFilter.prepare(spec); 
-    }
-
-    void process(const juce::dsp::AudioBlock<float>& block)
-    {
-        juce::dsp::ProcessContextReplacing<float> context(block);
-        firFilter.process(context);
-    }
-
-private:
-
-    void recordImpulseResponse() {
-        for (int i = 0; i < targetCoeff.size(); i++)
-        {
-            auto input = i == 0 ? 1.0f : 0.0f;
-            firCoeff[i] = iir(input);
-        }
-    }
-    void applyWindowFunction(std::vector<float>& coefficients)
-    {
-        // Hamming window
-        size_t size = coefficients.size();
-        for (size_t i = 0; i < size; ++i)
-        {
-            float windowValue = 0.54 - 0.46 * cos(2 * M_PI * i / (size - 1));
-            coefficients[i] *= windowValue;
-        }
-    }
-
-    void createSymmetricFIR()
-    {
-        std::vector<float> coefficients;
-        coefficients.insert(coefficients.end(), firCoeff.begin(), firCoeff.end());
-        coefficients.insert(coefficients.end(), firCoeff.rbegin(), firCoeff.rend());
-
-        applyWindowFunction(coefficients);
-
-        firFilter.setCoefficients(coefficients);
-    }
-
-    IIR iir;
-    std::vector<float> firCoeff;
-    juce::dsp::FIR::Filter<float> firFilter;
-};
-
 //====================================================================
 enum class BandFocus
 {
