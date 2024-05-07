@@ -249,8 +249,8 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
    
 
         
-    m_oversamplingFilter1.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
-    m_oversamplingFilter2.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
+    m_oversamplingFilter1.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
+    m_oversamplingFilter2.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
 
     m_tiltFilter.prepare(spec);
     *m_tiltFilter.get<0>().state = *juce::dsp::IIR::Coefficients<float>::makeLowShelf(sampleRate, 1200, 1.f, juce::Decibels::decibelsToGain(-6.f));
@@ -267,7 +267,7 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     monoOutFifo.prepare(samplesPerBlock);
     rightOutFifo.prepare(samplesPerBlock);
 
-    m_resizedBuffer->setSize(2, samplesPerBlock * m_maxOversample, false, true, false);
+    m_resizedBuffer->setSize(2, samplesPerBlock * kMaxOversample, false, true, false);
     m_resizedBuffer->clear();
 
     levelMeterSourceIn.resize(2, ceil((8192.0 / samplesPerBlock) * (sampleRate / 48000)));

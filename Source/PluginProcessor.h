@@ -10,7 +10,12 @@
 #include <array>
 #include "DspFilters/Dsp.h"
 
-constexpr int impulseSize = 128;
+namespace
+{
+    constexpr int impulseSize = 128;
+    constexpr int kFOrder = 12;
+    constexpr int kMaxOversample = 32;
+}
 
 //====================================================================
 enum class BandFocus
@@ -116,8 +121,6 @@ public:
 
 private:
     //==============================================================================
-    static const int m_forder = 12;
-    const int m_maxOversample = 32;
     const float m_sampleShift = 0.0;
 
 
@@ -137,7 +140,7 @@ private:
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> m_delayLine;
 
     // OversamplingiHP4; filters (butterworth)
-    using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
+    using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <kFOrder>, 2>;
     OversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
 
     // tilt filters for spectrum display
