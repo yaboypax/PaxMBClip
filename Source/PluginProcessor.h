@@ -191,15 +191,7 @@ private:
 
     juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>> FIR1, FIR2, FIR3, FIR4, FIR5;
 
-    // Linear Phase Crossover Filters
-    //using linearPhaseFilter = Falco::Dsp::SimpleFilter <Falco::Dsp::Bessel::LowPass <m_forder>, 2>;
-    //linearPhaseFilter iLP3, iAP4,
-    //                  iHP3, iLP4,
-    //                  iHP4;
-
-   // FIR<IIRFilter> fLP3, fAP4,
-   //                fHP3, fLP4,
-   //                fHP4;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> m_delayLine;
 
     // OversamplingiHP4; filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <m_forder>, 2>;
@@ -275,6 +267,29 @@ private:
         // Copy the response
         for (int i = 0; i < impulseSize; ++i)
             response[i] = impulseBuffer.getSample(0, i);
+    }
+
+
+    void forwardBackwardProcess(juce::AudioBuffer<float>& buffer,
+        juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>>& filter)
+    {
+        auto block = juce::dsp::AudioBlock<float>(buffer);
+        auto context = juce::dsp::ProcessContextReplacing<float>(block);
+
+        filter.process(context);
+        buffer.reverse(0, buffer.getNumSamples());
+
+        auto reverseBlock = juce::dsp::AudioBlock<float>(buffer);
+        auto reverseContext = juce::dsp::ProcessContextReplacing<float>(block);
+
+        filter.process(reverseContext);
+        buffer.reverse(0, buffer.getNumSamples());
+
+        auto delayBlock = juce::dsp::AudioBlock<float>(buffer);
+        auto delayContext = juce::dsp::ProcessContextReplacing<float>(block);
+
+        m_delayLine.process(delayContext);
+
     }
 
 

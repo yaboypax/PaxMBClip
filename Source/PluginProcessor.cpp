@@ -243,6 +243,11 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     FIR4.prepare(spec);
     FIR5.prepare(spec);
 
+    m_delayLine.prepare(spec);
+    m_delayLine.setMaximumDelayInSamples(impulseSize);
+    m_delayLine.setDelay(static_cast<float>((impulseSize - 1) / 2));
+   
+
         
     m_oversamplingFilter1.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(m_forder, sampleRate * m_oversample, calcCutoff(sampleRate));
@@ -462,16 +467,16 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
         fb = inputBuffer;
     }
 
-    auto fb0Block = juce::dsp::AudioBlock<float>(filterBuffers[0]);
-    auto fb1Block = juce::dsp::AudioBlock<float>(filterBuffers[1]);
-    auto fb2Block = juce::dsp::AudioBlock<float>(filterBuffers[2]);
-
-    auto fb0Ctx = juce::dsp::ProcessContextReplacing<float>(fb0Block);
-    auto fb1Ctx = juce::dsp::ProcessContextReplacing<float>(fb1Block);
-    auto fb2Ctx = juce::dsp::ProcessContextReplacing<float>(fb2Block);
-
     if (m_phaseResponse == PhaseResponse::minimum)
     {
+        auto fb0Block = juce::dsp::AudioBlock<float>(filterBuffers[0]);
+        auto fb1Block = juce::dsp::AudioBlock<float>(filterBuffers[1]);
+        auto fb2Block = juce::dsp::AudioBlock<float>(filterBuffers[2]);
+
+        auto fb0Ctx = juce::dsp::ProcessContextReplacing<float>(fb0Block);
+        auto fb1Ctx = juce::dsp::ProcessContextReplacing<float>(fb1Block);
+        auto fb2Ctx = juce::dsp::ProcessContextReplacing<float>(fb2Block);
+
         LP1.process(fb0Ctx);
         AP2.process(fb0Ctx);
 
@@ -483,11 +488,14 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
     }
     else if (m_phaseResponse == PhaseResponse::linear)
     {
-        FIR1.process(fb0Ctx);
-        FIR2.process(fb0Ctx);
-        FIR3.process(fb1Ctx);
-        FIR4.process(fb1Ctx);
-        FIR5.process(fb2Ctx);
+        forwardBackwardProcess(filterBuffers[0], FIR1);
+        forwardBackwardProcess(filterBuffers[0], FIR2);
+
+        forwardBackwardProcess(filterBuffers[1], FIR3);
+        filterBuffers[2] = filterBuffers[1];
+        forwardBackwardProcess(filterBuffers[1], FIR4);
+
+        forwardBackwardProcess(filterBuffers[2], FIR5);
     }
 }
 
