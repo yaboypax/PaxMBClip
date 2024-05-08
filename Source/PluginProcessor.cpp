@@ -242,12 +242,6 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     FIR3.prepare(spec);
     FIR4.prepare(spec);
     FIR5.prepare(spec);
-
-    m_delayLine.prepare(spec);
-    m_delayLine.setMaximumDelayInSamples(impulseSize);
-    m_delayLine.setDelay(static_cast<float>((impulseSize - 1) / 2));
-   
-
         
     m_oversamplingFilter1.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
@@ -363,6 +357,8 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
 
     levelMeterSourceIn.measureBlock(buffer);
 
+
+
     if (m_oversample > 1)
     {
         overSampleZS(&buffer, m_resizedBuffer.get(), buffer.getNumChannels());
@@ -392,6 +388,7 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
 
         recombineBands(buffer);
     }
+
     if (m_globalBandFocus != BandFocus::unfocused)
     {
         auto waveformDisplayBuffer = sumBufferToMono(filterBuffers[(size_t)m_globalBandFocus - 1]);

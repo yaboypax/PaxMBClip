@@ -137,8 +137,6 @@ private:
 
     juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>> FIR1, FIR2, FIR3, FIR4, FIR5;
 
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> m_delayLine;
-
     // OversamplingiHP4; filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <kFOrder>, 2>;
     OversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
@@ -173,6 +171,32 @@ private:
     juce::AudioParameterBool* m_masterClipParam{ nullptr };
     bool isAnalyzerOn = true;
 
+    void applyWindowFunction(std::vector<float>& coefficients)
+    {
+        // Hamming window
+        size_t size = coefficients.size();
+        for (size_t i = 0; i < size; ++i)
+        {
+            float windowValue = 0.54 - 0.46 * cos(2 * M_PI * i / (size - 1));
+            coefficients[i] *= windowValue;
+        }
+    }
+
+    void delayBuffer(juce::AudioBuffer<float>& buffer, int delaySamples)
+    {
+        const int numChannels = buffer.getNumChannels();
+        const int numSamples = buffer.getNumSamples();
+
+        juce::AudioBuffer<float> delayedBuffer(numChannels, numSamples + delaySamples);
+
+        delayedBuffer.clear();
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            delayedBuffer.copyFrom(ch, delaySamples, buffer, ch, 0, numSamples);
+        }
+        buffer = delayedBuffer;
+    }
+
 
     void createFIRFilters()
     {
@@ -206,36 +230,56 @@ private:
 
         juce::dsp::AudioBlock<float> block(impulseBuffer);
         juce::dsp::ProcessContextReplacing<float> context(block);
-
-        filter.prepare({ 44100, (juce::uint32)impulseSize, 1 });
         filter.process(context);
 
         // Copy the response
-        for (int i = 0; i < impulseSize; ++i)
-            response[i] = impulseBuffer.getSample(0, i);
+        for (int channel = 0; channel < impulseBuffer.getNumChannels(); ++channel)
+        {
+            for (int i = 0; i < impulseSize; ++i)
+                response[i] = impulseBuffer.getSample(channel, i);
+        }
     }
 
 
     void forwardBackwardProcess(juce::AudioBuffer<float>& buffer,
         juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>>& filter)
     {
-        auto block = juce::dsp::AudioBlock<float>(buffer);
+        juce::ScopedNoDenormals noDenormals;
+
+        const int filterLength = filter.state->getFilterOrder();
+        const int groupDelay = filterLength - 1;
+
+        const int numChannels = buffer.getNumChannels();
+        const int numSamples = buffer.getNumSamples();
+
+        juce::AudioBuffer<float> processingBuffer(numChannels, numSamples + groupDelay * 2);
+        processingBuffer.clear();
+
+        // initial group delay offset
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            processingBuffer.copyFrom(ch, groupDelay, buffer, ch, 0, numSamples);
+        }
+
+        // Forward filtering
+        auto block = juce::dsp::AudioBlock<float>(processingBuffer);
         auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
         filter.process(context);
-        buffer.reverse(0, buffer.getNumSamples());
+        processingBuffer.reverse(0, processingBuffer.getNumSamples());
 
-        auto reverseBlock = juce::dsp::AudioBlock<float>(buffer);
-        auto reverseContext = juce::dsp::ProcessContextReplacing<float>(block);
+        // Reverse Filtering
+        auto reverseBlock = juce::dsp::AudioBlock<float>(processingBuffer);
+        auto reverseContext = juce::dsp::ProcessContextReplacing<float>(reverseBlock);
 
         filter.process(reverseContext);
-        buffer.reverse(0, buffer.getNumSamples());
+        processingBuffer.reverse(0, processingBuffer.getNumSamples());
 
-        auto delayBlock = juce::dsp::AudioBlock<float>(buffer);
-        auto delayContext = juce::dsp::ProcessContextReplacing<float>(block);
-
-        m_delayLine.process(delayContext);
-
+        // Remove group delay
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            buffer.copyFrom(ch, 0, processingBuffer, ch, groupDelay, numSamples);
+        }
     }
 
 
