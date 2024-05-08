@@ -12,7 +12,7 @@
 
 namespace
 {
-    constexpr int impulseSize = 128;
+    constexpr int kImpulseSize = 128;
     constexpr int kFOrder = 12;
     constexpr int kMaxOversample = 32;
 }
@@ -221,10 +221,10 @@ private:
 
     void captureImpulseResponse(juce::dsp::LinkwitzRileyFilter<float>& filter, std::vector<float>& response)
     {
-        response.resize(impulseSize, 0.0f);
+        response.resize(kImpulseSize, 0.0f);
 
         // Create an impulse signal
-        juce::AudioBuffer<float> impulseBuffer(1, impulseSize);
+        juce::AudioBuffer<float> impulseBuffer(1, kImpulseSize);
         impulseBuffer.clear();
         impulseBuffer.setSample(0, 0, 1.0f); // Set the first sample to 1 (impulse)
 
@@ -235,40 +235,39 @@ private:
         // Copy the response
         for (int channel = 0; channel < impulseBuffer.getNumChannels(); ++channel)
         {
-            for (int i = 0; i < impulseSize; ++i)
+            for (int i = 0; i < kImpulseSize; ++i)
                 response[i] = impulseBuffer.getSample(channel, i);
         }
     }
-
 
     void forwardBackwardProcess(juce::AudioBuffer<float>& buffer,
         juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>>& filter)
     {
         juce::ScopedNoDenormals noDenormals;
 
-        const int filterLength = filter.state->getFilterOrder();
-        const int groupDelay = filterLength - 1;
+        //const int filterLength = filter.state->getFilterOrder();
+        const int groupDelay = kImpulseSize - 1;
 
         const int numChannels = buffer.getNumChannels();
         const int numSamples = buffer.getNumSamples();
 
-        juce::AudioBuffer<float> processingBuffer(numChannels, numSamples + groupDelay * 2);
+        juce::AudioBuffer<float> processingBuffer(numChannels, numSamples + groupDelay*2);
         processingBuffer.clear();
 
         // initial group delay offset
-        for (int ch = 0; ch < numChannels; ++ch)
+        for (int channel = 0; channel < numChannels; ++channel)
         {
-            processingBuffer.copyFrom(ch, groupDelay, buffer, ch, 0, numSamples);
+            processingBuffer.copyFrom(channel, groupDelay, buffer, channel, 0, numSamples);
         }
 
-        // Forward filtering
+        // Forward
         auto block = juce::dsp::AudioBlock<float>(processingBuffer);
         auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
         filter.process(context);
         processingBuffer.reverse(0, processingBuffer.getNumSamples());
 
-        // Reverse Filtering
+        // Reverse
         auto reverseBlock = juce::dsp::AudioBlock<float>(processingBuffer);
         auto reverseContext = juce::dsp::ProcessContextReplacing<float>(reverseBlock);
 
@@ -276,9 +275,9 @@ private:
         processingBuffer.reverse(0, processingBuffer.getNumSamples());
 
         // Remove group delay
-        for (int ch = 0; ch < numChannels; ++ch)
+        for (int channel = 0; channel < numChannels; ++channel)
         {
-            buffer.copyFrom(ch, 0, processingBuffer, ch, groupDelay, numSamples);
+            buffer.copyFrom(channel, 0, processingBuffer, channel, groupDelay, numSamples);
         }
     }
 
