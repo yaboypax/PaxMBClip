@@ -134,8 +134,9 @@ private:
     minimumPhaseFilter  LP1, AP2,
                         HP1, LP2,
                         HP2;
-
-    juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>> FIR1, FIR2, FIR3, FIR4, FIR5;
+    //Linear Phase Filters
+    using FIRFilter = juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>>;
+    juce::dsp::ProcessorChain<FIRFilter, FIRFilter> FIR1, FIR2, FIR3, FIR4, FIR5;
 
     // OversamplingiHP4; filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <kFOrder>, 2>;
@@ -169,92 +170,76 @@ private:
     Clipper m_masterClip;
     bool m_postClip = false;
     juce::AudioParameterBool* m_masterClipParam{ nullptr };
-    bool isAnalyzerOn = true;
-
-    void applyWindowFunction(std::vector<float>& coefficients)
-    {
-        // Hamming window
-        size_t size = coefficients.size();
-        for (size_t i = 0; i < size; ++i)
-        {
-            float windowValue = 0.54 - 0.46 * cos(2 * M_PI * i / (size - 1));
-            coefficients[i] *= windowValue;
-        }
-    }
-
-    void delayBuffer(juce::AudioBuffer<float>& buffer, int delaySamples)
-    {
-        const int numChannels = buffer.getNumChannels();
-        const int numSamples = buffer.getNumSamples();
-
-        juce::AudioBuffer<float> delayedBuffer(numChannels, numSamples + delaySamples);
-
-        delayedBuffer.clear();
-        for (int ch = 0; ch < numChannels; ++ch)
-        {
-            delayedBuffer.copyFrom(ch, delaySamples, buffer, ch, 0, numSamples);
-        }
-        buffer = delayedBuffer;
-    }
-
+    bool isAnalyzerOn = true;  
 
     void createFIRFilters()
     {
+        std::vector<float> impulseResponse1L, impulseResponse1R;
+        std::vector<float> impulseResponse2L, impulseResponse2R;
+        std::vector<float> impulseResponse3L, impulseResponse3R;
+        std::vector<float> impulseResponse4L, impulseResponse4R;
+        std::vector<float> impulseResponse5L, impulseResponse5R;
 
-        // Vectors to hold the captured impulse responses
-        std::vector<float> impulseResponse1, impulseResponse2, impulseResponse3, impulseResponse4, impulseResponse5;
-
-        // Capture the impulse responses
-        captureImpulseResponse(LP1, impulseResponse1);
-        captureImpulseResponse(AP2, impulseResponse2);
-        captureImpulseResponse(HP1, impulseResponse3);
-        captureImpulseResponse(LP2, impulseResponse4);
-        captureImpulseResponse(HP2, impulseResponse5);
+        // Capture the impulse responses for each filter and channel
+        captureImpulseResponse(LP1, impulseResponse1L, impulseResponse1R);
+        captureImpulseResponse(AP2, impulseResponse2L, impulseResponse2R);
+        captureImpulseResponse(HP1, impulseResponse3L, impulseResponse3R);
+        captureImpulseResponse(LP2, impulseResponse4L, impulseResponse4R);
+        captureImpulseResponse(HP2, impulseResponse5L, impulseResponse5R);
 
         // Initialize FIR filters using the coefficients
-        *FIR1.state = juce::dsp::FIR::Coefficients<float>(impulseResponse1.data(), impulseResponse1.size());
-        *FIR2.state = juce::dsp::FIR::Coefficients<float>(impulseResponse2.data(), impulseResponse2.size());
-        *FIR3.state = juce::dsp::FIR::Coefficients<float>(impulseResponse3.data(), impulseResponse3.size());
-        *FIR4.state = juce::dsp::FIR::Coefficients<float>(impulseResponse4.data(), impulseResponse4.size());
-        *FIR5.state = juce::dsp::FIR::Coefficients<float>(impulseResponse5.data(), impulseResponse5.size());
+        *FIR1.get<0>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse1L.data(), impulseResponse1L.size());
+        *FIR1.get<1>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse1R.data(), impulseResponse1R.size());
+
+        *FIR2.get<0>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse2L.data(), impulseResponse2L.size());
+        *FIR2.get<1>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse2R.data(), impulseResponse2R.size());
+
+        *FIR3.get<0>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse3L.data(), impulseResponse3L.size());
+        *FIR3.get<1>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse3R.data(), impulseResponse3R.size());
+
+        *FIR4.get<0>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse4L.data(), impulseResponse4L.size());
+        *FIR4.get<1>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse4R.data(), impulseResponse4R.size());
+
+        *FIR5.get<0>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse5L.data(), impulseResponse5L.size());
+        *FIR5.get<1>().state = juce::dsp::FIR::Coefficients<float>(impulseResponse5R.data(), impulseResponse5R.size());
     }
 
-    void captureImpulseResponse(juce::dsp::LinkwitzRileyFilter<float>& filter, std::vector<float>& response)
+    void captureImpulseResponse(juce::dsp::LinkwitzRileyFilter<float>& filter, std::vector<float>& responseLeft, std::vector<float>& responseRight)
     {
-        response.resize(kImpulseSize, 0.0f);
+        responseLeft.resize(kImpulseSize, 0.0f);
+        responseRight.resize(kImpulseSize, 0.0f);
 
-        // Create an impulse signal
-        juce::AudioBuffer<float> impulseBuffer(1, kImpulseSize);
+        // Create an impulse signal for both channels
+        juce::AudioBuffer<float> impulseBuffer(2, kImpulseSize);
         impulseBuffer.clear();
-        impulseBuffer.setSample(0, 0, 1.0f); // Set the first sample to 1 (impulse)
+        impulseBuffer.setSample(0, 0, 1.0f); // Set the first sample to 1 for the left channel
+        impulseBuffer.setSample(1, 0, 1.0f); // Set the first sample to 1 for the right channel
 
         juce::dsp::AudioBlock<float> block(impulseBuffer);
         juce::dsp::ProcessContextReplacing<float> context(block);
         filter.process(context);
 
-        // Copy the response
-        for (int channel = 0; channel < impulseBuffer.getNumChannels(); ++channel)
+        // Copy the response for left and right channels separately
+        for (int i = 0; i < kImpulseSize; ++i)
         {
-            for (int i = 0; i < kImpulseSize; ++i)
-                response[i] = impulseBuffer.getSample(channel, i);
+            responseLeft[i] = impulseBuffer.getSample(0, i);
+            responseRight[i] = impulseBuffer.getSample(1, i);
         }
     }
 
     void forwardBackwardProcess(juce::AudioBuffer<float>& buffer,
-        juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>>& filter)
+        juce::dsp::ProcessorChain<FIRFilter, FIRFilter>& filter)
     {
         juce::ScopedNoDenormals noDenormals;
-
-        //const int filterLength = filter.state->getFilterOrder();
-        const int groupDelay = kImpulseSize - 1;
+        const int groupDelay = kImpulseSize / 2;
 
         const int numChannels = buffer.getNumChannels();
         const int numSamples = buffer.getNumSamples();
 
-        juce::AudioBuffer<float> processingBuffer(numChannels, numSamples + groupDelay*2);
+        juce::AudioBuffer<float> processingBuffer(numChannels, numSamples + 2 * groupDelay);
         processingBuffer.clear();
 
-        // initial group delay offset
+        // Initial group delay offset
         for (int channel = 0; channel < numChannels; ++channel)
         {
             processingBuffer.copyFrom(channel, groupDelay, buffer, channel, 0, numSamples);

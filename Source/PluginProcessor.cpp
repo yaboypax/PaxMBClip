@@ -453,6 +453,7 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
 {
     for (auto& fb : filterBuffers)
     {
+        fb.clear();
         fb = inputBuffer;
     }
 
@@ -468,11 +469,11 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
 
         LP1.process(fb0Ctx);
         AP2.process(fb0Ctx);
-
+        
         HP1.process(fb1Ctx);
         filterBuffers[2] = filterBuffers[1];
         LP2.process(fb1Ctx);
-
+        
         HP2.process(fb2Ctx);
     }
     else if (m_phaseResponse == PhaseResponse::linear)
@@ -483,7 +484,7 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
         forwardBackwardProcess(filterBuffers[1], FIR3);
         filterBuffers[2] = filterBuffers[1];
         forwardBackwardProcess(filterBuffers[1], FIR4);
-
+        
         forwardBackwardProcess(filterBuffers[2], FIR5);
     }
 }
