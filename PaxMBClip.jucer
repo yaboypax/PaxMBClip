@@ -54,6 +54,7 @@
         <FILE id="KsMi4d" name="Types.h" compile="0" resource="0" file="Source/DspFilters/Types.h"/>
         <FILE id="uFFMyb" name="Utilities.h" compile="0" resource="0" file="Source/DspFilters/Utilities.h"/>
       </GROUP>
+      <FILE id="b84VeB" name="LinearPhaseEQ.h" compile="0" resource="0" file="Source/LinearPhaseEQ.h"/>
       <FILE id="E8YdbK" name="SettingsComponent.cpp" compile="1" resource="0"
             file="Source/SettingsComponent.cpp"/>
       <FILE id="B4OmO2" name="SettingsComponent.h" compile="0" resource="0"
@@ -126,10 +127,36 @@
         <MODULEPATH id="juce_gui_basics" path="C:\JUCE\modules"/>
         <MODULEPATH id="juce_gui_extra" path="C:\JUCE\modules"/>
         <MODULEPATH id="ff_meters" path="."/>
+        <MODULEPATH id="chowdsp_eq" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_dsp_utils" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_filters" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_dsp_data_structures" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_simd" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_buffers" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_math" path="../../../source/repos/chowdsp_utils/modules/dsp"/>
+        <MODULEPATH id="chowdsp_core" path="../../../source/repos/chowdsp_utils/modules/common"/>
+        <MODULEPATH id="chowdsp_data_structures" path="../../../source/repos/chowdsp_utils/modules/common"/>
+        <MODULEPATH id="chowdsp_reflection" path="../../../source/repos/chowdsp_utils/modules/common"/>
+        <MODULEPATH id="chowdsp_plugin_base" path="../../../source/repos/chowdsp_utils/modules/plugin"/>
+        <MODULEPATH id="chowdsp_parameters" path="../../../source/repos/chowdsp_utils/modules/plugin"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
   <MODULES>
+    <MODULE id="chowdsp_buffers" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="chowdsp_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="chowdsp_data_structures" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="chowdsp_dsp_data_structures" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="chowdsp_dsp_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="chowdsp_eq" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="chowdsp_filters" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="chowdsp_math" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="chowdsp_parameters" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="chowdsp_plugin_base" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="chowdsp_reflection" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="chowdsp_simd" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="ff_meters" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

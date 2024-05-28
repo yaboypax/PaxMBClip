@@ -9,10 +9,11 @@
 #include "SingleChannelSampleFifo.h"
 #include <array>
 #include "DspFilters/Dsp.h"
+#include <chowdsp_eq/EQ/chowdsp_LinearPhaseEQ.h>
 
 namespace
 {
-    constexpr int kImpulseSize = 128;
+    constexpr int kImpulseSize = 4096;
     constexpr int kFOrder = 12;
     constexpr int kMaxOversample = 32;
 }
@@ -32,7 +33,7 @@ enum class PhaseResponse
     minimum
 };
 
-#include <JuceHeader.h>
+
 class PaxMBClipAudioProcessor : public juce::AudioProcessor, public juce::ChangeBroadcaster
 #if JucePlugin_Enable_ARA
     , public juce::AudioProcessorARAExtension
@@ -128,6 +129,7 @@ private:
     std::array<juce::AudioBuffer<float>, 3> filterBuffers;
     std::unique_ptr<juce::AudioBuffer<float>> m_resizedBuffer;
 
+    
 
     // Minimum Phase Crossover Filters
     using minimumPhaseFilter = juce::dsp::LinkwitzRileyFilter<float>;
@@ -135,6 +137,7 @@ private:
     minimumPhaseFilter  LP1, AP2,
                         HP1, LP2,
                         HP2;
+
     //Linear Phase Filters
     juce::dsp::Convolution FIR1, FIR2, FIR3, FIR4, FIR5;
     juce::AudioBuffer<float> impulseResponse1, impulseResponse2, impulseResponse3, impulseResponse4, impulseResponse5;
