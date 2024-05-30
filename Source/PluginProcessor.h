@@ -139,7 +139,7 @@ private:
                         HP2;
     
     //Linear Phase Filters (chowDSP)
-    LinearPhaseEQ m_linearPhase1;
+    chowdsp::LinearPhase3WayCrossover<20> m_LinearPhaseCrossover;
 
     // OversamplingiHP4; filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <kFOrder>, 2>;

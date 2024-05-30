@@ -236,8 +236,8 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     AP2.prepare(spec);
 
     setCrossoverFilters();
-
-    m_linearPhase1.prepare(spec);
+    m_LinearPhaseCrossover.reset();
+    m_LinearPhaseCrossover.prepare(spec, kImpulseSize, 200.f, 2000.f);
         
     m_oversamplingFilter1.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
@@ -305,9 +305,11 @@ void PaxMBClipAudioProcessor::updateState()
 
     m_phaseResponse = static_cast<PhaseResponse>(m_phaseResponseParam->get());
     if (m_phaseResponse == PhaseResponse::linear)
-        setLatencySamples(m_linearPhase1.getLatencySamples());
+        setLatencySamples(kImpulseSize/2);
     else
         setLatencySamples(0);
+
+    m_LinearPhaseCrossover.setParameters(lowMidCutoffFreq, midHighCutoffFreq);
 
     m_inputGain = m_inputGainParam->get();
     m_outputGain = m_outputGainParam->get();
@@ -452,16 +454,16 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
         fb = inputBuffer;
     }
 
-    auto lowBlock = juce::dsp::AudioBlock<float>(filterBuffers[0]);
-    auto midBlock = juce::dsp::AudioBlock<float>(filterBuffers[1]);
-    auto highBlock = juce::dsp::AudioBlock<float>(filterBuffers[2]);
-
-    auto lowContext = juce::dsp::ProcessContextReplacing<float>(lowBlock);
-    auto midContext = juce::dsp::ProcessContextReplacing<float>(midBlock);
-    auto highContext = juce::dsp::ProcessContextReplacing<float>(highBlock);
-
     if (m_phaseResponse == PhaseResponse::minimum)
     {
+        auto lowBlock = juce::dsp::AudioBlock<float>(filterBuffers[0]);
+        auto midBlock = juce::dsp::AudioBlock<float>(filterBuffers[1]);
+        auto highBlock = juce::dsp::AudioBlock<float>(filterBuffers[2]);
+
+        auto lowContext = juce::dsp::ProcessContextReplacing<float>(lowBlock);
+        auto midContext = juce::dsp::ProcessContextReplacing<float>(midBlock);
+        auto highContext = juce::dsp::ProcessContextReplacing<float>(highBlock);
+
         LP1.process(lowContext);
         AP2.process(lowContext);
         
@@ -473,7 +475,7 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
     }
     else if (m_phaseResponse == PhaseResponse::linear)
     {
-        m_linearPhase1.process(lowContext);
+        m_LinearPhaseCrossover.processBlock(inputBuffer, filterBuffers[0], filterBuffers[1], filterBuffers[2]);
     }
 }
 
