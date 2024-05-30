@@ -238,7 +238,6 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     setCrossoverFilters();
 
     m_linearPhase1.prepare(spec);
-    setLatencySamples(m_linearPhase1.getLatencySamples());
         
     m_oversamplingFilter1.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
@@ -303,6 +302,12 @@ void PaxMBClipAudioProcessor::updateState()
     auto midHighCutoffFreq = midHighCrossover->get();
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
+
+    m_phaseResponse = static_cast<PhaseResponse>(m_phaseResponseParam->get());
+    if (m_phaseResponse == PhaseResponse::linear)
+        setLatencySamples(m_linearPhase1.getLatencySamples());
+    else
+        setLatencySamples(0);
 
     m_inputGain = m_inputGainParam->get();
     m_outputGain = m_outputGainParam->get();
