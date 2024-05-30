@@ -237,15 +237,8 @@ void PaxMBClipAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
 
     setCrossoverFilters();
 
-    auto params = chowdsp::EQ::BasicEQParams<1>();
-    params.bands[0].params.bandFreqHz = 1000.f;
-    params.bands[0].params.bandQ = 1.f;
-
-    //FIR1.prepare(spec);
-    //FIR2.prepare(spec);
-    //FIR3.prepare(spec);
-    //FIR4.prepare(spec);
-    //FIR5.prepare(spec);
+    m_linearPhase1.prepare(spec);
+    setLatencySamples(m_linearPhase1.getLatencySamples());
         
     m_oversamplingFilter1.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
     m_oversamplingFilter2.setup(kFOrder, sampleRate * m_oversample, calcCutoff(sampleRate));
@@ -308,15 +301,8 @@ void PaxMBClipAudioProcessor::updateState()
     HP1.setCutoffFrequency(lowMidCutoffFreq);
 
     auto midHighCutoffFreq = midHighCrossover->get();
-    //AP2.setCutoffFrequency(midHighCutoffFreq);
     LP2.setCutoffFrequency(midHighCutoffFreq);
     HP2.setCutoffFrequency(midHighCutoffFreq);
-
-    m_phaseResponse = static_cast<PhaseResponse>(m_phaseResponseParam->get());
-    if (m_phaseResponse == PhaseResponse::linear)
-    {
-        createFIRFilters();
-    }
 
     m_inputGain = m_inputGainParam->get();
     m_outputGain = m_outputGainParam->get();
@@ -461,36 +447,28 @@ void PaxMBClipAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBu
         fb = inputBuffer;
     }
 
-    auto fb0Block = juce::dsp::AudioBlock<float>(filterBuffers[0]);
-    auto fb1Block = juce::dsp::AudioBlock<float>(filterBuffers[1]);
-    auto fb2Block = juce::dsp::AudioBlock<float>(filterBuffers[2]);
+    auto lowBlock = juce::dsp::AudioBlock<float>(filterBuffers[0]);
+    auto midBlock = juce::dsp::AudioBlock<float>(filterBuffers[1]);
+    auto highBlock = juce::dsp::AudioBlock<float>(filterBuffers[2]);
 
-    auto fb0Ctx = juce::dsp::ProcessContextReplacing<float>(fb0Block);
-    auto fb1Ctx = juce::dsp::ProcessContextReplacing<float>(fb1Block);
-    auto fb2Ctx = juce::dsp::ProcessContextReplacing<float>(fb2Block);
+    auto lowContext = juce::dsp::ProcessContextReplacing<float>(lowBlock);
+    auto midContext = juce::dsp::ProcessContextReplacing<float>(midBlock);
+    auto highContext = juce::dsp::ProcessContextReplacing<float>(highBlock);
 
     if (m_phaseResponse == PhaseResponse::minimum)
     {
-        LP1.process(fb0Ctx);
-        AP2.process(fb0Ctx);
+        LP1.process(lowContext);
+        AP2.process(lowContext);
         
-        HP1.process(fb1Ctx);
+        HP1.process(midContext);
         filterBuffers[2] = filterBuffers[1];
-        LP2.process(fb1Ctx);
+        LP2.process(midContext);
         
-        HP2.process(fb2Ctx);
+        HP2.process(highContext);
     }
     else if (m_phaseResponse == PhaseResponse::linear)
     {
-
-        //forwardBackwardProcess(filterBuffers[0], FIR1);
-        //forwardBackwardProcess(filterBuffers[0], FIR2);
-        //
-        //forwardBackwardProcess(filterBuffers[1], FIR3);
-        //filterBuffers[2] = filterBuffers[1];
-        //forwardBackwardProcess(filterBuffers[1], FIR4);
-        //
-        //forwardBackwardProcess(filterBuffers[2], FIR5);
+        m_linearPhase1.process(lowContext);
     }
 }
 
