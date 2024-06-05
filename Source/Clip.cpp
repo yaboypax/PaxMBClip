@@ -19,6 +19,7 @@ void Clipper::prepare(const juce::dsp::ProcessSpec& spec)
 void Clipper::updateClipperSettings()
 {
     bandGain.setGainDecibels(gain->get());
+    //clipper.setClip(release->get());
 }
 
 void Clipper::process(juce::AudioBuffer<float>& buffer)
@@ -61,15 +62,28 @@ void Clipper::clipSamples(juce::AudioBuffer<float>* buffer, WaveType inWaveType)
 			switch (inWaveType)
 			{
 			case WaveType::hard:
-				newval = hard(bufferData[i]);
+				newval = hardclip(bufferData[i]);
 				break;
 
             case WaveType::soft:
 				newval = quintic(bufferData[i]);
 				break;
 
+                    
+//			case WaveType::cubic:
+//				newval = cubicBasic(bufferData[i]);
+//				break;
+//
+//			case WaveType::tan:
+//				newval = tanclip(bufferData[i], m_softness);
+//				break;
+//
+//			case WaveType::alg:
+//				newval = algclip(bufferData[i], m_softness);
+//				break;
+
 			case WaveType::smooth:
-				newval = arctangent(bufferData[i], m_softness);
+				newval = arcClip(bufferData[i], m_softness);
 				break;
 			}
 
@@ -86,9 +100,31 @@ void Clipper::masterClip(juce::AudioBuffer<float>* buffer)
 	clipSamples(buffer, m_waveType);
 }
 
-float Clipper::hard(float& s)
+float Clipper::sinclip(float& s)
+{
+	if (fabs(s) < M_PI)
+	{
+		return sin(s);
+	}
+	else
+	{
+		return sgn(s) * 1.0f;
+	}
+}
+
+float Clipper::logiclip(float& s)
+{
+	return 2.0f / (1.0f + exp(-2.0f * s)) - 1.0f;
+}
+
+float Clipper::hardclip(float& s)
 {
 	return sgn(s) * fmin(fabs(s), 1.0f);
+}
+
+float Clipper::tanclip(float& s, float& soft)
+{
+	return tanh((1.0f - 0.5f * soft) * s);
 }
 
 float Clipper::quintic(float& s)
@@ -99,7 +135,20 @@ float Clipper::quintic(float& s)
 		return sgn(s) * 1.0f;
 }
 
-float Clipper::arctangent(float& s, float& soft)
+float Clipper::cubicBasic(float& s)
+{
+	if (fabs(s) < 1.5f)
+		return s - (4.0f / 27.0f) * powf(s, 3.0f);
+	else
+		return sgn(s) * 1.0f;
+}
+
+float Clipper::algclip(float& s, float soft)
+{
+	return s / sqrtf((1.0f + 2.0f * soft + powf(s, 2.0f)));
+}
+
+float Clipper::arcClip(float& s, float& soft)
 {
 	return (2.0f / M_PI) * atan((1.6f - soft * 0.6f) * s);
 }

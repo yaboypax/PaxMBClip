@@ -48,9 +48,14 @@ private:
 
     float m_softness = 0.0;
     void clipSamples(juce::AudioBuffer<float>* buffer, WaveType inWaveType);
-    float hard(float& s);
+    float sinclip(float& s);
+    float logiclip(float& s);
+    float hardclip(float& s);
+    float tanclip(float& s, float& soft);
     float quintic(float& s);
-    float arctangent(float& s, float& soft);
+    float cubicBasic(float& s);
+    float algclip(float& s, float soft);
+    float arcClip(float& s, float& soft);
 
 
     std::atomic<float> rmsInputLevelDb{ PaxMBClip::NEG_INFINITY };

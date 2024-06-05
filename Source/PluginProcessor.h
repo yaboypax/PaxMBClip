@@ -10,10 +10,10 @@
 #include <array>
 #include "DspFilters/Dsp.h"
 #include <chowdsp_eq/EQ/chowdsp_LinearPhaseEQ.h>
+#include "LinearPhaseEQ.h"
 
 namespace
 {
-    constexpr int kImpulseSize = 4096;
     constexpr int kFOrder = 12;
     constexpr int kMaxOversample = 32;
 }
