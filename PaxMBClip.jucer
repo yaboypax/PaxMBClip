@@ -54,7 +54,6 @@
         <FILE id="KsMi4d" name="Types.h" compile="0" resource="0" file="Source/DspFilters/Types.h"/>
         <FILE id="uFFMyb" name="Utilities.h" compile="0" resource="0" file="Source/DspFilters/Utilities.h"/>
       </GROUP>
-      <FILE id="b84VeB" name="LinearPhaseEQ.h" compile="0" resource="0" file="Source/LinearPhaseEQ.h"/>
       <FILE id="E8YdbK" name="SettingsComponent.cpp" compile="1" resource="0"
             file="Source/SettingsComponent.cpp"/>
       <FILE id="B4OmO2" name="SettingsComponent.h" compile="0" resource="0"
