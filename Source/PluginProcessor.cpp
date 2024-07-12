@@ -323,6 +323,8 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+   
+
     m_resizedBuffer->setSize(buffer.getNumChannels(), buffer.getNumSamples() * m_oversample, false, true, true);
     m_resizedBuffer->clear();
 
@@ -338,7 +340,11 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
     
 
     spectrumInputBuffer.applyGain(juce::Decibels::decibelsToGain(12.f));
-    monoInFifo.update(sumBufferToMono(spectrumInputBuffer));
+    monoInFifo.update(
+
+        (buffer.getNumChannels() == 1) ? sumBufferToMono(spectrumInputBuffer) : spectrumInputBuffer
+    
+    );
 
     if (*m_inputGainParam != m_inputGain)
     {
@@ -417,7 +423,11 @@ void PaxMBClipAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
     m_tiltFilter.process(outContext);
 
     spectrumOutputBuffer.applyGain(juce::Decibels::decibelsToGain(12.f));
-    monoOutFifo.update(sumBufferToMono(spectrumOutputBuffer));
+    monoOutFifo.update(
+
+        (buffer.getNumChannels() == 1) ? sumBufferToMono(spectrumOutputBuffer) : spectrumOutputBuffer
+
+    );
 
     levelMeterSourceOut.measureBlock(buffer);
 
