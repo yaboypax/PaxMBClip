@@ -56,6 +56,7 @@ SpectrumAnalyzer::~SpectrumAnalyzer()
     m_muteLowButton.removeListener(this);
     m_muteMidButton.removeListener(this);
     m_muteHighButton.removeListener(this);
+    stopTimer();
 }
 
 void SpectrumAnalyzer::layoutBandButtons()
