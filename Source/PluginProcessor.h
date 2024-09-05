@@ -44,7 +44,6 @@ public:
     PaxMBClipAudioProcessor();
     ~PaxMBClipAudioProcessor() override;
 
-    juce::Point<int> m_savedSize;
     juce::Point<int> getSavedSize() { return m_savedSize; }
     void setSavedSize(int x, int y) { m_savedSize = { x, y }; }
 
@@ -124,12 +123,10 @@ public:
 private:
     //==============================================================================
     const float m_sampleShift = 0.0;
-
+    juce::Point<int> m_savedSize;
 
     std::array<juce::AudioBuffer<float>, 3> filterBuffers;
     std::unique_ptr<juce::AudioBuffer<float>> m_resizedBuffer;
-
-    
 
     // Minimum Phase Crossover Filters
     using minimumPhaseFilter = juce::dsp::LinkwitzRileyFilter<float>;
@@ -141,7 +138,7 @@ private:
     //Linear Phase Filters (chowDSP)
     chowdsp::LinearPhase3WayCrossover<20> m_LinearPhaseCrossover;
 
-    // OversamplingiHP4; filters (butterworth)
+    // Oversampling filters (butterworth)
     using OversamplingFilter = Dsp::SimpleFilter <Dsp::Butterworth::LowPass <kFOrder>, 2>;
     OversamplingFilter m_oversamplingFilter1, m_oversamplingFilter2;
 
