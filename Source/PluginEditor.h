@@ -10,7 +10,6 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "ClipperBandControls.h"
 #include "GlobalControls.h"
 #include "SpectrumAnalyzer.h"
 #include "ControlBar.h"
@@ -33,7 +32,6 @@ private:
 
     ControlBar controlBar {m_processor};
     GlobalControls globalControls {m_processor};
-    ClipperBandControls bandControls {m_processor};
     SpectrumAnalyzer analyzer {m_processor};
     SettingsComponent settingsComponent{ m_processor };
 

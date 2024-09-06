@@ -12,11 +12,11 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     }
     else
     {
-        setSize(800, 500);
+        setSize(MIN_WIDTH, MIN_HEIGHT);
     }
 
     setResizable(true, true);
-    setResizeLimits(800, 500, 1600, 1000);
+    setResizeLimits(MIN_WIDTH, MIN_HEIGHT, 1600, 1000);
 
     controlBar.globalBypassButton.onClick = [this]()
     {
@@ -29,12 +29,11 @@ PaxMBClipAudioProcessorEditor::PaxMBClipAudioProcessorEditor(PaxMBClipAudioProce
     };
 
     controlBar.setLookAndFeel(chompLAF);
-    bandControls.setLookAndFeel(chompLAF);
 
     addAndMakeVisible(controlBar);
     addAndMakeVisible(analyzer);
     addAndMakeVisible(globalControls);
-    addAndMakeVisible(bandControls);
+
     addChildComponent(settingsComponent);
 
 }
@@ -55,8 +54,8 @@ void PaxMBClipAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
 
     controlBar.setBounds(bounds.removeFromTop(32));
-    analyzer.setBounds(0, 32, getWidth()-300, getHeight() - 32);
-    bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
+    analyzer.setBounds(0, 32, getWidth()-150, getHeight() - 32);
+    //bandControls.setBounds(getWidth()-300, 32, 150, getHeight() - 32);
     globalControls.setBounds(getWidth() - 150, 32, 150, getHeight() - 32);
 
     bounds.reduce(200, 100);
