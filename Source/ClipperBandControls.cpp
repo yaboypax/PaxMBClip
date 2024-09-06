@@ -166,7 +166,9 @@ void ClipperBandControls::updateAttachments()
 void ClipperBandControls::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
-    drawModuleBackground(g, bounds);
+
+    g.setColour(juce::Colours::black.withAlpha(0.5f));
+    g.fillRoundedRectangle(bounds.toFloat(), 3);
 }
 
 void ClipperBandControls::resized()
