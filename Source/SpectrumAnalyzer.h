@@ -13,6 +13,7 @@
 #include "PathProducer.h"
 #include "RotarySlider.h"
 #include "LookAndFeel.h"
+#include "ClipperBandControls.h"
 
 class SpectrumAnalyzer : public juce::Component,
     public juce::AudioProcessorParameter::Listener,
@@ -51,8 +52,8 @@ public:
 
 private:
     PaxMBClipAudioProcessor& m_processor;
-
-
+    ClipperBandControls bandControls{ m_processor };
+    juce::SharedResourcePointer<ChompLookAndFeel> chompLAF;
     bool shouldShowFFTAnalysis = true;
 
     juce::Atomic<bool> parametersChanged{ false };

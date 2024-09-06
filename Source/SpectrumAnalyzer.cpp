@@ -34,6 +34,9 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     layoutBandButtons();
     setAttachments();
     addChildComponent(m_frequencyDisplay);
+
+    addAndMakeVisible(bandControls);
+    bandControls.setLookAndFeel(chompLAF);
     
     m_processor.addChangeListener(this);
     addChildComponent(m_processor.m_waveformDisplay);
@@ -198,7 +201,7 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     g.drawVerticalLine(m_midHighX, top, bottom);
 
     auto highlight = bounds;
-    g.setColour(juce::Colour(0x10FFFFFF));
+    g.setColour(juce::Colour(0x20FFFFFF));
     switch (m_processor.getBandFocus())
     {
     case BandFocus::unfocused:
@@ -250,24 +253,64 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
 
 void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
 {
-    auto x = e.getMouseDownX();
+    int x = e.getMouseDownX();
 
-    if (x < m_lowMidX - 5)
-    {
-        m_processor.setBandFocus(BandFocus::Low);
-    }
-    else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
-    {
-        m_processor.setBandFocus(BandFocus::Mid);
-    }
-    else if (x > m_midHighX + 5)
-    {
-        m_processor.setBandFocus(BandFocus::High);
-    }
+    int bandMargin = 10;
+    int bandWidth = 150;
+    int bandHeight = MIN_HEIGHT - 132;
+
+    int bandX;
+    int bandY = (getHeight() - bandHeight) / 2;
 
     if (e.mods.isLeftButtonDown())
     {
+        // clicking within bounds
+        if (x < m_lowMidX - 5)
+        {
+            if (m_lowMidX > bandWidth)
+            {
+                bandX = (m_lowMidX - bandWidth) / 2;
+            }
+            else
+            {
+                bandX = bandMargin;
+            }
 
+            m_processor.setBandFocus(BandFocus::Low);
+            bandControls.setVisible(true);
+            bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
+        }
+        else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
+        {
+            if (m_midHighX - m_lowMidX > bandWidth)
+            {
+                bandX = m_lowMidX + ((m_midHighX - m_lowMidX - bandWidth)  / 2);
+            }
+            else
+            {
+                bandX = m_lowMidX + bandMargin;
+            }
+            m_processor.setBandFocus(BandFocus::Mid);
+            bandControls.setVisible(true);
+            bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
+        }
+        else if (x > m_midHighX + 5)
+        {
+            if (getWidth() - m_midHighX > bandWidth)
+            {
+                bandX = m_midHighX + ((getWidth() - m_midHighX - bandWidth) / 2);
+            }
+            else
+            {
+                bandX = m_midHighX + bandMargin;
+            }
+            m_processor.setBandFocus(BandFocus::High);
+            bandControls.setVisible(true);
+            bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
+
+        }
+
+        // dragging band controls
         if (x > m_lowMidX - 5 && x < m_lowMidX + 5)
         {
             m_lowMidDragging = true;
@@ -277,8 +320,10 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
             m_midHighDragging = true;
         }
     }
+ 
     else if (e.mods.isRightButtonDown())
     {
+        bandControls.setVisible(false);
         m_shouldDisplayWaveform = !m_shouldDisplayWaveform;
         m_processor.m_waveformDisplay.setVisible(m_shouldDisplayWaveform);
     }
