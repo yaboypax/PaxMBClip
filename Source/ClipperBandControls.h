@@ -38,13 +38,16 @@ private:
     using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     juce::Slider bandGainSlider, bandClipSlider;
     std::unique_ptr<Attachment> bandGainSliderAttachment, bandClipSliderAttachment;
+    juce::Label m_clipGainLabel;
 
     RotarySlider m_lowMidSlider, m_midHighSlider;
     std::unique_ptr<Attachment> m_lowMidAttachment, m_midHighAttachment;
+    juce::Label m_crossoverLabel;
 
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
     WaveSelector m_clipWave;
     std::unique_ptr<ComboAttachment> m_clipWaveAttachment;
+    juce::Label m_waveLabel;
 
 
 };

@@ -35,6 +35,18 @@ ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
 
     layoutSliders();
 
+    addAndMakeVisible(m_crossoverLabel);
+    m_crossoverLabel.setText("CROSSOVERS", juce::NotificationType::dontSendNotification);
+    m_crossoverLabel.setJustificationType(juce::Justification::centred);
+
+    addAndMakeVisible(m_clipGainLabel);
+    m_clipGainLabel.setText("GAIN      CLIP", juce::NotificationType::dontSendNotification);
+    m_clipGainLabel.setJustificationType(juce::Justification::centred);
+
+    addAndMakeVisible(m_waveLabel);
+    m_waveLabel.setText("CURVE", juce::NotificationType::dontSendNotification);
+    m_waveLabel.setJustificationType(juce::Justification::centred);
+
     addAndMakeVisible(m_clipWave);
 
     updateAttachments();
@@ -173,23 +185,26 @@ void ClipperBandControls::paint(juce::Graphics& g)
 
 void ClipperBandControls::resized()
 {
-    
+
     if (m_focus == BandFocus::unfocused)
         return;
     //bypassButton.setBounds(buttonX, buttonY, buttonSize, buttonSize);
     //muteButton.setBounds(bypassButton.getRight() + margin, buttonY, buttonSize, buttonSize);
     //soloButton.setBounds(muteButton.getRight() + margin, buttonY, buttonSize, buttonSize);
 
-    const int sliderHeight = getHeight() - 113;
-    bandGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
-    bandClipSlider.setBounds(bandGainSlider.getRight() + 5, sliderY, sliderWidth, sliderHeight);
-
-    const int waveY = getHeight() - 46;
-    m_clipWave.setBounds(waveX, waveY, waveW, waveH);
-
-
     m_lowMidSlider.setBounds(rotaryX, rotaryY, rotarySize, rotarySize);
     m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
+
+    m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
+
+    const int sliderHeight = getHeight() - JUCE_LIVE_CONSTANT(182);
+    bandGainSlider.setBounds(sliderX, m_crossoverLabel.getBottom() + margin, sliderWidth, sliderHeight);
+    bandClipSlider.setBounds(bandGainSlider.getRight() + 5, m_crossoverLabel.getBottom() + margin, sliderWidth, sliderHeight);
+    m_clipGainLabel.setBounds(0, bandClipSlider.getBottom() + margin, getWidth(), 20);
+
+    const int waveY = getHeight() - JUCE_LIVE_CONSTANT(56);
+    m_clipWave.setBounds(waveX, waveY, waveW, waveH);
+    m_waveLabel.setBounds(waveX, m_clipWave.getBottom() + margin, waveW, waveH);
 }
 
 void ClipperBandControls::changeListenerCallback(juce::ChangeBroadcaster* source)
