@@ -13,6 +13,10 @@
 #include <JuceHeader.h>
 #define M_PI 3.14159265358979323846
 
+static constexpr int MIN_HEIGHT = 500;
+static constexpr int MIN_WIDTH = 800;
+
+
 enum FFTOrder
 {
     order2048 = 11,
@@ -30,6 +34,8 @@ namespace PaxMBClip
     static constexpr float MAX_DB = 24.f;
 
     static constexpr float MIN_THRESHOLD = -60.f;
+
+
 
     enum FFTOrder
     {
