@@ -342,6 +342,9 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
         m_shouldDisplayWaveform = !m_shouldDisplayWaveform;
         m_processor.m_waveformDisplay.setVisible(m_shouldDisplayWaveform);
     }
+
+    bandControls.m_isWaveformShowing = m_shouldDisplayWaveform;
+    bandControls.repaint();
 }
 
 void SpectrumAnalyzer::mouseDrag(const juce::MouseEvent& e)

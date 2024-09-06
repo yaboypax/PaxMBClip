@@ -30,7 +30,7 @@ public:
 
     void updateAttachments();
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
-
+    bool m_isWaveformShowing = false;
 private:
     PaxMBClipAudioProcessor* m_processor;
     BandFocus m_focus = BandFocus::unfocused;
@@ -48,6 +48,5 @@ private:
     WaveSelector m_clipWave;
     std::unique_ptr<ComboAttachment> m_clipWaveAttachment;
     juce::Label m_waveLabel;
-
 
 };
