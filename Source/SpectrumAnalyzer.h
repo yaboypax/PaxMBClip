@@ -53,6 +53,7 @@ public:
 private:
     PaxMBClipAudioProcessor& m_processor;
     ClipperBandControls bandControls{ m_processor };
+    juce::Label m_bandLabel;
     juce::SharedResourcePointer<ChompLookAndFeel> chompLAF;
     bool shouldShowFFTAnalysis = true;
 

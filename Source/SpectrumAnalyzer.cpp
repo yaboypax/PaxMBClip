@@ -35,8 +35,11 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     setAttachments();
     addChildComponent(m_frequencyDisplay);
 
-    addAndMakeVisible(bandControls);
+    addChildComponent(bandControls);
     bandControls.setLookAndFeel(chompLAF);
+
+    addChildComponent(m_bandLabel);
+    m_bandLabel.setLookAndFeel(chompLAF);
     
     m_processor.addChangeListener(this);
     addChildComponent(m_processor.m_waveformDisplay);
@@ -279,6 +282,10 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
             m_processor.setBandFocus(BandFocus::Low);
             bandControls.setVisible(true);
             bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
+
+            m_bandLabel.setVisible(true);
+            m_bandLabel.setText("LOW", juce::NotificationType::dontSendNotification);
+            m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
         }
         else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
         {
@@ -293,6 +300,10 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
             m_processor.setBandFocus(BandFocus::Mid);
             bandControls.setVisible(true);
             bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
+
+            m_bandLabel.setVisible(true);
+            m_bandLabel.setText("MID", juce::NotificationType::dontSendNotification);
+            m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
         }
         else if (x > m_midHighX + 5)
         {
@@ -308,6 +319,9 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
             bandControls.setVisible(true);
             bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
 
+            m_bandLabel.setVisible(true);
+            m_bandLabel.setText("HIGH", juce::NotificationType::dontSendNotification);
+            m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
         }
 
         // dragging band controls
@@ -324,6 +338,7 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
     else if (e.mods.isRightButtonDown())
     {
         bandControls.setVisible(false);
+        m_bandLabel.setVisible(false);
         m_shouldDisplayWaveform = !m_shouldDisplayWaveform;
         m_processor.m_waveformDisplay.setVisible(m_shouldDisplayWaveform);
     }
