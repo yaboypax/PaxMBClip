@@ -198,12 +198,12 @@ void ClipperBandControls::resized()
 
     m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
 
-    const int sliderHeight = getHeight() - JUCE_LIVE_CONSTANT(182);
+    const int sliderHeight = getHeight() - 182;
     bandGainSlider.setBounds(sliderX, m_crossoverLabel.getBottom() + margin, sliderWidth, sliderHeight);
     bandClipSlider.setBounds(bandGainSlider.getRight() + 5, m_crossoverLabel.getBottom() + margin, sliderWidth, sliderHeight);
     m_clipGainLabel.setBounds(0, bandClipSlider.getBottom() + margin, getWidth(), 20);
 
-    const int waveY = getHeight() - JUCE_LIVE_CONSTANT(56);
+    const int waveY = getHeight() - 56;
     m_clipWave.setBounds(waveX, waveY, waveW, waveH);
     m_waveLabel.setBounds(waveX, m_clipWave.getBottom() + margin, waveW, waveH);
 }
