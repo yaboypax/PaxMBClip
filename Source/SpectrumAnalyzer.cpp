@@ -254,74 +254,130 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     g.drawHorizontalLine(mapClipY(m_highClipParam->get()), m_midHighX, right);
 }
 
+void SpectrumAnalyzer::resized()
+{
+    auto fftBounds = getAnalysisArea().toFloat();
+    auto negativeInfinity = juce::jmap(getLocalBounds().toFloat().getBottom(), fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
+
+    inPathProducer.updateNegativeInfinity(negativeInfinity);
+    outPathProducer.updateNegativeInfinity(negativeInfinity);
+
+    m_lowMidX = mapFrequencyToX(m_lowCrossoverParam->get());
+    m_midHighX = mapFrequencyToX(m_highCrossoverParam->get());
+
+    m_muteLowButton.setBounds(m_lowMidX - muteOffset, getHeight() - marginY, size, size);
+    m_soloLowButton.setBounds(m_lowMidX - soloOffset, getHeight() - marginY, size, size);
+
+    m_muteMidButton.setBounds(m_midHighX - muteOffset, getHeight() - marginY, size, size);
+    m_soloMidButton.setBounds(m_midHighX - soloOffset, getHeight() - marginY, size, size);
+
+    m_muteHighButton.setBounds(getWidth() - muteOffset, getHeight() - marginY, size, size);
+    m_soloHighButton.setBounds(getWidth() - soloOffset, getHeight() - marginY, size, size);
+
+   // m_lowMidSlider.setBounds(0, 0, rotarySize, rotarySize);
+   // m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
+
+    // m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
+
+    centerBandControls();
+}
+
+void SpectrumAnalyzer::centerBandControls()
+{
+    deleteCrossoverSliders();
+
+    int bandX;
+    int bandY = (getHeight() - JUCE_LIVE_CONSTANT(132));
+
+    auto focus = m_processor.getBandFocus();
+
+    switch (focus)
+    {
+    case BandFocus::Low:
+    {
+        if (m_lowMidX > bandWidth)
+        {
+            bandX = (m_lowMidX - bandWidth) / 2;
+        }
+        else
+        {
+            bandX = bandMargin;
+        }
+        break;
+    }
+    case BandFocus::Mid:
+    {
+        if (m_midHighX - m_lowMidX > bandWidth)
+        {
+            bandX = m_lowMidX + ((m_midHighX - m_lowMidX - bandWidth) / 2);
+        }
+        else
+        {
+            bandX = m_lowMidX + bandMargin;
+        }
+        break;
+    }
+    case BandFocus::High:
+    {
+        if (getWidth() - m_midHighX > bandWidth)
+        {
+            bandX = m_midHighX + ((getWidth() - m_midHighX - bandWidth) / 2);
+        }
+        else
+        {
+            bandX = m_midHighX + bandMargin;
+        }
+        break;
+    }
+
+    case BandFocus::unfocused:
+        return;
+    }
+
+
+    bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
+    m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
+
+    createCrossoverSliders({ bandX, bandControls.getBottom() + bandMargin });
+
+}
+
 void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
 {
     int x = e.getMouseDownX();
-
-    int bandMargin = 10;
-    int bandWidth = 150;
-    int bandHeight = MIN_HEIGHT - 132;
-
-    int bandX;
-    int bandY = (getHeight() - bandHeight) / 2;
 
     if (e.mods.isLeftButtonDown())
     {
         // clicking within bounds
         if (x < m_lowMidX - 5)
         {
-            if (m_lowMidX > bandWidth)
-            {
-                bandX = (m_lowMidX - bandWidth) / 2;
-            }
-            else
-            {
-                bandX = bandMargin;
-            }
 
             m_processor.setBandFocus(BandFocus::Low);
             bandControls.setVisible(true);
-            bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
-
             m_bandLabel.setVisible(true);
             m_bandLabel.setText("LOW", juce::NotificationType::dontSendNotification);
-            m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
+            resized();
+            return;
         }
         else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
         {
-            if (m_midHighX - m_lowMidX > bandWidth)
-            {
-                bandX = m_lowMidX + ((m_midHighX - m_lowMidX - bandWidth)  / 2);
-            }
-            else
-            {
-                bandX = m_lowMidX + bandMargin;
-            }
             m_processor.setBandFocus(BandFocus::Mid);
             bandControls.setVisible(true);
-            bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
-
             m_bandLabel.setVisible(true);
             m_bandLabel.setText("MID", juce::NotificationType::dontSendNotification);
-            m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
+
+            resized();
+            return;
         }
         else if (x > m_midHighX + 5)
         {
-            if (getWidth() - m_midHighX > bandWidth)
-            {
-                bandX = m_midHighX + ((getWidth() - m_midHighX - bandWidth) / 2);
-            }
-            else
-            {
-                bandX = m_midHighX + bandMargin;
-            }
             m_processor.setBandFocus(BandFocus::High);
             bandControls.setVisible(true);
-            bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
-
             m_bandLabel.setVisible(true);
             m_bandLabel.setText("HIGH", juce::NotificationType::dontSendNotification);
-            m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
+
+            resized();
+            return;
         }
 
         // dragging band controls
@@ -659,26 +715,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g)
     }
 }
 
-void SpectrumAnalyzer::resized()
-{
-    auto fftBounds = getAnalysisArea().toFloat();
-    auto negativeInfinity = juce::jmap(getLocalBounds().toFloat().getBottom(), fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
 
-    inPathProducer.updateNegativeInfinity(negativeInfinity);
-    outPathProducer.updateNegativeInfinity(negativeInfinity);
-
-    m_lowMidX = mapFrequencyToX(m_lowCrossoverParam->get());
-    m_midHighX = mapFrequencyToX(m_highCrossoverParam->get());
-
-    m_muteLowButton.setBounds(m_lowMidX - muteOffset, getHeight() - marginY, size, size);
-    m_soloLowButton.setBounds(m_lowMidX - soloOffset, getHeight() - marginY, size, size);
-
-    m_muteMidButton.setBounds(m_midHighX - muteOffset, getHeight() - marginY, size, size);
-    m_soloMidButton.setBounds(m_midHighX - soloOffset, getHeight() - marginY, size, size);
-
-    m_muteHighButton.setBounds(getWidth() - muteOffset, getHeight() - marginY, size, size);
-    m_soloHighButton.setBounds(getWidth() - soloOffset, getHeight() - marginY, size, size);
-}
 
 void SpectrumAnalyzer::parameterValueChanged(int parameterIndex, float newValue)
 {

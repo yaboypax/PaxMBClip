@@ -32,6 +32,7 @@ public:
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void centerBandControls();
 
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseDrag(const juce::MouseEvent& e) override;
