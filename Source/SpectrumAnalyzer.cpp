@@ -298,7 +298,7 @@ void SpectrumAnalyzer::centerBandControls()
     deleteCrossoverSliders();
 
     int bandX;
-    int bandY = (getHeight() - JUCE_LIVE_CONSTANT(132));
+    int bandY = 38;
 
     auto focus = m_processor.getBandFocus();
 
@@ -306,38 +306,17 @@ void SpectrumAnalyzer::centerBandControls()
     {
     case BandFocus::Low:
     {
-        if (m_lowMidX > bandWidth)
-        {
-            bandX = (m_lowMidX - bandWidth) / 2;
-        }
-        else
-        {
-            bandX = bandMargin;
-        }
+        bandX = bandMargin;
         break;
     }
     case BandFocus::Mid:
     {
-        if (m_midHighX - m_lowMidX > bandWidth)
-        {
-            bandX = m_lowMidX + ((m_midHighX - m_lowMidX - bandWidth) / 2);
-        }
-        else
-        {
-            bandX = m_lowMidX + bandMargin;
-        }
+        bandX = m_lowMidX + bandMargin;
         break;
     }
     case BandFocus::High:
     {
-        if (getWidth() - m_midHighX > bandWidth)
-        {
-            bandX = m_midHighX + ((getWidth() - m_midHighX - bandWidth) / 2);
-        }
-        else
-        {
-            bandX = m_midHighX + bandMargin;
-        }
+        bandX = m_midHighX + bandMargin;
         break;
     }
 
@@ -551,7 +530,7 @@ void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
     makeAttachment(lowCrossoverAttachment, m_processor.apvts, params, Names::Low_Mid_Crossover_Freq, *lowCrossover);
     makeAttachment(highCrossoverAttachment, m_processor.apvts, params, Names::Mid_High_Crossover_Freq, *highCrossover);
 
-    auto size = 78;
+    auto size = 60;
     lowCrossover->setBounds(point.getX(), point.getY(), size, size);
     highCrossover->setBounds(lowCrossover->getRight() + 5, point.getY(), size, size);
 
