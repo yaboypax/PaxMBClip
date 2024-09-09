@@ -52,6 +52,8 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
 
 SpectrumAnalyzer::~SpectrumAnalyzer()
 {
+    deleteCrossoverSliders();
+
     const auto& params = m_processor.getParameters();
     for (auto param : params)
     {
