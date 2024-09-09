@@ -115,3 +115,9 @@ void GlobalControls::resized()
     masterClipButton.setBounds(clipX, clipY, clipW, clipH);
        
 }
+
+void GlobalControls::mouseDown(const juce::MouseEvent& e)
+{
+        m_processor->setBandFocus(BandFocus::unfocused);
+        m_processor->sendChangeMessage();
+}

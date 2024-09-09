@@ -17,14 +17,16 @@
 #include "Params.h"
 
 
-struct GlobalControls : juce::Component
+class GlobalControls : public juce::Component, public juce::MouseListener
 {
+public:
     GlobalControls(PaxMBClipAudioProcessor& inProcessor);
     ~GlobalControls();
     void paint(juce::Graphics& g) override;
     void resized() override;
 
     void setupLevelMeters();
+    void mouseDown(const juce::MouseEvent& e) override;
 
 private:
     PaxMBClipAudioProcessor* m_processor;

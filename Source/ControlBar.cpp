@@ -39,3 +39,9 @@ void ControlBar::resized()
     globalBypassButton.setBounds(getWidth() - 54, getY() + 4, 50, getHeight() - 8);
     settingsButton.setBounds(globalBypassButton.getX() - 44, getY() + 4, 50, getHeight() - 8);
 }
+
+void ControlBar::mouseDown(const juce::MouseEvent& e)
+{
+    m_processor->setBandFocus(BandFocus::unfocused);
+    m_processor->sendChangeMessage();
+}

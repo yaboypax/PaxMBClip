@@ -15,7 +15,7 @@
 #include "Params.h"
 #include "Utilities.h"
 
-class ControlBar : public juce::Component
+class ControlBar : public juce::Component, public juce::MouseListener
 {
 public:
     
@@ -23,6 +23,7 @@ public:
 
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void mouseDown(const juce::MouseEvent& e) override;
 
     PowerButton globalBypassButton;
     SettingsButton settingsButton;
