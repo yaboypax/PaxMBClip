@@ -96,9 +96,6 @@ void GlobalControls::setupLevelMeters()
 
 void GlobalControls::paint(juce::Graphics& g)
 {
-    auto bounds = getLocalBounds();
-    drawModuleBackground(g, bounds);
-    
     g.setColour(juce::Colours::white);
     g.setFont(Chomp::Overhead.withHeight(42.f));
 
