@@ -18,6 +18,10 @@ namespace
     constexpr int size = 25;
     constexpr int muteOffset = 51;
     constexpr int soloOffset = 27;
+
+    constexpr int bandMargin = 10;
+    constexpr int bandWidth = 150;
+    constexpr int bandHeight = MIN_HEIGHT - 190;
 }
 
 SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
@@ -127,6 +131,13 @@ void SpectrumAnalyzer::setAttachments()
     m_lowGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Gain)));
     m_midGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Gain)));
     m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
+
+    for (auto& slider : m_crossoverSliders)
+    {
+        slider.get()->onValueChange = [this]() {
+            m_processor.sendChangeMessage();
+            };
+    }
 }
 
 void SpectrumAnalyzer::paint(juce::Graphics& g)

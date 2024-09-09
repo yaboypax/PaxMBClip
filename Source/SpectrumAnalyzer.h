@@ -109,5 +109,9 @@ private:
     juce::Label m_frequencyDisplay;
     bool m_shouldDisplayWaveform = false;
 
+    RotarySlider m_lowMidSlider, m_midHighSlider;
+    std::unique_ptr<SliderAttachment> m_lowMidAttachment, m_midHighAttachment;
+    juce::Label m_crossoverLabel;
+
 };
 

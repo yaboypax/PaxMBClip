@@ -35,9 +35,9 @@ ClipperBandControls::ClipperBandControls(PaxMBClipAudioProcessor& inProcessor)
 
     layoutSliders();
 
-    addAndMakeVisible(m_crossoverLabel);
+    /*addAndMakeVisible(m_crossoverLabel);
     m_crossoverLabel.setText("CROSSOVERS", juce::NotificationType::dontSendNotification);
-    m_crossoverLabel.setJustificationType(juce::Justification::centred);
+    m_crossoverLabel.setJustificationType(juce::Justification::centred);*/
 
     addAndMakeVisible(m_clipGainLabel);
     m_clipGainLabel.setText("GAIN      CLIP", juce::NotificationType::dontSendNotification);
@@ -68,9 +68,6 @@ void ClipperBandControls::layoutSliders()
 
     addAndMakeVisible(bandGainSlider);
     addAndMakeVisible(bandClipSlider);
-
-    addAndMakeVisible(m_lowMidSlider);
-    addAndMakeVisible(m_midHighSlider);
 
 }
 
@@ -158,19 +155,12 @@ void ClipperBandControls::updateAttachments()
     makeAttachment(bandGainSliderAttachment, m_processor->apvts, params, names[Position::Gain], bandGainSlider);
     makeAttachment(bandClipSliderAttachment, m_processor->apvts, params, names[Position::Clip], bandClipSlider);
 
-    makeAttachment(m_lowMidAttachment, m_processor->apvts, params, Names::Low_Mid_Crossover_Freq, m_lowMidSlider);
-    makeAttachment(m_midHighAttachment, m_processor->apvts, params, Names::Mid_High_Crossover_Freq, m_midHighSlider);
+
 
     bandClipSlider.setRange(-48.0, 0.0, 0.1);
     bandGainSlider.setRange(-24.0, 24.0, 0.1);
 
-    m_lowMidSlider.onValueChange = [this]() {
-        m_processor->sendChangeMessage();
-        };
 
-    m_midHighSlider.onValueChange = [this]() {
-        m_processor->sendChangeMessage();
-        };
 }
 
 
@@ -193,14 +183,9 @@ void ClipperBandControls::resized()
     //muteButton.setBounds(bypassButton.getRight() + margin, buttonY, buttonSize, buttonSize);
     //soloButton.setBounds(muteButton.getRight() + margin, buttonY, buttonSize, buttonSize);
 
-    m_lowMidSlider.setBounds(rotaryX, rotaryY, rotarySize, rotarySize);
-    m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
-
-    m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
-
-    const int sliderHeight = getHeight() - 182;
-    bandGainSlider.setBounds(sliderX, m_crossoverLabel.getBottom() + margin, sliderWidth, sliderHeight);
-    bandClipSlider.setBounds(bandGainSlider.getRight() + 5, m_crossoverLabel.getBottom() + margin, sliderWidth, sliderHeight);
+    const int sliderHeight = getHeight() - 100;
+    bandGainSlider.setBounds(sliderX, rotaryY + margin, sliderWidth, sliderHeight);
+    bandClipSlider.setBounds(bandGainSlider.getRight() + 5, rotaryY + margin, sliderWidth, sliderHeight);
     m_clipGainLabel.setBounds(0, bandClipSlider.getBottom() + margin, getWidth(), 20);
 
     const int waveY = getHeight() - 56;
