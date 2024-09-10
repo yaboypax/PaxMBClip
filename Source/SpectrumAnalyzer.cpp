@@ -133,13 +133,6 @@ void SpectrumAnalyzer::setAttachments()
     m_lowGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Low_Gain)));
     m_midGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::Mid_Gain)));
     m_highGainParam = dynamic_cast<juce::AudioParameterFloat*>(m_processor.apvts.getParameter(paramNames.at(Names::High_Gain)));
-
-    for (auto& slider : m_crossoverSliders)
-    {
-        slider.get()->onValueChange = [this]() {
-            m_processor.sendChangeMessage();
-            };
-    }
 }
 
 void SpectrumAnalyzer::paint(juce::Graphics& g)
@@ -269,6 +262,8 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
 
 void SpectrumAnalyzer::resized()
 {
+    deleteCrossoverSliders();
+
     auto fftBounds = getAnalysisArea().toFloat();
     auto negativeInfinity = juce::jmap(getLocalBounds().toFloat().getBottom(), fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
 
@@ -291,13 +286,16 @@ void SpectrumAnalyzer::resized()
    // m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
 
     // m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
+    
 
+    createCrossoverSliders({ (getWidth() / 2) - 30,
+                    getHeight() - 78 }); // juce::Point
     centerBandControls();
 }
 
 void SpectrumAnalyzer::centerBandControls()
 {
-    deleteCrossoverSliders();
+    
 
     int bandX = 0;
     int bandY = 38;
@@ -332,8 +330,6 @@ void SpectrumAnalyzer::centerBandControls()
     bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
     m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
 
-    createCrossoverSliders({ bandX + bandMargin, bandControls.getBottom() + bandMargin });
-
 }
 
 void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
@@ -342,14 +338,17 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
 
     if (e.mods.isLeftButtonDown())
     {
+        deleteCrossoverSliders();
+
         // clicking within bounds
         if (x < m_lowMidX - 5)
         {
-
             m_processor.setBandFocus(BandFocus::Low);
             bandControls.setVisible(true);
             m_bandLabel.setVisible(true);
             m_bandLabel.setText("LOW", juce::NotificationType::dontSendNotification);
+            createCrossoverSliders({ (getWidth() / 2) - 30,
+                        getHeight() - 78 }); // juce::Point
             resized();
             return;
         }
@@ -359,7 +358,8 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
             bandControls.setVisible(true);
             m_bandLabel.setVisible(true);
             m_bandLabel.setText("MID", juce::NotificationType::dontSendNotification);
-
+            createCrossoverSliders({ (getWidth() / 2) - 30,
+                                    getHeight() - 78 }); // juce::Point
             resized();
             return;
         }
@@ -369,7 +369,8 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
             bandControls.setVisible(true);
             m_bandLabel.setVisible(true);
             m_bandLabel.setText("HIGH", juce::NotificationType::dontSendNotification);
-
+            createCrossoverSliders({ (getWidth() / 2) - 30,
+                                    getHeight() - 78 }); // juce::Point
             resized();
             return;
         }
@@ -541,14 +542,19 @@ void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
     auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
     lowCrossover->setLookAndFeel(chompLAF);
     highCrossover->setLookAndFeel(chompLAF);
+    
+    lowCrossover->onValueChange = [this]() {
+        centerBandControls();
+        };
+    highCrossover->onValueChange = [this]() {
+        centerBandControls();
+        };
 
     addAndMakeVisible(*lowCrossover);
     addAndMakeVisible(*highCrossover);
 
     m_crossoverSliders.push_back(lowCrossover);
     m_crossoverSliders.push_back(highCrossover);
-
-    
 }
 
 void SpectrumAnalyzer::deleteCrossoverSliders()
