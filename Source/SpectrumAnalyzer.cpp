@@ -273,14 +273,6 @@ void SpectrumAnalyzer::resized()
     m_lowMidX = mapFrequencyToX(m_lowCrossoverParam->get());
     m_midHighX = mapFrequencyToX(m_highCrossoverParam->get());
 
-    m_muteLowButton.setBounds(m_lowMidX - muteOffset, getHeight() - marginY, size, size);
-    m_soloLowButton.setBounds(m_lowMidX - soloOffset, getHeight() - marginY, size, size);
-
-    m_muteMidButton.setBounds(m_midHighX - muteOffset, getHeight() - marginY, size, size);
-    m_soloMidButton.setBounds(m_midHighX - soloOffset, getHeight() - marginY, size, size);
-
-    m_muteHighButton.setBounds(getWidth() - muteOffset, getHeight() - marginY, size, size);
-    m_soloHighButton.setBounds(getWidth() - soloOffset, getHeight() - marginY, size, size);
 
    // m_lowMidSlider.setBounds(0, 0, rotarySize, rotarySize);
    // m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
@@ -329,6 +321,16 @@ void SpectrumAnalyzer::centerBandControls()
 
     bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
     m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
+
+
+    m_muteLowButton.setBounds(m_lowMidX - muteOffset, getHeight() - marginY, size, size);
+    m_soloLowButton.setBounds(m_lowMidX - soloOffset, getHeight() - marginY, size, size);
+
+    m_muteMidButton.setBounds(m_midHighX - muteOffset, getHeight() - marginY, size, size);
+    m_soloMidButton.setBounds(m_midHighX - soloOffset, getHeight() - marginY, size, size);
+
+    m_muteHighButton.setBounds(getWidth() - muteOffset, getHeight() - marginY, size, size);
+    m_soloHighButton.setBounds(getWidth() - soloOffset, getHeight() - marginY, size, size);
 
 }
 
