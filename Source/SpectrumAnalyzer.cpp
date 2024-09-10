@@ -332,7 +332,7 @@ void SpectrumAnalyzer::centerBandControls()
     bandControls.setBounds(bandX, bandY, bandWidth, bandHeight);
     m_bandLabel.setBounds(bandX, bandY - 30, bandWidth, 40);
 
-    createCrossoverSliders({ bandX, bandControls.getBottom() + bandMargin });
+    createCrossoverSliders({ bandX + bandMargin, bandControls.getBottom() + bandMargin });
 
 }
 
