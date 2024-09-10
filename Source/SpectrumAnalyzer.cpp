@@ -47,6 +47,8 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     
     m_processor.addChangeListener(this);
     addChildComponent(m_processor.m_waveformDisplay);
+
+    centerBandControls();
     startTimerHz(40);
 }
 
@@ -545,12 +547,14 @@ void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
     lowCrossover->setLookAndFeel(chompLAF);
     highCrossover->setLookAndFeel(chompLAF);
     
-    lowCrossover->onValueChange = [this]() {
+    auto center = [this]() {
         centerBandControls();
         };
-    highCrossover->onValueChange = [this]() {
-        centerBandControls();
-        };
+
+    lowCrossover->onValueChange = center;
+    highCrossover->onValueChange = center;
+    lowCrossover->onDragEnd = center;
+    highCrossover->onDragEnd = center;
 
     addAndMakeVisible(*lowCrossover);
     addAndMakeVisible(*highCrossover);

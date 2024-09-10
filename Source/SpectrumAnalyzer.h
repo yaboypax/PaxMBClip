@@ -31,8 +31,9 @@ public:
 
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
+
     void resized() override;
-    void centerBandControls();
+    void centerBandControls();  //resize band component and band buttons
 
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseDrag(const juce::MouseEvent& e) override;
