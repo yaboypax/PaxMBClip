@@ -288,20 +288,22 @@ void SpectrumAnalyzer::resized()
    // m_midHighSlider.setBounds(m_lowMidSlider.getRight() + margin, rotaryY, rotarySize, rotarySize);
 
     // m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
-    
+   
+    createCrossoverSliders({ (getWidth() / 2) - 30,
+                    getHeight() - 78 }); // juce::Point
+    centerWaveformDisplay();
+    centerBandControls();
+}
+
+void SpectrumAnalyzer::centerWaveformDisplay()
+{
     auto highlight = getHighlightArea();
     m_processor.m_waveformDisplay.setBounds(highlight);
     m_processor.m_waveformDisplay.toBack();
-
-    createCrossoverSliders({ (getWidth() / 2) - 30,
-                    getHeight() - 78 }); // juce::Point
-    centerBandControls();
 }
 
 void SpectrumAnalyzer::centerBandControls()
 {
-    
-
     int bandX = 0;
     int bandY = 38;
 
@@ -559,6 +561,7 @@ void SpectrumAnalyzer::createCrossoverSliders(const juce::Point<int> point)
     highCrossover->setLookAndFeel(chompLAF);
     
     auto center = [this]() {
+        centerWaveformDisplay();
         centerBandControls();
         };
 
