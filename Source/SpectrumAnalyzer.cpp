@@ -714,7 +714,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g)
 
         Rectangle<int> r;
         r.setSize(textWidth, fontHeight);
-        r.setX(getWidth() - textWidth);
+        r.setX(1);
         r.setCentre(r.getCentreX(), y);
 
         g.setColour(gDb == 0.f ? Colour(188, 198, 206) : Colours::lightgrey);
@@ -724,8 +724,9 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g)
         str.clear();
         str << (gDb - 24.f);
 
-        r.setX(1);
+        
         textWidth = g.getCurrentFont().getStringWidth(str);
+        r.setX(getWidth() - textWidth);
         r.setSize(textWidth, fontHeight);
         g.setColour(Colours::lightgrey);
         g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
