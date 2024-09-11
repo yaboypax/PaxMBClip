@@ -39,7 +39,7 @@ SpectrumAnalyzer::SpectrumAnalyzer(PaxMBClipAudioProcessor& p) :
     setAttachments();
     addChildComponent(m_frequencyDisplay);
 
-    addChildComponent(bandControls);
+    addAndMakeVisible(bandControls);
     bandControls.setLookAndFeel(chompLAF);
 
     addChildComponent(m_bandLabel);
