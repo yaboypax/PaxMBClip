@@ -15,6 +15,59 @@
 #include "LookAndFeel.h"
 #include "ClipperBandControls.h"
 
+struct CrossoverComponent : juce::Component
+{
+    CrossoverComponent(PaxMBClipAudioProcessor& inProcessor, std::function<void()> callback)
+    {
+        m_processor = &inProcessor;
+
+        using namespace Params;
+        const auto& params = GetParams();
+        makeAttachment(m_lowCrossoverAttachment, m_processor->apvts, params, Names::Low_Mid_Crossover_Freq, m_lowCrossover);
+        makeAttachment(m_highCrossoverAttachment, m_processor->apvts, params, Names::Mid_High_Crossover_Freq, m_highCrossover);
+
+        auto chompLAF = juce::SharedResourcePointer<ChompLookAndFeel>();
+        m_lowCrossover.setLookAndFeel(chompLAF);
+        m_highCrossover.setLookAndFeel(chompLAF);
+
+        m_lowCrossover.onValueChange = callback;
+        m_highCrossover.onValueChange = callback;
+        m_lowCrossover.onDragEnd = callback;
+        m_highCrossover.onDragEnd = callback;
+
+        addAndMakeVisible(m_lowCrossover);
+        addAndMakeVisible(m_highCrossover);
+
+        m_crossoverLabel.setText("CROSSOVERS", juce::NotificationType::dontSendNotification);
+        m_crossoverLabel.setLookAndFeel(chompLAF);
+        addAndMakeVisible(m_crossoverLabel);
+
+
+
+    }
+    void paint(juce::Graphics& g) override
+    {
+
+    }
+    
+    void resized() override
+    {
+        int size = 60;
+        m_lowCrossover.setBounds(0, 0, size, size);
+        m_highCrossover.setBounds(m_lowCrossover.getRight() + 5, 0, size, size);
+        m_crossoverLabel.setBounds(JUCE_LIVE_CONSTANT(14), 
+            m_lowCrossover.getBottom() - JUCE_LIVE_CONSTANT(6), getWidth(), 24);
+    }
+
+    PaxMBClipAudioProcessor* m_processor;
+    juce::SharedResourcePointer<ChompLookAndFeel> chompLAF;
+
+    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    RotarySlider m_lowCrossover, m_highCrossover;
+    std::unique_ptr<SliderAttachment> m_lowCrossoverAttachment, m_highCrossoverAttachment;
+    juce::Label m_crossoverLabel;
+};
+
 class SpectrumAnalyzer : public juce::Component,
     public juce::AudioProcessorParameter::Listener,
     public juce::Timer, public juce::MouseListener, public juce::ChangeListener, public juce::Button::Listener
@@ -50,8 +103,7 @@ public:
     int mapFrequencyToX(const float frequency);
     int mapXToFrequency(const int x);
 
-    void createCrossoverSliders(const juce::Point<int> point);
-    void deleteCrossoverSliders();
+
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
@@ -81,10 +133,6 @@ private:
     
     int m_lowMidX = 200;
     int m_midHighX = 2000;
-
-    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-    std::unique_ptr<SliderAttachment> lowCrossoverAttachment, highCrossoverAttachment;
-
     
     juce::ToggleButton m_soloLowButton, m_muteLowButton;
     juce::ToggleButton m_soloMidButton, m_muteMidButton;
@@ -106,15 +154,18 @@ private:
     juce::AudioParameterFloat* m_midGainParam{ nullptr };
     juce::AudioParameterFloat* m_highGainParam{ nullptr };
 
-    std::vector<std::shared_ptr<RotarySlider>> m_crossoverSliders;
-    std::atomic<bool> m_showCrossoverSliders;
+    std::function<void()> m_crossoverCallback = [this]() {
+        centerWaveformDisplay();
+        centerBandControls();
+        };
+    CrossoverComponent m_crossoverComponent { m_processor, m_crossoverCallback };
 
     juce::Label m_frequencyDisplay;
     bool m_shouldDisplayWaveform = false;
 
-    RotarySlider m_lowMidSlider, m_midHighSlider;
-    std::unique_ptr<SliderAttachment> m_lowMidAttachment, m_midHighAttachment;
-    juce::Label m_crossoverLabel;
+    //RotarySlider m_lowMidSlider, m_midHighSlider;
+    //std::unique_ptr<SliderAttachment> m_lowMidAttachment, m_midHighAttachment;
+
 
 };
 
