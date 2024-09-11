@@ -15,12 +15,13 @@
 #include "LookAndFeel.h"
 #include "ClipperBandControls.h"
 
-struct CrossoverComponent : juce::Component
+struct CrossoverComponent : juce::Component , juce::MouseListener
 {
     CrossoverComponent(PaxMBClipAudioProcessor& inProcessor, std::function<void()> callback)
     {
         m_processor = &inProcessor;
-
+        setAlpha(0.5f);
+        
         using namespace Params;
         const auto& params = GetParams();
         makeAttachment(m_lowCrossoverAttachment, m_processor->apvts, params, Names::Low_Mid_Crossover_Freq, m_lowCrossover);
@@ -42,21 +43,37 @@ struct CrossoverComponent : juce::Component
         m_crossoverLabel.setLookAndFeel(chompLAF);
         addAndMakeVisible(m_crossoverLabel);
 
-
-
     }
+
+    void mouseEnter(const juce::MouseEvent& ev) override
+    {
+        setAlpha(0.9f);
+        repaint();
+    }
+
+    void mouseExit(const juce::MouseEvent& ev) override
+    {
+        setAlpha(0.5f);
+        repaint();
+    }
+
     void paint(juce::Graphics& g) override
     {
+        auto bounds = getLocalBounds();
+        auto background = juce::Colours::black;
 
+        g.setColour(background);
+        g.fillRoundedRectangle(bounds.toFloat(), 24.f);
     }
     
     void resized() override
     {
         int size = 60;
-        m_lowCrossover.setBounds(0, 0, size, size);
+        int margin = 14;
+        m_lowCrossover.setBounds(margin, 0, size, size);
         m_highCrossover.setBounds(m_lowCrossover.getRight() + 5, 0, size, size);
-        m_crossoverLabel.setBounds(JUCE_LIVE_CONSTANT(14), 
-            m_lowCrossover.getBottom() - JUCE_LIVE_CONSTANT(6), getWidth(), 24);
+        m_crossoverLabel.setBounds(margin +14,
+            m_lowCrossover.getBottom() - 6, getWidth(), 24);
     }
 
     PaxMBClipAudioProcessor* m_processor;

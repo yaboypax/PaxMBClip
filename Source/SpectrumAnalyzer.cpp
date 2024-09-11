@@ -288,7 +288,7 @@ void SpectrumAnalyzer::resized()
     // m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
    
     m_crossoverComponent.setBounds((getWidth() / 2) - 30,
-                    getHeight() - 85, 300, 200 ); // juce::Point
+                    getHeight() - 116, 152, 77); // juce::Point
     centerWaveformDisplay();
     centerBandControls();
 }
@@ -328,6 +328,7 @@ void SpectrumAnalyzer::centerBandControls()
     case BandFocus::unfocused:
         bandControls.setVisible(false);
         m_bandLabel.setVisible(false);
+        m_crossoverComponent.setVisible(false);
         break;
     }
 
@@ -358,30 +359,23 @@ void SpectrumAnalyzer::mouseDown(const juce::MouseEvent& e)
         if (x < m_lowMidX - 5)
         {
             m_processor.setBandFocus(BandFocus::Low);
-            bandControls.setVisible(true);
-            m_bandLabel.setVisible(true);
             m_bandLabel.setText("LOW", juce::NotificationType::dontSendNotification);
-            resized();
-            return;
         }
         else if (x > m_lowMidX + 5 && x < m_midHighX - 5)
         {
             m_processor.setBandFocus(BandFocus::Mid);
-            bandControls.setVisible(true);
-            m_bandLabel.setVisible(true);
             m_bandLabel.setText("MID", juce::NotificationType::dontSendNotification);
-            resized();
-            return;
         }
         else if (x > m_midHighX + 5)
         {
             m_processor.setBandFocus(BandFocus::High);
-            bandControls.setVisible(true);
-            m_bandLabel.setVisible(true);
             m_bandLabel.setText("HIGH", juce::NotificationType::dontSendNotification);
-            resized();
-            return;
         }
+
+        bandControls.setVisible(true);
+        m_bandLabel.setVisible(true);
+        m_crossoverComponent.setVisible(true);
+        resized();
 
         // dragging band controls
         if (x > m_lowMidX - 5 && x < m_lowMidX + 5)

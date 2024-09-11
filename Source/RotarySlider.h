@@ -11,7 +11,7 @@
 #pragma once
 #include "JuceHeader.h"
 
-struct RotarySlider : juce::Slider
+struct RotarySlider : juce::Slider , juce::MouseListener
 {
     RotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
         juce::Slider::TextEntryBoxPosition::NoTextBox)
@@ -21,6 +21,17 @@ struct RotarySlider : juce::Slider
 
     int getTextHeight() const { return 14; }
     void changeParam(juce::RangedAudioParameter* p);
+
+    void mouseEnter(const juce::MouseEvent& ev) override
+    {
+        getParentComponent()->mouseEnter(ev);
+    }
+
+    void mouseExit(const juce::MouseEvent& ev) override
+    {
+        getParentComponent()->mouseExit(ev);
+    }
+
 private:
     juce::RangedAudioParameter* param;
     juce::String suffix;
