@@ -195,6 +195,36 @@ int SpectrumAnalyzer::mapXToFrequency(const int x)
     return static_cast<int>(frequency);
 }
 
+juce::Rectangle<int> SpectrumAnalyzer::getHighlightArea()
+{
+    auto highlight = getAnalysisArea();
+
+    switch (m_processor.getBandFocus())
+    {
+    case BandFocus::unfocused:
+        highlight.setX(0);
+        highlight.setRight(0);
+        break;
+
+    case BandFocus::Low:
+        highlight.setX(0);
+        highlight.setRight(m_lowMidX);
+        break;
+
+    case BandFocus::Mid:
+        highlight.setX(m_lowMidX);
+        highlight.setRight(m_midHighX);
+        break;
+
+    case BandFocus::High:
+        highlight.setX(m_midHighX);
+        highlight.setRight(getWidth() - 1);
+        break;
+    }
+
+    return highlight;
+}
+
 void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
     const auto top = bounds.getY();
@@ -211,33 +241,11 @@ void SpectrumAnalyzer::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bo
     g.setColour(juce::Colour(188, 198, 206));
     g.drawVerticalLine(m_midHighX, top, bottom);
 
-    auto highlight = bounds;
+   
     g.setColour(juce::Colour(0x20FFFFFF));
-    switch (m_processor.getBandFocus())
-    {
-    case BandFocus::unfocused:
-        break;
-
-        case BandFocus::Low:
-            highlight.setX(0);
-            highlight.setRight(m_lowMidX);
-            g.fillRect(highlight);
-            break;
-
-        case BandFocus::Mid:
-            highlight.setX(m_lowMidX);
-            highlight.setRight(m_midHighX);
-            g.fillRect(highlight);
-            break;
-
-        case BandFocus::High:
-            highlight.setX(m_midHighX);
-            highlight.setRight(getWidth()-1);
-            g.fillRect(highlight);
-            break;
-    }
-    m_processor.m_waveformDisplay.setBounds(highlight);
-    m_processor.m_waveformDisplay.toFront(false);
+    
+    auto highlight = getHighlightArea();
+    g.fillRect(highlight);
 
 
     auto mapGainY = [bottom, top](float db) {
@@ -281,6 +289,9 @@ void SpectrumAnalyzer::resized()
 
     // m_crossoverLabel.setBounds(0, m_lowMidSlider.getBottom() + margin, getWidth(), 20);
     
+    auto highlight = getHighlightArea();
+    m_processor.m_waveformDisplay.setBounds(highlight);
+    m_processor.m_waveformDisplay.toBack();
 
     createCrossoverSliders({ (getWidth() / 2) - 30,
                     getHeight() - 78 }); // juce::Point
@@ -317,7 +328,7 @@ void SpectrumAnalyzer::centerBandControls()
     case BandFocus::unfocused:
         bandControls.setVisible(false);
         m_bandLabel.setVisible(false);
-        return;
+        break;
     }
 
 

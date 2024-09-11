@@ -169,7 +169,7 @@ void ClipperBandControls::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
 
-    auto background = m_isWaveformShowing ? juce::Colours::black : juce::Colours::black.withAlpha(0.5f);
+    auto background = m_isWaveformShowing ? juce::Colours::black.withAlpha(0.9f) : juce::Colours::black.withAlpha(0.5f);
     g.setColour(background);
     g.fillRoundedRectangle(bounds.toFloat(), 36.f);
 }

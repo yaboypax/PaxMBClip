@@ -29,6 +29,7 @@ public:
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
 
+    juce::Rectangle<int> getHighlightArea();
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
 
