@@ -73,7 +73,6 @@ void SettingsComponent::paint(juce::Graphics& g)
 
     g.setColour(juce::Colours::white);
     g.setFont(Chomp::Overhead.withHeight(36.f));
-    //auto textBounds = getLocalBounds().removeFromBottom(getHeight() * 0.8f);
     g.drawText("Settings", getLocalBounds(), juce::Justification::centredTop);
 }
 

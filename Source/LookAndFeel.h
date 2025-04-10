@@ -86,27 +86,26 @@ struct SettingsButton : juce::TextButton
     void paintButton(juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
         auto bounds = getLocalBounds().toFloat();
-        auto gearRadius = juce::jmin(bounds.getWidth(), bounds.getHeight()) * 0.4f; // Adjust size as needed
+        auto gearRadius = juce::jmin(bounds.getWidth(), bounds.getHeight()) * 0.4f; 
         auto center = bounds.getCentre();
         juce::Path gearPath;
 
-        const int teethCount = 8; // Number of teeth on the gear
-        const float toothSize = juce::MathConstants<float>::twoPi / teethCount; // Size of each tooth in radians
+        const int teethCount = 8;
+        const float toothSize = juce::MathConstants<float>::twoPi / teethCount;
 
         for (int i = 0; i < teethCount; ++i)
         {
             float angle = toothSize * i;
             float nextAngle = toothSize * (i + 1);
 
-            // Calculate points for the outer edge of a tooth
+            
             juce::Point<float> p1(center.x + cos(angle - toothSize * 0.2f) * gearRadius * 1.2f,
                 center.y + sin(angle - toothSize * 0.2f) * gearRadius * 1.2f);
             juce::Point<float> p2(center.x + cos(angle + toothSize * 0.2f) * gearRadius * 1.2f,
                 center.y + sin(angle + toothSize * 0.2f) * gearRadius * 1.2f);
 
-            // Add lines to the points or arcs around the gear
             if (i == 0)
-                gearPath.startNewSubPath(p1); // Start the path
+                gearPath.startNewSubPath(p1);
             else
                 gearPath.lineTo(p1);
 
@@ -116,9 +115,8 @@ struct SettingsButton : juce::TextButton
 
         gearPath.closeSubPath();
 
-        // Draw the gear
-        g.setColour(juce::Colours::white); // Set your desired colour
-        g.strokePath(gearPath, juce::PathStrokeType(2.0f)); // Outline the path with a stroke width of 2.0
+        g.setColour(juce::Colours::white);
+        g.strokePath(gearPath, juce::PathStrokeType(2.0f));
     }
 };
 struct WaveSelector : juce::ComboBox

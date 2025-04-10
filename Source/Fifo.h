@@ -23,9 +23,9 @@ struct Fifo
         {
             buffer.setSize(numChannels,
                 numSamples,
-                false,   //clear everything?
-                true,    //including the extra space?
-                true);   //avoid reallocating if you can?
+                false,  
+                true,   
+                true);  
             buffer.clear();
         }
     }

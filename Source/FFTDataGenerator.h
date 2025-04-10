@@ -27,20 +27,13 @@ struct FFTDataGenerator
         fftData.assign(fftData.size(), 0);
         auto* readIndex = audioData.getReadPointer(0);
         std::copy(readIndex, readIndex + fftSize, fftData.begin());
-
-        // first apply a windowing function to our data
-        window->multiplyWithWindowingTable(fftData.data(), fftSize);       // [1]
-
-        // then render our FFT data..
-        forwardFFT->performFrequencyOnlyForwardTransform(fftData.data());  // [2]
+        window->multiplyWithWindowingTable(fftData.data(), fftSize);      
+        forwardFFT->performFrequencyOnlyForwardTransform(fftData.data()); 
 
         int numBins = (int)fftSize / 2;
-
-        //normalize the fft values.
         for (int i = 0; i < numBins; ++i)
         {
             auto v = fftData[i];
-            //            fftData[i] /= (float) numBins;
             if (!std::isinf(v) && !std::isnan(v))
             {
                 v /= float(numBins);
@@ -53,7 +46,6 @@ struct FFTDataGenerator
         }
 
         float max = negativeInfinity;
-        //convert them to decibels
         for (int i = 0; i < numBins; ++i)
         {
             auto data = juce::Decibels::gainToDecibels(fftData[i], negativeInfinity);
@@ -66,10 +58,6 @@ struct FFTDataGenerator
 
     void changeOrder(FFTOrder newOrder)
     {
-        //when you change order, recreate the window, forwardFFT, fifo, fftData
-        //also reset the fifoIndex
-        //things that need recreating should be created on the heap via std::make_unique<>
-
         order = newOrder;
         auto fftSize = getFFTSize();
 

@@ -14,60 +14,16 @@
 struct RotarySlider : juce::Slider
 {
     RotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
-        juce::Slider::TextEntryBoxPosition::NoTextBox)
-    {
-        param = nullptr;
-    }
+        juce::Slider::TextEntryBoxPosition::NoTextBox){}
 
     int getTextHeight() const { return 14; }
-    void changeParam(juce::RangedAudioParameter* p);
+    void changeParam(juce::RangedAudioParameter* p)
+    {
+        param = p;
+        repaint();
+    }
 private:
-    juce::RangedAudioParameter* param;
+    juce::RangedAudioParameter* param = nullptr;
     juce::String suffix;
 };
-
-
-
-
-
-
-
-
-
-
-//
-//struct RotarySliderWithLabels : juce::Slider
-//{
-//    RotarySliderWithLabels(juce::RangedAudioParameter& rap, const juce::String& unitSuffix) :
-//        juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
-//            juce::Slider::TextEntryBoxPosition::NoTextBox),
-//        param(&rap),
-//        suffix(unitSuffix)
-//    {
-//        setLookAndFeel(&lnf);
-//    }
-//
-//    ~RotarySliderWithLabels()
-//    {
-//        setLookAndFeel(nullptr);
-//    }
-//
-//    struct LabelPos
-//    {
-//        float pos;
-//        juce::String label;
-//    };
-//
-//    juce::Array<LabelPos> labels;
-//
-//    void paint(juce::Graphics& g) override;
-//    juce::Rectangle<int> getSliderBounds() const;
-//    int getTextHeight() const { return 14; }
-//    juce::String getDisplayString() const;
-//private:
-//    LookAndFeel lnf;
-//
-//    juce::RangedAudioParameter* param;
-//    juce::String suffix;
-//};
 

@@ -47,7 +47,6 @@ void PaxMBClipAudioProcessor::initializeParameters()
     using namespace Params;
     const auto& params = GetParams();
 
-    // Float and int parameter initialization
     lowBandClip.gain = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(params.at(Names::Low_Gain)));
     lowBandClip.clip = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(params.at(Names::Low_Clip)));
     lowBandClip.waveType = dynamic_cast<juce::AudioParameterInt*>(apvts.getParameter(params.at(Names::Low_Wave)));
@@ -67,7 +66,6 @@ void PaxMBClipAudioProcessor::initializeParameters()
     m_outputGainParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(params.at(Names::Gain_Out)));
     m_oversampleParam = dynamic_cast<juce::AudioParameterInt*>(apvts.getParameter(params.at(Names::Oversample)));
 
-    // Boolean parameter initialization
     lowBandClip.bypassed = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Bypassed_Low)));
     midBandClip.bypassed = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Bypassed_Mid)));
     highBandClip.bypassed = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(Names::Bypassed_High)));

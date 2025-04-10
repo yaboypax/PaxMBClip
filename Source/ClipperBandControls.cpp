@@ -20,10 +20,8 @@ namespace
     constexpr int sliderX = 26;
     constexpr int sliderY = 55;
     constexpr int sliderWidth = 48;
-    //constexpr int sliderHeight = 355;
 
     constexpr int waveX = 26;
-    //constexpr int waveY = 422;
     constexpr int waveW = 100;
     constexpr int waveH = 20;
 }
@@ -174,9 +172,6 @@ void ClipperBandControls::resized()
     
     if (m_focus == BandFocus::unfocused)
         return;
-    //bypassButton.setBounds(buttonX, buttonY, buttonSize, buttonSize);
-    //muteButton.setBounds(bypassButton.getRight() + margin, buttonY, buttonSize, buttonSize);
-    //soloButton.setBounds(muteButton.getRight() + margin, buttonY, buttonSize, buttonSize);
 
     const int sliderHeight = getHeight() - 113;
     bandGainSlider.setBounds(sliderX, sliderY, sliderWidth, sliderHeight);
